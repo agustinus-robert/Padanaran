@@ -1,0 +1,30 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : Afadas
+ Source Server Type    : PostgreSQL
+ Source Server Version : 150013 (150013)
+ Source Host           : 192.168.45.146:5432
+ Source Catalog        : db_boarding2
+ Source Schema         : public
+
+ Target Server Type    : PostgreSQL
+ Target Server Version : 150013 (150013)
+ File Encoding         : 65001
+
+ Date: 16/08/2025 11:09:53
+*/
+
+-- ----------------------------
+-- Records of outlet_product_adjustment
+-- ----------------------------
+INSERT INTO "public"."outlet_product_adjustment" VALUES (1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (2, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (3, 1, 3, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (4, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (5, 1, 5, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (6, 1, 6, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (9, 1, 9, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (10, 1, 10, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (11, 1, 11, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."outlet_product_adjustment" VALUES (12, 1, 12, NULL, NULL, NULL, NULL, NULL, NULL);

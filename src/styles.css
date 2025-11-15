@@ -1,0 +1,15 @@
+/* src/styles.css */
+/* font */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Kustomisasi tambahan jika diperlukan */
+@layer components {
+  .my-custom-button {
+    @apply bg-blue-500 text-white px-4 py-2 rounded;
+  }
+}
+
+

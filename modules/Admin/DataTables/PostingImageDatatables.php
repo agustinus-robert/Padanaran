@@ -1,0 +1,118 @@
+<?php
+
+namespace Modules\Admin\DataTables;
+
+use Illuminate\Http\Request;
+use Modules\Admin\Models\PostImage;
+use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Column;
+use Yajra\DataTables\Html\Editor\Editor;
+use Yajra\DataTables\Html\Editor\Fields;
+use Yajra\DataTables\Services\DataTable;
+use DB;
+
+class PostingImageDatatables extends DataTable
+{
+    /**
+     * Build DataTable class.
+     *
+     * @param mixed $query Results from query() method.
+     * @return \Yajra\DataTables\DataTableAbstract
+     */
+    public function dataTable($query, Request $request)
+    {
+         if($request->trash == 0){
+            $trash = 0;
+        } else {
+            $trash = 1;
+        }
+
+        return datatables()
+            ->eloquent($query)
+            ->addColumn('action', function ($row) {
+                                 $template = '';
+                                 $template .= view('admin::layouts_master.component.button_edit', array('id' => $row->id, 'update' => route('admin::builder.posting_image.edit', ['posting_image' => '?id_menu='.$row->menu_id.'&post_id='.$row->post_id.'&id='.$row->id])))->render();
+                                 $template .= view('admin::layouts_master.component.button_delete', array('id' => $row->id, 'delete' => route('admin::builder.posting_image.destroy', ['posting_image' => $row->id])))->render();
+                                 return $template;
+                             })
+                             ->rawColumns(['action'])
+                             ->addIndexColumn();
+            // ->editColumn('action', function($data){
+            //      //return \Livewire::mount('admin::livewire.btn.actions', ['permission' => $data->id])->html();
+            //     return \Livewire::mount('admin::livewire.btn.actions', $data)->html();
+            // })
+           // ->rawColumns(['action']);
+    }
+
+    /**
+     * Get query source of dataTable.
+     *
+     * @param \App\Models\Product $model
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function query(PostImage $model, Request $request)
+    {
+        $str = $request->header('referer');
+        $qs = parse_url($str, PHP_URL_QUERY);
+
+        if(!empty($qs)){
+            parse_str($qs, $output);
+            
+            $data = $model::where('menu_id', $output['id_menu'])->where('post_id', $output['post_id'])->where('deleted_at', null);
+            return $this->applyScopes($data);
+        }
+    }
+
+    /**
+     * Optional method if you want to use html builder.
+     *
+     * @return \Yajra\DataTables\Html\Builder
+     */
+    public function html()
+    {
+        return $this->builder()
+                    ->setTableId('datatablesSimple')
+                    ->columns($this->getColumns())
+                    ->minifiedAjax('datatable?class=' . __CLASS__)
+                    ->drawCallbackWithLivewire()
+                    ->orderBy(1)
+                    ->buttons(
+                        Button::make('create'),
+                        Button::make('export'),
+                        Button::make('print'),
+                        Button::make('reset'),
+                        Button::make('reload')
+                    )
+                    ->parameters([
+                        'paging' => true,
+                        'searching' => true,
+                        'info' => false,
+                        'searchDelay' => 350,
+                    ]);
+    }
+
+    /**
+     * Get columns.
+     *
+     * @return array
+     */
+    protected function getColumns()
+    {
+        return [
+            Column::make('id'),
+            Column::make('title'),
+            Column::make('slug'),
+            Column::make('action')
+        ];
+    }
+
+    /**
+     * Get filename for export.
+     *
+     * @return string
+     */
+    // protected function filename()
+    // {
+    //     return 'Supplier_' . date('YmdHis');
+    // }
+}

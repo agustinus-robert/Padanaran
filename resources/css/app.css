@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "~grapesjs/dist/css/grapes.min.css";
+@import "grapesjs/dist/css/grapes.min.css";
+
+[x-cloak] {
+    display: none;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #121212;
+  color: #FFF;
+}
+
+/* ==== Panel Utama (Canvas) ==== */
+#gjs {
+  border: none;
+  background-color: #181818;
+  border: 1px solid #2B2B3A;
+}
+
+.editor-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+
+.editor-canvas {
+  flex-grow: 1;
+  background-color: #181818;
+  border: 1px solid #2B2B3A; /* Border hitam keabu-abuan */
+}
+
+.panel-left {
+  flex-basis: 250px;
+  position: relative;
+  overflow-y: auto;
+  border: 1px solid #2B2B3A;
+}
+
+/* ==== Panel Atas (Toolbar) ==== */
+.panel__top {
+  position: absolute;
+  width: 100%;
+  height: 50px;
+  background: #181818;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-bottom: 1px solid #2B2B3A;
+}
+
+/* ==== Panel Kiri (Komponen & Blok Manager) ==== */
+.panel__left {
+  position: absolute;
+  width: 250px;
+  top: 50px;
+  bottom: 0;
+  left: 0;
+  background: #1a1a1a;
+  border-right: 1px solid #2B2B3A;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* ==== Panel Kanan (Style Manager & Layers) ==== */
+.panel__right {
+  position: absolute;
+  width: 300px;
+  top: 50px;
+  bottom: 0;
+  right: 0;
+  background: #1a1a1a;
+  border-left: 1px solid #2B2B3A;
+  transition: width 0.3s ease-in-out;
+}
+
+/* ==== Style untuk Blok Manager di Panel Kiri ==== */
+.gjs-block {
+  background: #222;
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  color: white;
+  text-align: center;
+  border-radius: 5px; /* Tambahan border agar lebih smooth */
+}
+
+.gjs-block:hover {
+  background: #333;
+}
+
+/* ==== Style untuk Tombol Toolbar ==== */
+.btn-toggle {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.btn-toggle:hover {
+  color: #ffcc00;
+}
+/* ==== Style untuk Panel Kanan Agar Lebih Ramping ==== */
+.gjs-pn-views-container,
+.gjs-one-bg,
+.gjs-two-color,
+.gjs-sm-sector,
+.gjs-layer,
+.gjs-traits-label,
+.gjs-clm-tags {
+  background-color: #181818 !important;
+  border-color: #2B2B3A !important;
+  color: #FFF !important;
+}
+
+.gjs-layer .gjs-layer-vis,
+.gjs-layer .gjs-layer-move {
+  display: none !important;
+}
+
+
+/* ==== Style Manager Modern (Panel Kanan) ==== */
+.gjs-sm-sector-title {
+  background: #1a1a1a !important;
+  color: #FFF !important;
+  padding: 5px;
+  font-weight: bold;
+  border-bottom: 1px solid #2B2B3A;
+}
+
+/* ==== Input Fields di Panel Kanan ==== */
+.gjs-field, .gjs-field-checkbox {
+  background-color: #222 !important;
+  color: #FFF !important;
+  border: 1px solid #3A3A4E;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+
+/* ==== Hover Effect ==== */
+.gjs-pn-btn:hover,
+.gjs-clm-tags:hover,
+.gjs-sm-title:hover,
+.gjs-trt-trait:hover {
+  background-color: #2B2B3A !important;
+}
+
+/* ==== Active Button ==== */
+.gjs-pn-btn.gjs-pn-active {
+  background-color: #3A3A4E !important;
+}
+
+/* Editor agar tidak ketabrak */
+#editor-container {
+  position: absolute;
+  left: 250px;
+  width: calc(100% - 250px);
+  height: 100vh;
+  border: 1px solid #2B2B3A; /* Border tambahan */
+}

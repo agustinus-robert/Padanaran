@@ -1,0 +1,13 @@
+<?php
+
+namespace Modules\Admin\Models;
+use App\Models\Traits\Restorable\Restorable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Partnership extends Model
+{
+    use HasFactory;
+
+    public $table = "user_partnership";
+}

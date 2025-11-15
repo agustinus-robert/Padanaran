@@ -1,0 +1,13 @@
+{
+    "name": "Administration",
+    "alias": "administration",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Administration\\Providers\\AdministrationServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

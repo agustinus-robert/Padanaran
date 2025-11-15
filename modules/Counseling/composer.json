@@ -1,0 +1,25 @@
+{
+    "name": "kangrsyd/counseling",
+    "description": "",
+    "authors": [
+        {
+            "name": "Rasyid Ridho",
+            "email": "ngodink@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Counseling\\Providers\\CounselingServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Counseling\\": ""
+        }
+    }
+}

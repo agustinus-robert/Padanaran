@@ -1,0 +1,73 @@
+<?php
+
+namespace Modules\Editor\Providers;
+
+use App\Models\Position;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
+use Modules\Account\Models\Employee;
+use Modules\Account\Models\EmployeePosition;
+use Modules\Account\Models\User;
+
+class EditorServiceProvider extends ServiceProvider
+{
+    /**
+     * @var string $moduleName
+     */
+    protected $moduleName = 'Editor';
+
+    /**
+     * @var string $moduleNameLower
+     */
+    protected $moduleNameLower = 'editor';
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../Config/' . $this->moduleNameLower . '.php',
+            'modules.' . $this->moduleNameLower
+        );
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->app->register(AuthServiceProvider::class);
+        $this->app->register(RouteServiceProvider::class);
+        $this->loadDynamicRelationships();
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+
+
+        $this->loadViewsFrom(__DIR__ . '/../Resources/Views', $this->moduleNameLower);
+        $this->loadViewsFrom(__DIR__ . '/../Resources/Components', 'x-' . $this->moduleNameLower);
+
+        Blade::componentNamespace('Modules\\' . $this->moduleName . '\\Resources\\Components', $this->moduleNameLower);
+    }
+
+    /**
+     * Register dynamic relationships.
+     */
+    public function loadDynamicRelationships()
+    {
+        // User::resolveRelationUsing('employee', function ($user) {
+        //     return $user->hasOne(Employee::class, 'user_id')->withDefault();
+        // });
+
+        // Position::resolveRelationUsing('employees', function ($position) {
+        //     return $position->belongsToMany(Employee::class, 'empl_positions', 'position_id', 'empl_id')->withPivot('id');
+        // });
+
+        // Position::resolveRelationUsing('employeePositions', function ($position) {
+        //     return $position->hasMany(EmployeePosition::class, 'position_id');
+        // });
+    }
+}

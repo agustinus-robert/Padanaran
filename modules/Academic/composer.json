@@ -1,0 +1,25 @@
+{
+    "name": "kangrsyd/academic",
+    "description": "",
+    "authors": [
+        {
+            "name": "Rasyid Ridho",
+            "email": "ngodink@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Academic\\Providers\\AcademicServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Academic\\": ""
+        }
+    }
+}

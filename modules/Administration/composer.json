@@ -1,0 +1,25 @@
+{
+    "name": "kangrsyd/administration",
+    "description": "",
+    "authors": [
+        {
+            "name": "Rasyid Ridho",
+            "email": "ngodink@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Administration\\Providers\\AdministrationServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Administration\\": ""
+        }
+    }
+}
