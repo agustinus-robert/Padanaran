@@ -2,7 +2,6 @@
 /modules/Web/Resources/Assets
 /public/storage
 /public/saves
-/public
 /storage/*.key
 /vendor
 /web/resources/asset
