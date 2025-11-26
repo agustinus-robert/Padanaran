@@ -1,6 +1,7 @@
 /node_modules
 /modules/Web/Resources/Assets
 /public/storage
+/public/skote
 /public/saves
 /storage/*.key
 /vendor

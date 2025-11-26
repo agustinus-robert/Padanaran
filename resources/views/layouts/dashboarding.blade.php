@@ -113,6 +113,14 @@
     <div class="rightbar-overlay"></div>
     <!-- END Page Container -->
 
+    <div id="global-progress-wrapper" 
+        style="position: fixed; bottom: 20px; right: 20px; width: 250px; height: 25px; 
+                background: rgba(0,0,0,0.2); border-radius: 6px; display: none; z-index: 9999;">
+        <div id="progress-bar" 
+            style="height: 100%; width: 0%; background: #4caf50; border-radius: 6px;">
+        </div>
+    </div>
+
     <!--
       Dashmix JS
 
@@ -159,6 +167,34 @@
     </script>
 
     @stack('scripts')
+
+    <script>
+        function startProgress(key) {
+            document.getElementById('progress-box').style.display = 'block';
+
+            let interval = setInterval(() => {
+                fetch('/progress?schedule_key=' + key)
+                    .then(r => r.json())
+                    .then(data => {
+                        document.getElementById('progress-bar').style.width = data.percent + '%';
+
+                        if (data.percent >= 100) {
+                            clearInterval(interval);
+                            setTimeout(() => {
+                                document.getElementById('progress-box').style.display = 'none';
+                                document.getElementById('progress-bar').style.width = '0%';
+                            }, 800);
+                        }
+                    });
+            }, 1000);
+        }
+    </script>
+    <?php if (session('progress_key')): ?>
+        <script>
+            startProgress("<?= session('progress_key'); ?>");
+        </script>
+    <?php endif; ?>
+
 </body>
 
 </html>

@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 use Modules\HRMS\Models\EmployeeScanLog;
 use Modules\HRMS\Models\EmployeeTeacherScanLog;
 use Modules\HRMS\Models\TeacherScanLog;
+use App\Events\TeacherMeetUpsert;
 
 trait EmployeeScheduleTeacherRepository
 {

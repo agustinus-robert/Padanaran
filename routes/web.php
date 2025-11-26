@@ -26,6 +26,19 @@ Route::middleware([
     Route::post('/choose-education', [ChooseEducationController::class, 'store'])->name('choose.education.store');
 });
 
+    Route::get('/progress', function (Request $request) {
+        $key = $request->query('schedule_key');
+        if (!$key) {
+            return response()->json(['percent' => 0]);
+        }
+
+        $value = cache()->get("progress_{$key}", 0);
+        return response()->json([
+            'percent' => intval($value)
+        ]);
+    });
+
+
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware(['guest']); // ← Tanpa throttle:login

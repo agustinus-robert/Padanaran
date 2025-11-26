@@ -18,7 +18,7 @@ class AcademicSubjectSchedule extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'subject_id', 'teacher_id', 'assist_id', 'classroom_id', 'day', 'start_at', 'end_at'
+        'subject_id', 'teacher_id', 'assist_id', 'classroom_id', 'day', 'start_at', 'end_at', 'date'
     ];
 
     /**

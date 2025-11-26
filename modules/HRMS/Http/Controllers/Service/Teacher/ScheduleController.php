@@ -27,6 +27,8 @@ use Modules\Administration\Excel\Exports\ExportScheduleTeacher;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Modules\Academic\Models\AcademicClassroom;
+use App\Events\TeacherMeetUpsert;
+use Illuminate\Support\Facades\DB;
 use Carbon\CarbonPeriod;
 
 
@@ -296,11 +298,30 @@ class ScheduleController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        if ($schedule = $this->storeEmployeeSchedule($request->transformed()->toArray())) {
-            return redirect()->next()->with('success', 'Jadwal kerja karyawan baru atas nama <strong>' . $schedule->employee->user->name . '</strong> berhasil dibuat.');
-        }
-        return redirect()->fail();
+        $data = $request->transformed()->toArray();
+        $key = 'schedule_' . time();
+        cache()->put("progress_$key", 0);
+
+        DB::transaction(function () use ($data, $key, &$schedule) {
+
+            $schedule = $this->storeEmployeeSchedule($data);
+
+            if (!$schedule) {
+                throw new \Exception("Gagal membuat schedule");
+            }
+
+            event(new TeacherMeetUpsert($data, $key));
+        });
+
+        return redirect()
+            ->next()
+            ->with('progress_key', $key)
+            ->with('success', 'Jadwal kerja karyawan baru atas nama <strong>' .
+                $schedule->employee->user->name .
+                '</strong> berhasil dibuat.');
     }
+
+
 
   public function updateCategory(Request $request, $date, $employeeId)
 {

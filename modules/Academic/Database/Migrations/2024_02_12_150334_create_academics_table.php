@@ -165,6 +165,7 @@ class CreateAcademicsTable extends Migration
             $table->smallInteger('day')->nullable();
             $table->time('start_at')->nullable();
             $table->time('end_at')->nullable();
+            $table->date('date')->nullable();
             $table->softDeletes();
             $table->timestamps();
 
