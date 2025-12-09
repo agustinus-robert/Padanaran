@@ -12,7 +12,7 @@ use Modules\Administration\Http\Controllers\API\Scholar\ClassroomAPIController;
 
 Route::get('/semesters', function () {
     return AcademicSemester::whereNull('deleted_at')
-        ->with('academic:id,name') 
+        ->with('academic:id,name')
         ->get(['id', 'acdmc_id', 'name'])
         ->map(function ($item) {
             return [
@@ -24,7 +24,7 @@ Route::get('/semesters', function () {
 
 
 Route::get('/grade_class', function() {
-    $classroomId = request()->query('class_id'); 
+    $classroomId = request()->query('class_id');
 
     $query = GradeLevel::query();
 
@@ -45,8 +45,8 @@ Route::get('/grade_class', function() {
 
 
 Route::get('/classrooms', function () {
-    $classroomId = request()->query('class_id'); 
-    
+    $classroomId = request()->query('class_id');
+
     return AcademicClassroom::where('level_id', $classroomId)
         ->get(['id', 'name'])
         ->map(function ($item){
@@ -60,12 +60,12 @@ Route::get('/classrooms', function () {
 
 
 Route::get('/batches', function () {
-    $semesterId = request()->query('semester_id'); 
+    $semesterId = request()->query('semester_id');
     $acdmcId = AcademicSemester::find($semesterId);
 
     return SchoolBillCycleSemesters::where('semester_id', $acdmcId->id)
         ->where('grade_id', userGrades())
-        ->get(['id','name']) 
+        ->get(['id','name'])
         ->map(function ($item) {
             return [
                 'id'   => $item->id,
@@ -76,7 +76,7 @@ Route::get('/batches', function () {
 
 
 Route::get('/references', function () {
-    $batchId = request()->query('batch_id'); 
+    $batchId = request()->query('batch_id');
 
     return SchoolBillReference::where('batch_id', $batchId)
         ->select('type_class')
@@ -87,7 +87,7 @@ Route::get('/references', function () {
             $enum = $ref->type_class;
 
             return [
-                'type_class'       => $enum->value, 
+                'type_class'       => $enum->value,
                 'type_class_label' => $enum->label(),
             ];
         })
@@ -96,7 +96,7 @@ Route::get('/references', function () {
 
 
 Route::get('/references_category', function () {
-    $batchId = request()->query('batch_id'); 
+    $batchId = request()->query('batch_id');
 
     return SchoolBillReference::where('batch_id', $batchId)
         ->select('payment_category')

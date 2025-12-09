@@ -76,7 +76,7 @@ class AcademicSubjectMeet extends Model
     public function semester () {
         return $this->belongsTo(AcademicSemester::class, 'semester_id')->withDefault();
     }
-    
+
 
     /**
      * This belongsTo subject.
