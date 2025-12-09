@@ -9,6 +9,7 @@ use Modules\Core\Enums\StudentEducationEnum;
 use Modules\Administration\Http\Controllers\API\Facility\RoomAPIController;
 use Modules\Administration\Http\Controllers\API\Facility\BuildingAPIController;
 use Modules\Administration\Http\Controllers\API\Scholar\ClassroomAPIController;
+use Modules\Administration\Http\Controllers\API\Invoice\InvoicesMidtransControllerAPI;
 
 Route::get('/semesters', function () {
     return AcademicSemester::whereNull('deleted_at')
@@ -126,4 +127,8 @@ Route::prefix('facility')->middleware('auth:sanctum')->group(function() {
 
 Route::prefix('scholar')->middleware('auth:sanctum')->group(function() {
     Route::get('/classroom-list', [ClassroomAPIController::class, 'index'])->name('classroom.list');
+});
+
+Route::prefix('invoice')->middleware('auth:sanctum')->group(function(){
+    Route::post('/invoice/school/create-transaction', [InvoicesMidtransControllerAPI::class, 'createTransaction']);
 });
