@@ -92,19 +92,44 @@ class PresenceControllerAPI extends Controller
     {
         $employee = $request->user()->employee;
 
+        $now = Carbon::now();
+        $today = $now->format('Y-m-d');
+
+        $start = Carbon::parse($today . ' 06:00:00');
+        $end   = Carbon::parse($today . ' 15:59:59');
+
+        if ($now->lessThan($start)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Absensi awal hari belum dimulai, silakan absen mulai jam 06:00.'
+            ], 400);
+        }
+
+        // Tentukan model
+        $model = ($employee->positions->first()->position_id == 14)
+            ? EmployeeTeacherScanLog::class
+            : EmployeeScanLog::class;
+
+        $alreadyScan = $model::where('empl_id', $employee->id)
+            ->whereBetween('created_at', [$start, $end])
+            ->first();
+
+        if ($alreadyScan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda sudah absen di awal hari, tunggu waktu pulang untuk absen pulang.'
+            ], 400);
+        }
+
         $payload = [
-            'empl_id'     => $employee->id,
-            'latlong'     => json_decode($request->input('latlong'), true),
-            'location'    => $request->input('location'),
-            'ip'          => getClientIp(),
-            'user_agent'  => $request->server('HTTP_USER_AGENT')
+            'empl_id'    => $employee->id,
+            'latlong'    => json_decode($request->input('latlong'), true),
+            'location'   => $request->input('location'),
+            'ip'         => getClientIp(),
+            'user_agent' => $request->server('HTTP_USER_AGENT'),
         ];
 
-        if ($employee->positions->first()->position_id == 14) {
-            $input = new EmployeeTeacherScanLog($payload);
-        } else {
-            $input = new EmployeeScanLog($payload);
-        }
+        $input = new $model($payload);
 
         if ($input->save()) {
             return response()->json([
