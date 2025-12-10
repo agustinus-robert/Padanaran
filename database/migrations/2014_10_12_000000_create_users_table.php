@@ -23,9 +23,9 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable()->index();
             $table->string('profile_photo_path', 2048)->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete()->index();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete()->index();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete()->index();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->softDeletesTz();
             $table->timestampsTz();
         });
