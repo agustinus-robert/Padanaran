@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Administration\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\Cache;
 use App\Models\References\Hobby;
 use App\Models\References\Desire;
 use Modules\Account\Models\User;
@@ -24,17 +25,35 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        // $this->authorize('access', User::class);
         $this->authorize('access', Student::class);
 
         $trashed = $request->get('trash');
+        $search  = $request->get('search');
+        $limit   = $request->get('limit', 10);
+        $page    = $request->get('page', 1);
+        $gradeId = userGrades();
 
-        $students = Student::with('user', 'generation')->where('grade_id', userGrades())->search($request->get('search'))->when($trashed, function($query, $trashed) {
-            return $query->onlyTrashed();
-        })
-        ->orderByDesc('id')->paginate($request->get('limit', 10));
+        $cacheKey = "students:"
+            . "grade={$gradeId}:"
+            . "search=" . ($search ?: 'null') . ":"
+            . "trashed=" . ($trashed ?: 'false') . ":"
+            . "limit={$limit}:"
+            . "page={$page}";
 
-        $students_count = Student::where('grade_id', userGrades())->count();
+        $cacheCountKey = "students_count:grade={$gradeId}";
+
+        $students = Cache::tags(['students'])->remember($cacheKey, 60, function () use ($trashed, $search, $limit, $gradeId) {
+            return Student::with('user', 'generation')
+                ->where('grade_id', $gradeId)
+                ->search($search)
+                ->when($trashed, fn($query) => $query->onlyTrashed())
+                ->orderByDesc('id')
+                ->paginate($limit);
+        });
+
+        $students_count = Cache::tags(['students'])->remember($cacheCountKey, 60, function () use ($gradeId) {
+            return Student::where('grade_id', $gradeId)->count();
+        });
 
         return view('administration::scholar.students.index', compact('students', 'students_count'));
     }
@@ -104,7 +123,7 @@ class StudentController extends Controller
         $this->authorize('update', Student::class);
 
         if($student->trashed() || $student->id == auth()->id()) abort(404);
-        
+
         if($student = Student::completeUpdate($student, $request->merge([
             'grade_id' => userGrades()
         ]))){
@@ -138,7 +157,7 @@ class StudentController extends Controller
             );
 
             return redirect()->back()->with('success', 'Siswa atas nama <strong>'.$student->user->profile->name.' ('.$student->nis.')</strong> berhasil dihapus');
-        }   
+        }
 
         return redirect()->back()->with('danger', 'Siswa atas nama <strong>'.$student->user->profile->name.' ('.$student->nis.')</strong> gagal dihapus');
     }

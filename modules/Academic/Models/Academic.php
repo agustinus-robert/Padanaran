@@ -5,6 +5,7 @@ namespace Modules\Academic\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Academic extends Model
 {
     use SoftDeletes;

@@ -20,18 +20,18 @@ class EventStudentController extends Controller
     {
         $boardingEventStdn = BoardingStudentsEvent::with(['event', 'teacher', 'supervisor'])
         ->whereHas('teacher', function ($query) {
-            $query->where('grade_id', userGrades()); 
+            $query->where('grade_id', userGrades());
         })
         ->whereNull('deleted_at')
         ->paginate(10);
-        
+
         $students = Student::with('user')
         ->where('grade_id', userGrades())
         ->whereNull('deleted_at')->get();
 
         $events = BoardingReferenceEvent::where('grade_id', userGrades())->whereNull('deleted_at')->get();
         $acdmcClass = AcademicClassroom::whereNull('deleted_at')->get();
-        
+
         $employeeTeacher = Employee::with('user')
         ->where('grade_id', userGrades())
         ->whereHas('contract.position.position', function ($q) {
@@ -43,7 +43,6 @@ class EventStudentController extends Controller
         ->whereHas('contract.position.position', function ($q) {
             $q->where('type', PositionTypeEnum::PENGURUS->value);
         })->get();
-
 
         return view('boarding::event.student.index', compact('boardingEventStdn', 'students', 'events', 'employeeTeacher', 'employeeSupervisor', 'acdmcClass'));
     }
@@ -58,8 +57,8 @@ class EventStudentController extends Controller
             $studentableType = \Modules\Academic\Models\Student::class;
             $studentableId = $request->input('student_id');
         } elseif ($typeEvent == 2) {
-            $studentableType = \Modules\Academic\Models\AcademicClassroom::class; 
-            $studentableId = $request->input('academic_id'); 
+            $studentableType = \Modules\Academic\Models\AcademicClassroom::class;
+            $studentableId = $request->input('academic_id');
         } else {
             return redirect()->back()->with('error', 'Type event tidak valid.');
         }
@@ -73,8 +72,8 @@ class EventStudentController extends Controller
             // $boardStudent->load('studentable', 'event');
 
             Auth::user()->log(
-                ' Kegiatan bernama ' . $boardStudent->event->name . ' telah ditambahkan pada ' . 
-                ($typeEvent == 1 
+                ' Kegiatan bernama ' . $boardStudent->event->name . ' telah ditambahkan pada ' .
+                ($typeEvent == 1
                     ? 'siswa/siswi bernama ' . $boardStudent->modelable->user->name
                     : 'rombel bernama ' . $boardStudent->modelable->name) .
                 ' <strong>[ID: ' . $boardStudent->id . ']</strong>',
@@ -134,8 +133,8 @@ class EventStudentController extends Controller
             $studentableType = \Modules\Academic\Models\Student::class;
             $studentableId = $request->input('student_id');
         } elseif ($typeEvent == 2) {
-            $studentableType = \Modules\Academic\Models\AcademicClassroom::class; 
-            $studentableId = $request->input('academic_id'); 
+            $studentableType = \Modules\Academic\Models\AcademicClassroom::class;
+            $studentableId = $request->input('academic_id');
         } else {
             return redirect()->back()->with('error', 'Type event tidak valid.');
         }
@@ -148,8 +147,8 @@ class EventStudentController extends Controller
          //   $event_student->load('studentable.user', 'event');
 
             Auth::user()->log(
-                ' Kegiatan bernama ' . $event_student->event->name . ' telah diperbarui pada ' . 
-                ($typeEvent == 1 
+                ' Kegiatan bernama ' . $event_student->event->name . ' telah diperbarui pada ' .
+                ($typeEvent == 1
                     ? 'siswa/siswi bernama ' . $event_student->modelable->user->name
                     : 'rombel bernama ' . $event_student->modelable->name) .
                 ' <strong>[ID: ' . $event_student->id . ']</strong>',
@@ -159,12 +158,12 @@ class EventStudentController extends Controller
 
             return redirect()->route('boarding::event.event-student.index')
                 ->with('success', 'Data berhasil diperbarui.');
-        } 
-        
-        
+        }
+
+
         return redirect()->route('boarding::event.event-student.index')
             ->with('error', 'Data gagal diperbarui.');
-        
+
     }
 
     public function destroy(BoardingStudentsEvent $event_student)
@@ -172,11 +171,11 @@ class EventStudentController extends Controller
         $studentEv = $event_student->delete();
 
         if($studentEv){
-            $event_student->load('student.user','event');   
+            $event_student->load('student.user','event');
 
             Auth::user()->log(
-                ' Kegiatan bernama ' . $event_student->event->name . ' telah diperbarui pada ' . 
-                ($event_student->event_id == 1 
+                ' Kegiatan bernama ' . $event_student->event->name . ' telah diperbarui pada ' .
+                ($event_student->event_id == 1
                     ? 'siswa/siswi bernama ' . $event_student->modelable->user->name
                     : 'rombel bernama ' . $event_student->modelable->name) .
                 ' <strong>[ID: ' . $event_student->id . ']</strong>',
@@ -186,10 +185,10 @@ class EventStudentController extends Controller
 
             return redirect()->route('boarding::event.event-student.index')
                 ->with('success', 'Data berhasil dihapus.');
-        } 
-        
+        }
+
         return redirect()->route('boarding::event.event-student.index')
                 ->with('error', 'Gagal menghapus data.');
-        
+
     }
 }

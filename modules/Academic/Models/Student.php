@@ -5,6 +5,7 @@ namespace Modules\Academic\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Boarding\Models\BoardingStudentsLeave;
+use Illuminate\Support\Facades\Cache;
 
 use Modules\Academic\Models\Traits\StudentTrait;
 use Modules\HRMS\Models\EmployeePosition;
@@ -59,6 +60,25 @@ class Student extends Model
     public $with = [
         'user'
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($student) {
+            Cache::tags(['students'])->flush();
+        });
+
+        static::updated(function ($student) {
+            Cache::tags(['students'])->flush();
+        });
+
+        static::deleted(function ($student) {
+            Cache::tags(['students'])->flush();
+        });
+
+        static::restored(function ($student) {
+            Cache::tags(['students'])->flush();
+        });
+    }
 
     /**
      * Retrieve the model for a bound value.

@@ -30,6 +30,8 @@ return new class extends Migration
             $table->bigInteger('reserved_at')->nullable();
             $table->bigInteger('available_at');
             $table->bigInteger('created_at');
+            $table->index('reserved_at');
+            $table->index('available_at');
         });
 
         Schema::create('app_failed_jobs', function (Blueprint $table) {
@@ -50,6 +52,7 @@ return new class extends Migration
             $table->string('model')->nullable();
             $table->text('description')->nullable();
             $table->string('guard_name')->default('web');
+            $table->index('module');
         });
 
         Schema::create('app_roles', function (Blueprint $table) {

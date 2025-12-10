@@ -218,7 +218,7 @@ class User extends Authenticatable
         return $this->hasOne(Student::class, 'user_id');
     }
 
-    
+
 
       /**
      * This has many achievements.
@@ -227,7 +227,7 @@ class User extends Authenticatable
         return $this->hasMany(UserAchievement::class, 'user_id');
     }
 
-    
+
     /**
      * This has many logs.
      */

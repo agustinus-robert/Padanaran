@@ -15,7 +15,7 @@ class EventReferenceController extends Controller
     public function index(Request $request)
     {
         $boardingEvent = BoardingReferenceEvent::where('grade_id', userGrades())->whereNull('deleted_at')->paginate(10);
-        
+
         return view('boarding::event.index', compact('boardingEvent'));
     }
 
@@ -23,12 +23,12 @@ class EventReferenceController extends Controller
     {
         $data = array_merge(
             Arr::only($request->all(), [
-                'name', 
-                'type', 
-                'start_date', 
-                'end_date', 
-                'in', 
-                'out', 
+                'name',
+                'type',
+                'start_date',
+                'end_date',
+                'in',
+                'out',
                 'type_participant'
             ]),
             [
@@ -37,7 +37,7 @@ class EventReferenceController extends Controller
         );
 
         $boardEvent = BoardingReferenceEvent::create($data);
-        
+
         if($boardEvent){
 
             Auth::user()->log(
@@ -48,12 +48,12 @@ class EventReferenceController extends Controller
             );
 
             return redirect($request->input('next', route('boarding::event.event-reference.index')))
-            ->with('success', 'Data berhasil disimpan.'); 
+            ->with('success', 'Data berhasil disimpan.');
         }
 
         return redirect($request->input('next', route('boarding::event.event-reference.index')))
                 ->with('error', 'Data gagal disimpan.');
-        
+
     }
 
     public function edit(BoardingReferenceEvent $event_reference)
@@ -85,7 +85,7 @@ class EventReferenceController extends Controller
             ]
         );
 
-        
+
         $event = $event_reference->update($data);
 
         if($event){
@@ -98,11 +98,11 @@ class EventReferenceController extends Controller
 
             return redirect()->route('boarding::event.event-reference.index')
                 ->with('success', 'Data berhasil diperbarui.');
-        } 
-        
+        }
+
         return redirect()->route('boarding::event.event-reference.index')
                 ->with('error', 'Data gagal diperbarui.');
-        
+
     }
 
     public function destroy(BoardingReferenceEvent $event_reference)
@@ -110,7 +110,7 @@ class EventReferenceController extends Controller
         $event = $event_reference->delete();
 
         if($event){
-            
+
             Auth::user()->log(
                 ' Kegiatan bernama '.$event_reference->name. '<strong>'.' telah dihapus '.'</strong>' .
                 ' <strong>[ID: ' . $event_reference->id . ']</strong>',
@@ -124,6 +124,6 @@ class EventReferenceController extends Controller
 
         return redirect()->route('boarding::event.event-reference.index')
             ->with('error', 'Gagal menghapus data.');
-        
+
     }
 }

@@ -16,16 +16,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->string('username')->nullable();
-            $table->string('email')->unique()->nullable();
+            $table->string('username')->nullable()->index();
+            $table->string('email')->unique()->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->foreignId('current_team_id')->nullable();
+            $table->foreignId('current_team_id')->nullable()->index();
             $table->string('profile_photo_path', 2048)->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete()->index();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete()->index();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete()->index();
             $table->softDeletesTz();
             $table->timestampsTz();
         });
