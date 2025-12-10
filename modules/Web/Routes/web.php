@@ -23,6 +23,7 @@ Route::get('/payment/{uuid}', 'PaymentCommerceController@index')->name('payment.
 Route::get('/contact', 'ContactCommerceController@index')->name('contact.page');
 Route::post('/payment-transaction', 'PaymentCommerceController@status')->name('payment.transaction');
 Route::get('/pbuilder', 'PBuilderController@index')->name('page.pbuilder');
+Route::get('/webrequest', 'RequestorController@index')->name('page.webrequest');
 
 Route::prefix('builder')->namespace('Builder')->name('builder.')->group(function () {
     Route::get('/builder', 'PageBuilderController@index')->name('page.builder');
