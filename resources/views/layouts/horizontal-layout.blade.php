@@ -34,9 +34,8 @@
 
 <body data-topbar="dark" data-layout="horizontal">
 
+    @stack('nav')
     @if(config('theme.default') == 'material')
-        @include('layouts.component.material-admin-nav')
-
         <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
             @yield('body-content')
         </main>

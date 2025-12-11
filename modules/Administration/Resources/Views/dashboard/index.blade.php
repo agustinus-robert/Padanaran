@@ -1,21 +1,176 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Dasbor - ')
+
+@section('titleTemplate', config('account.admin.name'))
+
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item active">Dasbor</li>
 @endsection
 
-@section('content')
-    <div class="row">
-        <div class="col-md-8">
-            <div class="jumbotron bg-light p-2">
-                <h2>Assalamu'alaikum {{ auth()->user()->name }}!</h2>
-                <p class="text-muted">Selamat datang di Digi-Boarding</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            @include('account::includes.account-info')
+@php
+$menus = [
+
+    [
+        'type'  => 'item',
+        'label' => 'Dasbor',
+        'icon'  => 'dashboard',
+        'route' => route('administration::dashboard'),
+    ],
+
+    [
+        'type'  => 'title',
+        'label' => 'Administrasi',
+    ],
+
+    [
+        'type'  => 'dropdown',
+        'label' => 'Kesiswaan',
+        'icon'  => 'groups',
+        'children' => [
+            [
+                'label' => 'Rombel',
+                'icon'  => 'group',
+                'route' => route('administration::scholar.classrooms.index'),
+            ],
+            [
+                'label' => 'Data siswa',
+                'icon'  => 'groups_2',
+                'route' => route('administration::scholar.students.index'),
+            ],
+            [
+                'label' => 'Registrasi semester',
+                'icon'  => 'checklist',
+                'route' => route('administration::scholar.semesters.index'),
+            ],
+        ]
+    ],
+
+    [
+        'type' => 'dropdown',
+        'label' => 'Kurikulum',
+        'icon'  => 'menu_book',
+        'children' => [
+            [
+                'label' => 'Mapel',
+                'icon'  => 'book',
+                'route' => route('administration::curriculas.subjects.index'),
+            ],
+            [
+                'label' => 'Pertemuan',
+                'icon'  => 'event_note',
+                'route' => route('administration::curriculas.meets.index'),
+            ],
+        ]
+    ],
+
+    [
+        'type' => 'dropdown',
+        'label' => 'Sarpras',
+        'icon'  => 'business',
+        'children' => [
+            [
+                'label' => 'Gedung',
+                'icon'  => 'business',
+                'route' => route('administration::facility.buildings.index'),
+            ],
+            [
+                'label' => 'Ruang',
+                'icon'  => 'meeting_room',
+                'route' => route('administration::facility.rooms.index'),
+            ],
+        ]
+    ],
+
+    [
+        'type' => 'item',
+        'label' => auth()->user()->employee->grade_id == 4
+            ? 'Tagihan Siswa SMP'
+            : 'Tagihan Siswa SMA',
+        'icon'  => 'school',
+        'route' => auth()->user()->employee->grade_id == 4
+            ? route('administration::bill.students.index', ['education' => 4])
+            : route('administration::bill.students.index', ['education' => 5]),
+    ],
+
+    [
+        'type' => 'title',
+        'label' => 'Basis data',
+    ],
+
+    [
+        'type' => 'item',
+        'label' => 'Tahun ajaran',
+        'icon'  => 'calendar_month',
+        'route' => route('administration::database.academics.index'),
+    ],
+
+    [
+        'type' => 'item',
+        'label' => 'Data kurikulum',
+        'icon'  => 'menu_book',
+        'route' => route('administration::database.curriculas.index'),
+    ],
+
+    [
+        'type' => 'item',
+        'label' => 'Referensi Tagihan',
+        'icon'  => 'playlist_add',
+        'route' => route('administration::bill.references.index'),
+    ],
+
+    [
+        'type' => 'item',
+        'label' => 'Gelombang',
+        'icon'  => 'waves',
+        'route' => route('administration::bill.batchs.index'),
+    ],
+
+    [
+        'type' => 'dropdown',
+        'label' => 'Kelola',
+        'icon'  => 'settings',
+        'children' => array_filter([
+            auth()->user()->can('access', User::class) ? [
+                'label' => 'Pengguna',
+                'icon'  => 'person',
+                'route' => route('administration::database.manage.users.index'),
+            ] : null,
+
+            auth()->user()->can('access', Role::class) ? [
+                'label' => 'Peran',
+                'icon'  => 'badge',
+                'route' => route('administration::database.manage.roles.index'),
+            ] : null,
+        ])
+    ],
+
+];
+@endphp
+
+
+
+@push('nav')
+    @if(config('theme.default') == 'material')
+        @include('layouts.component.material-admin-nav')
+    @endif
+@endpush
+
+@section('body-content')
+    @if(config('theme.default') == 'material')
+        @include('layouts.component.material-admin-top-nav')
+    @endif
+
+    <div class="container-fluid">
+        <div class="row">
+            @if(config('theme.default') == 'material')
+                @include('layouts.component.material-admin-dashboard-global')
+            @elseif(config('theme.default') == 'skote')
+                @include('layouts.component.skote-admin-header-global')
+                @include('layouts.component.skote-admin-dashboard-global')
+            @endif
         </div>
     </div>
 @endsection

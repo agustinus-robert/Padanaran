@@ -20,7 +20,7 @@
 @section('body-content')
 
     @if(config('theme.default') === 'material')
-        @include('portal::layouts.components.material-header')
+        @include('layouts.component.material-nav')
     @elseif(config('theme.default') === 'skote')
         @include('portal::layouts.components.skote-header')
     @endif

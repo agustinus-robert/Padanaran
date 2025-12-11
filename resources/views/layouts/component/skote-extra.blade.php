@@ -65,3 +65,12 @@
         style="height: 100%; width: 0%; background: #4caf50; border-radius: 6px;">
     </div>
 </div>
+
+
+
+<script src="{{ asset('skote/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('skote/libs/metismenu/metisMenu.min.js') }}"></script>
+<script src="{{ asset('skote/libs/simplebar/simplebar.min.js') }}"></script>
+<script src="{{ asset('skote/libs/node-waves/waves.min.js') }}"></script>
+<script src="{{ asset('skote/libs/chart.js/chart.umd.js') }}"></script>
+<script src="{{ asset('skote/js/app.js') }}"></script>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Academic\Http\Controllers;
+namespace Modules\Academic\Http\Controllers\API;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;

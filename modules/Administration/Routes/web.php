@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function() {
             });
             // Bill
             Route::name('bill.')->prefix('bill')->namespace('Bill')->group(function() {
-                // Teacher 
+                // Teacher
                 Route::resource('references', 'ReferenceController');
                 Route::resource('students', 'StudentController');
                 Route::resource('batchs', 'BatchController');
