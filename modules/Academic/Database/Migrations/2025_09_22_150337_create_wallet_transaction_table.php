@@ -40,6 +40,8 @@ class CreateWalletTransactionTable extends Migration
             $table->string('reference_type', 100)->nullable();
             $table->decimal('balance_after', 18, 2);
             $table->timestamps();
+
+            $table->index('type');
         });
 
         Schema::create('student_wallet_topups', function (Blueprint $table) {
@@ -53,6 +55,8 @@ class CreateWalletTransactionTable extends Migration
             //orang tua lalu -> pihak bank -> lalu pihak bank approve, keputusan saldo tersebut akan dikirim lewat API
             $table->string('status', 20)->default('pending');
             $table->timestamps();
+
+            $table->index('status');
         });
     }
 

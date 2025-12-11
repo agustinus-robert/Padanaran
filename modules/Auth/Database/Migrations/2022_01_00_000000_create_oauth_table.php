@@ -38,7 +38,7 @@ return new class extends Migration
             $table->boolean('revoked');
             $table->dateTime('expires_at')->nullable();
         });
-        
+
         $this->schema->create('oauth_access_tokens', function (Blueprint $table) {
             $table->string('id', 100)->primary();
             $table->unsignedBigInteger('user_id')->nullable()->index();
@@ -51,7 +51,7 @@ return new class extends Migration
             $table->timestamps();
             $table->dateTime('expires_at')->nullable();
         });
-        
+
         $this->schema->create('oauth_refresh_tokens', function (Blueprint $table) {
             $table->string('id', 100)->primary();
             $table->string('access_token_id', 100)->index();
@@ -71,7 +71,7 @@ return new class extends Migration
             $table->boolean('revoked');
             $table->timestamps();
         });
-        
+
         $this->schema->create('oauth_personal_access_clients', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->uuid('client_id');

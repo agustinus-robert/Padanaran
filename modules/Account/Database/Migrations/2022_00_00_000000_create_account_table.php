@@ -24,6 +24,8 @@ return new class extends Migration
 
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('email');
         });
 
         Schema::create('user_emails', function (Blueprint $table) {
@@ -79,6 +81,9 @@ return new class extends Migration
             $table->foreign('hobby_id')->references('id')->on('ref_hobbies')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('religion_id')->references('id')->on('ref_religions')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('desire_id')->references('id')->on('ref_desires')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
+            $table->index('sex');
         });
 
         Schema::create('user_father', function (Blueprint $table) {
@@ -170,6 +175,8 @@ return new class extends Migration
             $table->foreign('territory_id')->references('id')->on('ref_territories')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('type_id')->references('id')->on('ref_achievement_types')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('num_id')->references('id')->on('ref_achievement_nums')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('user_appreciations', function (Blueprint $table) {
@@ -184,6 +191,8 @@ return new class extends Migration
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('territory_id')->references('id')->on('ref_territories')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('user_organizations', function (Blueprint $table) {
@@ -201,6 +210,8 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('type_id')->references('id')->on('ref_organization_types')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('position_id')->references('id')->on('ref_organization_positions')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('user_disabilities', function (Blueprint $table) {

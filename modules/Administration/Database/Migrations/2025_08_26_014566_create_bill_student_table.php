@@ -18,6 +18,8 @@ class CreateBillStudentTable extends Migration
             $table->timestamps();
 
             $table->foreign('semester_id')->references('id')->on('acdmc_semesters')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('sch_bill_references', function (Blueprint $table) {
@@ -34,6 +36,7 @@ class CreateBillStudentTable extends Migration
             $table->timestamps();
 
             $table->foreign('batch_id')->references('id')->on('sch_bill_batchs')->onDelete('cascade');
+            $table->index('name');
         });
 
         Schema::create('sch_bill_students', function (Blueprint $table) {

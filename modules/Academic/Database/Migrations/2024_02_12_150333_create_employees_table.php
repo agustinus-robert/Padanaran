@@ -33,6 +33,10 @@ return new class extends Migration
             $table->unsignedInteger('deleted_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            //index
+            $table->index(['joined_at', 'exited_at']);
+            $table->index('group');
         });
 
         MetableSchema::create('empl_meta', 'empl_id', 'empls', 'unsignedSmallInteger');
@@ -46,6 +50,9 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index(['start_date', 'end_date']);
         });
 
         Schema::create('empl_asmts', function (Blueprint $table) {
@@ -55,6 +62,8 @@ return new class extends Migration
             $table->double('scale')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
         });
 
         Schema::create('empl_teachers', function (Blueprint $table) {
@@ -66,6 +75,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['employee_id']);
+            $table->index('nuptk');
         });
 
         Schema::create('empl_teacher_mutations', function (Blueprint $table) {
@@ -74,6 +84,8 @@ return new class extends Migration
             $table->string('reason')->nullable();
             $table->timestamp('officiated_at')->nullable();
             $table->timestamps();
+
+            $table->index('officiated_at');
         });
 
         Schema::create('empl_contracts', function (Blueprint $table) {
@@ -93,6 +105,9 @@ return new class extends Migration
             $table->unique('kd');
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('contract_id')->references('id')->on('cmp_contracts')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('work_location');
+            $table->index(['start_at', 'end_at']);
         });
 
         MetableSchema::create('empl_contract_meta', 'contract_id', 'empl_contracts', 'unsignedSmallInteger');
@@ -123,6 +138,8 @@ return new class extends Migration
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('position_id')->references('id')->on('cmp_positions')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('contract_id')->references('id')->on('empl_contracts')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_vacation_quotas', function (Blueprint $table) {
@@ -138,6 +155,8 @@ return new class extends Migration
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('ctg_id')->references('id')->on('cmp_vacation_ctgs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_vacations', function (Blueprint $table) {
@@ -187,6 +206,11 @@ return new class extends Migration
             $table->foreignId('grade_id')->constrained('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('scheduled_by')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('scheduled_at');
+            $table->index('accepted_at');
+            $table->index('paidable_at');
+            $table->index('paid_off_at');
         });
 
         Schema::create('empl_outworks', function (Blueprint $table) {
@@ -205,6 +229,9 @@ return new class extends Migration
 
             $table->foreignId('grade_id')->constrained('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('ctg_id')->references('id')->on('cmp_outwork_ctgs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('paid_off_at');
+            $table->index('paidable_at');
         });
 
         Schema::create('empl_insurances', function (Blueprint $table) {
@@ -235,6 +262,9 @@ return new class extends Migration
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('cmp_template_id')->references('id')->on('cmp_salary_templates')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_salary_template_items', function (Blueprint $table) {
@@ -254,6 +284,9 @@ return new class extends Migration
 
             $table->foreign('template_id')->references('id')->on('empl_salary_templates')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('component_id')->references('id')->on('cmp_salary_slip_cmpnts')->onUpdate('cascade')->onDelete('restrict');
+
+            $table->index('slip_name');
+            $table->index('name');
         });
 
         Schema::create('empl_salaries', function (Blueprint $table) {
@@ -275,6 +308,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_data_recaps', function (Blueprint $table) {
@@ -288,6 +324,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_taxs', function (Blueprint $table) {
@@ -303,6 +340,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_loans', function (Blueprint $table) {
@@ -386,6 +424,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_recap_submissions', function (Blueprint $table) {
@@ -401,6 +440,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->index(['start_at', 'end_at']);
         });
     }
 

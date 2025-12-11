@@ -32,6 +32,10 @@ class CreateStudentsTable extends Migration
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('generation_id')->references('id')->on('acdmcs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('nis');
+            $table->index('nisn');
+            $table->index('nik');
         });
 
         Schema::create('stdnt_mutations', function (Blueprint $table) {
@@ -132,6 +136,7 @@ class CreateStudentsTable extends Migration
             $table->softDeletes();
 
             $table->foreign('student_id')->references('id')->on('stdnts')->onUpdate('cascade')->onDelete('cascade');
+            $table->index('name');
         });
     }
 

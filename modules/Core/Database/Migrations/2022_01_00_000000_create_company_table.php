@@ -24,6 +24,8 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->unique('kd');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_role_permissions', function (Blueprint $table) {
@@ -58,6 +60,8 @@ return new class extends Migration
             $table->unique('kd');
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('parent_id')->references('id')->on('cmp_depts')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_positions', function (Blueprint $table) {
@@ -74,6 +78,8 @@ return new class extends Migration
 
             $table->unique('kd');
             $table->foreign('dept_id')->references('id')->on('cmp_depts')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_position_trees', function (Blueprint $table) {
@@ -97,6 +103,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         MetableSchema::create('cmp_contract_meta', 'contract_id', 'cmp_contracts', 'unsignedSmallInteger');
@@ -112,6 +120,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_vacation_ctgs', function (Blueprint $table) {
@@ -124,6 +134,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_leave_stdnts_ctgs', function (Blueprint $table) {
@@ -137,6 +149,8 @@ return new class extends Migration
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('parent_id')->references('id')->on('cmp_leave_stdnts_ctgs')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_leave_ctgs', function (Blueprint $table) {
@@ -150,6 +164,8 @@ return new class extends Migration
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('parent_id')->references('id')->on('cmp_leave_ctgs')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_outwork_ctgs', function (Blueprint $table) {
@@ -163,6 +179,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_salary_slips', function (Blueprint $table) {
@@ -174,6 +192,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_salary_slip_ctgs', function (Blueprint $table) {
@@ -187,6 +207,8 @@ return new class extends Migration
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('slip_id')->references('id')->on('cmp_salary_slips')->onUpdate('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_salary_slip_cmpnts', function (Blueprint $table) {
@@ -207,6 +229,8 @@ return new class extends Migration
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('slip_id')->references('id')->on('cmp_salary_slips')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('ctg_id')->references('id')->on('cmp_salary_slip_ctgs')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_salary_templates', function (Blueprint $table) {
@@ -220,6 +244,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_buildings', function (Blueprint $table) {
@@ -235,6 +261,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_building_rooms', function (Blueprint $table) {
@@ -247,6 +275,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('building_id')->references('id')->on('cmp_buildings')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_insurances', function (Blueprint $table) {
@@ -259,6 +289,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('cmp_insurance_prices', function (Blueprint $table) {
@@ -346,6 +378,8 @@ return new class extends Migration
 
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('interest_id')->references('id')->on('cmp_loan_ctgs')->onUpdate('cascade')->onDelete('restrict');
+
+            $table->index('name');
         });
     }
 

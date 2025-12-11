@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
 
             $table->timestamps();
+
+            $table->index('name');
         });
 
         Schema::create('empl_schedules_lesson', function (Blueprint $table) {
@@ -36,6 +38,9 @@ return new class extends Migration
                 ->on('empl_schedule_category')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+
+            $table->index('name');
+            $table->index(['in', 'out']);
         });
     }
 

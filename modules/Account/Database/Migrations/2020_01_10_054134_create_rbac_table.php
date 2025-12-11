@@ -19,6 +19,8 @@ class CreateRbacTable extends Migration
             $table->string('display_name')->nullable();
             $table->string('module')->nullable();
             $table->timestamps();
+
+            $table->index('name');
         });
 
         Schema::create('roles', function (Blueprint $table) {

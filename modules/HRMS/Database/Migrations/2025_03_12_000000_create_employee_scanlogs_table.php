@@ -21,6 +21,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('location');
         });
 
         Schema::create('empl_teacher_scan_logs', function (Blueprint $table) {
@@ -32,6 +34,8 @@ return new class extends Migration
             $table->string('ip')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
+
+            $table->index('location');
         });
     }
 

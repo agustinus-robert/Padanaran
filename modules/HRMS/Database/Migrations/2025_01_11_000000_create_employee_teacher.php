@@ -24,6 +24,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_schedule_submissions_teachers', function (Blueprint $table) {
@@ -41,6 +43,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('empl_schedule_duty_teachers', function(Blueprint $table){
@@ -61,6 +64,7 @@ return new class extends Migration
 
            // $table->foreign('room_id')->references('id')->on('sch_building_rooms')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('empl_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->index(['start_at', 'end_at']);
         });
     }
 

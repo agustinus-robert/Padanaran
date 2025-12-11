@@ -27,13 +27,15 @@ class CreateSchoolsTable extends Migration
                 ->references('id')->on('ref_province_regency_districts')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('sch_building_rooms', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->smallInteger('building_id');
             $table->smallInteger('grade_id');
-            $table->string('kd');
+            $table->string('kd')->unique();
             $table->string('name');
             $table->smallInteger('capacity')->nullable();
             $table->softDeletes();
@@ -42,11 +44,15 @@ class CreateSchoolsTable extends Migration
             $table->unique(['building_id', 'kd']);
             $table->foreign('building_id')->references('id')->on('sch_buildings')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('sch_building_room_asset_ctgs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+
+            $table->index('name');
         });
 
         Schema::create('sch_building_room_assets', function (Blueprint $table) {
@@ -61,6 +67,8 @@ class CreateSchoolsTable extends Migration
 
             $table->foreign('room_id')->references('id')->on('sch_building_rooms')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('ctg_id')->references('id')->on('sch_building_room_asset_ctgs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('sch_building_room_asset_brws', function (Blueprint $table) {
@@ -81,6 +89,8 @@ class CreateSchoolsTable extends Migration
             $table->year('year')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
         });
 
         Schema::create('sch_fclt_ctgs', function (Blueprint $table) {
@@ -97,6 +107,8 @@ class CreateSchoolsTable extends Migration
             $table->timestamps();
 
             $table->foreign('ctg_id')->references('id')->on('sch_fclt_ctgs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('sch_fclt_ops', function (Blueprint $table) {

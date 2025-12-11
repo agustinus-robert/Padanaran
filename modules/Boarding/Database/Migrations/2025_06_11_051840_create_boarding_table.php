@@ -58,6 +58,10 @@ class CreateBoardingTable extends Migration
             $table->foreign('grade_id')->references('id')->on('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index(['start_date', 'end_date']);
+            $table->index(['in', 'out']);
         });
 
          Schema::create('sch_boarding_student_event', function (Blueprint $table) {

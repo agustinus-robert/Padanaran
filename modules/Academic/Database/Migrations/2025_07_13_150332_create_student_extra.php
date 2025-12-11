@@ -43,6 +43,8 @@ class CreateStudentExtra extends Migration
             $table->foreign('smt_id')->references('id')->on('stdnt_smts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('stdnts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('classroom_id')->references('id')->on('acdmc_classrooms')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
     }
 

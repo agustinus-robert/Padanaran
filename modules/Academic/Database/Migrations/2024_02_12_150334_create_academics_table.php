@@ -22,6 +22,9 @@ class CreateAcademicsTable extends Migration
 
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index('year');
         });
 
         Schema::create('acdmc_semesters', function (Blueprint $table) {
@@ -33,6 +36,9 @@ class CreateAcademicsTable extends Migration
             $table->timestamps();
 
             $table->foreign('acdmc_id')->references('id')->on('acdmcs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
+            $table->index('open');
         });
 
         // Schema::table('user_roles', function (Blueprint $table) {
@@ -63,6 +69,7 @@ class CreateAcademicsTable extends Migration
             $table->string('name');
 
             $table->foreign('acdmc_id')->references('id')->on('acdmcs')->onUpdate('cascade')->onDelete('cascade');
+            $table->index('name');
         });
 
         Schema::create('acdmc_calendars', function (Blueprint $table) {
@@ -75,6 +82,8 @@ class CreateAcademicsTable extends Migration
 
             $table->foreign('acdmc_id')->references('id')->on('acdmcs')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('acdmc_calendar_ctgs')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('holiday');
         });
 
         Schema::create('acdmc_majors', function (Blueprint $table) {
@@ -86,6 +95,8 @@ class CreateAcademicsTable extends Migration
             $table->timestamps();
 
             $table->foreign('semester_id')->references('id')->on('acdmc_semesters')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('acdmc_superiors', function (Blueprint $table) {
@@ -97,6 +108,7 @@ class CreateAcademicsTable extends Migration
             $table->timestamps();
 
             $table->foreign('semester_id')->references('id')->on('acdmc_semesters')->onUpdate('cascade')->onDelete('cascade');
+            $table->index('name');
         });
 
         Schema::create('acdmc_classrooms', function (Blueprint $table) {
@@ -117,6 +129,8 @@ class CreateAcademicsTable extends Migration
             $table->foreign('level_id')->references('id')->on('ref_grade_levels')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('room_id')->references('id')->on('sch_building_rooms')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('supervisor_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('acdmc_classroom_presences', function(Blueprint $table){
@@ -137,6 +151,8 @@ class CreateAcademicsTable extends Migration
             $table->string('name')->nullable();
             $table->foreignId('grade_id')->constrained('ref_grades')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
+
+            $table->index('name');
         });
 
         Schema::create('acdmc_subjects', function (Blueprint $table) {
@@ -154,6 +170,9 @@ class CreateAcademicsTable extends Migration
             $table->foreign('semester_id')->references('id')->on('acdmc_semesters')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('level_id')->references('id')->on('ref_grade_levels')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('acdmc_subject_ctgs')->onUpdate('cascade')->onDelete('set null');
+
+            $table->index('name');
+            $table->index('kd');
         });
 
         Schema::create('acdmc_subject_schedules', function (Blueprint $table) {
@@ -172,6 +191,8 @@ class CreateAcademicsTable extends Migration
             $table->foreign('subject_id')->references('id')->on('acdmc_subjects')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('teacher_id')->references('id')->on('empl_teachers')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('assist_id')->references('id')->on('empl_teachers')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index(['start_at', 'end_at']);
         });
 
         Schema::create('acdmc_subject_comps', function (Blueprint $table) {
@@ -186,6 +207,9 @@ class CreateAcademicsTable extends Migration
 
             $table->foreign('subject_id')->references('id')->on('acdmc_subjects')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('employee_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('kd');
+            $table->index('name');
         });
 
         Schema::create('acdmc_subject_meets', function (Blueprint $table) {
@@ -229,6 +253,8 @@ class CreateAcademicsTable extends Migration
 
             $table->foreign('meet_id')->references('id')->on('acdmc_subject_meets')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('comp_id')->references('id')->on('acdmc_subject_comps')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('test');
         });
 
         Schema::create('acdmc_case_ctgs', function (Blueprint $table) {
@@ -237,6 +263,8 @@ class CreateAcademicsTable extends Migration
             $table->string('name');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
         });
 
         Schema::create('acdmc_case_ctg_descs', function (Blueprint $table) {
@@ -247,6 +275,8 @@ class CreateAcademicsTable extends Migration
             $table->timestamps();
 
             $table->foreign('ctg_id')->references('id')->on('acdmc_case_ctgs')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
 
         Schema::create('acdmc_counseling_ctgs', function (Blueprint $table) {
@@ -255,6 +285,8 @@ class CreateAcademicsTable extends Migration
             $table->string('name');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
         });
     }
 

@@ -25,6 +25,8 @@ class CreateAcademicsTypeEvaluationsTable extends Migration
 
             $table->foreign('smt_id')->references('id')->on('acdmc_subject_meet_plans')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('meet_id')->references('id')->on('acdmc_subject_meets')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->index('name');
         });
     }
 
