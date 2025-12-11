@@ -11,7 +11,6 @@
     <meta name="author" content="pixelcave">
     <meta name="robots" content="noindex, nofollow">
 
-    <!-- Open Graph Meta -->
     <meta property="og:title" content="Point Of Sale UMKM">
     <meta property="og:site_name" content="POS">
     <meta property="og:description" content="Point Of Sale UMKM">
@@ -19,30 +18,17 @@
     <meta property="og:url" content="">
     <meta property="og:image" content="">
 
-    <!-- Icons -->
-    <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
-    <link rel="shortcut icon" href="{{ asset('skote/images/favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('skote/images/favicon.ico') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('skote/images/favicon.ico') }}">
-    <!-- END Icons -->
 
-    <!-- Stylesheets -->
-    <!-- Dashmix framework -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-    <link rel="stylesheet" id="css-main" href="{{ asset('skote/css/bootstrap.min.css') }}">
-    <link href="{{ asset('skote/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="{{ asset('skote/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
-    <!-- App js -->
-    <script src="{{ asset('skote/js/plugin.js') }}"></script>
+    @if(config('theme.default') == 'material')
+        @include('layouts.component.material-style')
+    @elseif(config('theme.default') == 'skote')
+        @include('layouts.component.skote-style')
+    @endif
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chgibb/css-spinners@2.2.1/css/spinners.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-    <!-- You can include a specific file from css/themes/ folder to alter the default color theme of the template. eg: -->
-    <!-- <link rel="stylesheet" id="css-theme" href="assets/css/themes/xwork.min.css"> -->
-    <!-- END Stylesheets -->
     @stack('style')
 </head>
 
@@ -52,81 +38,10 @@
         @yield('body-content')
     </div>
 
-    <!-- Right Sidebar -->
-    <div class="right-bar">
-        <div data-simplebar class="h-100">
-            <div class="rightbar-title d-flex align-items-center px-3 py-4">
+    @if(config('theme.default') == 'skote')
+        @include('layouts.component.skote-extra')
+    @endif
 
-                <h5 class="m-0 me-2">Settings</h5>
-
-                <a href="javascript:void(0);" class="right-bar-toggle ms-auto">
-                    <i class="mdi mdi-close noti-icon"></i>
-                </a>
-            </div>
-
-            <!-- Settings -->
-            <hr class="mt-0" />
-            <h6 class="mb-0 text-center">Choose Layouts</h6>
-
-            <div class="p-4">
-                <div class="mb-2">
-                    <img src="assets/images/layouts/layout-1.jpg" class="img-thumbnail" alt="layout images">
-                </div>
-
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input theme-choice" type="checkbox" id="light-mode-switch" checked>
-                    <label class="form-check-label" for="light-mode-switch">Light Mode</label>
-                </div>
-
-                <div class="mb-2">
-                    <img src="assets/images/layouts/layout-2.jpg" class="img-thumbnail" alt="layout images">
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input theme-choice" type="checkbox" id="dark-mode-switch">
-                    <label class="form-check-label" for="dark-mode-switch">Dark Mode</label>
-                </div>
-
-                <div class="mb-2">
-                    <img src="assets/images/layouts/layout-3.jpg" class="img-thumbnail" alt="layout images">
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input theme-choice" type="checkbox" id="rtl-mode-switch">
-                    <label class="form-check-label" for="rtl-mode-switch">RTL Mode</label>
-                </div>
-
-                <div class="mb-2">
-                    <img src="assets/images/layouts/layout-4.jpg" class="img-thumbnail" alt="layout images">
-                </div>
-                <div class="form-check form-switch mb-5">
-                    <input class="form-check-input theme-choice" type="checkbox" id="dark-rtl-mode-switch">
-                    <label class="form-check-label" for="dark-rtl-mode-switch">Dark RTL Mode</label>
-                </div>
-
-
-            </div>
-
-        </div> <!-- end slimscroll-menu-->
-    </div>
-    <!-- /Right-bar -->
-
-    <!-- Right bar overlay-->
-    <div class="rightbar-overlay"></div>
-    <!-- END Page Container -->
-
-    <div id="global-progress-wrapper" 
-        style="position: fixed; bottom: 20px; right: 20px; width: 250px; height: 25px; 
-                background: rgba(0,0,0,0.2); border-radius: 6px; display: none; z-index: 9999;">
-        <div id="progress-bar" 
-            style="height: 100%; width: 0%; background: #4caf50; border-radius: 6px;">
-        </div>
-    </div>
-
-    <!--
-      Dashmix JS
-
-      Core libraries and functionality
-      webpack is putting everything together at assets/_js/main/app.js
-    -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -139,11 +54,6 @@
 
     <!-- apexcharts -->
     <script src="{{ asset('skote/libs/chart.js/chart.umd.js') }}"></script>
-
-    <!-- dashboard init -->
-    {{-- <script src="{{ asset('skote/js/pages/dashboard.init.js') }}"></script> --}}
-
-    <!-- App js -->
     <script src="{{ asset('skote/js/app.js') }}"></script>
 
     <script>
