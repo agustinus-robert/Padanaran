@@ -59,71 +59,70 @@
 
                 @if($item['type'] === 'dropdown')
 
-    @php
-        $childActive = collect($item['children'])->contains(function($child) {
-            return request()->url() === $child['route'];
-        });
-
-        $dropdownActive = $childActive ? 'active bg-gradient-dark text-white' : 'text-dark';
-        $showChildren   = $childActive ? 'show' : '';
-    @endphp
-
-    <li class="nav-item">
-
-        <a class="nav-link d-flex align-items-center {{ $dropdownActive }}"
-           data-bs-toggle="collapse"
-           href="#menu-{{ Str::slug($item['label']) }}"
-           role="button"
-           aria-expanded="{{ $childActive ? 'true' : 'false' }}">
-
-            {{-- ICON --}}
-            <i class="material-symbols-rounded opacity-5 me-2">
-                {{ $item['icon'] }}
-            </i>
-
-            {{-- LABEL --}}
-            <span class="nav-link-text flex-grow-1 ms-1">
-                {{ $item['label'] }}
-            </span>
-
-            {{-- CHEVRON --}}
-            <i class="material-symbols-rounded rotate-icon ms-auto">
-                expand_more
-            </i>
-        </a>
-
-        <div class="collapse {{ $showChildren }}" id="menu-{{ Str::slug($item['label']) }}">
-            <ul class="nav ms-4">
-
-                @foreach($item['children'] as $child)
                     @php
-                        $childIsActive = request()->url() === $child['route']
-                            ? 'active text-dark fw-bold'
-                            : 'text-dark';
+                        $childActive = collect($item['children'])->contains(function($child) {
+                            return request()->url() === $child['route'];
+                        });
+
+                        $dropdownActive = $childActive ? 'active bg-gradient-dark text-white' : 'text-dark';
+                        $showChildren   = $childActive ? 'show' : '';
                     @endphp
 
                     <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center {{ $childIsActive }}"
-                           href="{{ $child['route'] }}">
 
+                        <a class="nav-link d-flex align-items-center {{ $dropdownActive }}"
+                        data-bs-toggle="collapse"
+                        href="#menu-{{ Str::slug($item['label']) }}"
+                        role="button"
+                        aria-expanded="{{ $childActive ? 'true' : 'false' }}">
+
+                            {{-- ICON --}}
                             <i class="material-symbols-rounded opacity-5 me-2">
-                                {{ $child['icon'] }}
+                                {{ $item['icon'] }}
                             </i>
 
-                            <span class="nav-link-text ms-1">
-                                {{ $child['label'] }}
+                            {{-- LABEL --}}
+                            <span class="nav-link-text flex-grow-1 ms-1">
+                                {{ $item['label'] }}
                             </span>
+
+                            {{-- CHEVRON --}}
+                            <i class="material-symbols-rounded rotate-icon ms-auto">
+                                expand_more
+                            </i>
                         </a>
+
+                        <div class="collapse {{ $showChildren }}" id="menu-{{ Str::slug($item['label']) }}">
+                            <ul class="nav ms-4">
+
+                                @foreach($item['children'] as $child)
+                                    @php
+                                        $childIsActive = request()->url() === $child['route']
+                                            ? 'active text-dark fw-bold'
+                                            : 'text-dark';
+                                    @endphp
+
+                                    <li class="nav-item">
+                                        <a class="nav-link d-flex align-items-center {{ $childIsActive }}"
+                                        href="{{ $child['route'] }}">
+
+                                            <i class="material-symbols-rounded opacity-5 me-2">
+                                                {{ $child['icon'] }}
+                                            </i>
+
+                                            <span class="nav-link-text ms-1">
+                                                {{ $child['label'] }}
+                                            </span>
+                                        </a>
+                                    </li>
+                                @endforeach
+
+                            </ul>
+                        </div>
+
                     </li>
-                @endforeach
 
-            </ul>
-        </div>
-
-    </li>
-
-@endif
-
+                @endif
 
             @endforeach
 

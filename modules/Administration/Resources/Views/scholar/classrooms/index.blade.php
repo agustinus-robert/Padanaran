@@ -1,13 +1,22 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Rombel - ')
+
+@section('titleTemplate', config('account.admin.name'))
+
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
+
 
 @section('breadcrumb')
 	<li class="breadcrumb-item">Kesiswaan</li>
 	<li class="breadcrumb-item active">Rombel</li>
 @endsection
 
-@section('content')
+@push('nav')
+    @include('administration::layouts.includes.navbar-administration')
+@endpush
+
+@section('body-content')
 	<div class="row">
 		<div class="col-md-8">
 			<div class="card mb-4">
@@ -40,7 +49,7 @@
 									{!! Session::get('success') !!}
 								</div>
 							</div>
-						@endif 
+						@endif
 
 						@if (Session::has('danger'))
 							<div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
