@@ -1,177 +1,188 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Unggulan - ')
+@section('titleTemplate', config('account.admin.name'))
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Kesiswaan</li>
     <li class="breadcrumb-item active">Unggulan</li>
 @endsection
 
-@section('content')
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-details float-left mr-2"></i>Unggulan
-                </div>
-                <div class="card-body">
-                    <form class="form-block" action="{{ route('administration::scholar.superiors.index', ['academic' => request('academic')]) }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama unggulan disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('administration::scholar.superiors.index', ['academic' => request('academic')]) }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
 
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
+@php
+$columns = [
+    [
+        'field' => 'name',
+        'label' => 'Unggulan',
+        'slot' => fn($item) =>
+            '<p class="'.($item->trashed() ? 'text-muted' : '').' mb-0">Unggulan '.$item->name.'</p>'.
+            ($item->classrooms->take(8)->count()
+                ? $item->classrooms->take(8)->map(fn($c) => '<span class="badge '.($item->trashed() ? 'badge-sm bg-gradient-secondary' : 'badge-sm bg-gradient-dark').'">'.$c->name.'</span>')->implode(' ')
+                : '<span class="text-muted font-italic">Tidak rombel di unggulan ini</span>'
+            )
+            .
+            ($item->classrooms->count() > 8
+                ? '<span class="badge badge-sm bg-gradient-secondary">+'.($item->classrooms->count() - 8).' lainnya</span>'
+                : '')
+    ],
+    [
+        'field' => 'actions',
+        'label' => '',
+        'slot' => fn($item) => view('components.partial-actions', [
+            'item' => $item,
+            'routes' => [
+                'edit' => 'administration::scholar.superiors.update',
+                'destroy' => 'administration::scholar.superiors.destroy',
+                'restore' => 'administration::scholar.superiors.restore',
+                'kill' => 'administration::scholar.superiors.kill',
+            ],
+            'useModal' => true,
+        ])->render()
+    ],
+];
+@endphp
 
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
-                </div>
-                <div class="list-group list-group-flush border-top">
-                    @forelse($superiors as $superior)
-                        <div class="list-group-item">
-                            <div class="row">
-                                <div class="col-9">
-                                    <h5 class="{{ request('trash') ? 'text-muted' : '' }} mb-0">Unggulan {{ $superior->name }}</h5>
-                                    @forelse($superior->classrooms->take(8) as $classroom)
-                                        <span class="badge {{ request('trash') ? 'badge-secondary' : 'badge-dark' }}">{{ $classroom->name }}</span>
-                                    @empty
-                                        <span class="text-muted font-italic">Tidak rombel di unggulan ini</span>
-                                    @endforelse
-                                    @if ($superior->classrooms->count() > 8)
-                                        <span class="badge badge-secondary">+{{ $superior->classrooms->count() - 8 }} lainnya</span>
-                                    @endif
-                                </div>
-                                <div class="col-3 align-self-center text-nowrap text-right">
-                                    @if ($superior->trashed())
-                                        <form class="d-inline form-block form-confirm" action="{{ route('administration::scholar.superiors.restore', ['superior' => $superior->id]) }}" method="POST"> @csrf @method('PUT')
-                                            <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                        </form>
-                                        <form class="d-inline form-block form-confirm" action="{{ route('administration::scholar.superiors.kill', ['superior' => $superior->id]) }}" method="POST"> @csrf @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus permanen"><i class="mdi mdi-delete-forever-outline"></i></button>
-                                        </form>
-                                    @else
-                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{ $superior->id }}" data-action="{{ route('administration::scholar.superiors.update', ['superior' => $superior]) }}" data-name="{{ $superior->name }}"><i class="mdi mdi-pencil"></i></button>
-                                        <form class="d-inline form-block form-confirm" action="{{ route('administration::scholar.superiors.destroy', ['superior' => $superior->id]) }}" method="POST"> @csrf @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-forever-outline"></i></button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="list-group-item">
-                            <i>Tidak ada data unggulan</i>
-                        </div>
-                    @endforelse
-                    <div class="list-group-item">
-                        <form class="form-block" action="{{ route('administration::scholar.superiors.store', ['semester_id' => $acsem->id]) }}" method="POST"> @csrf
-                            <div class="form-group mb-2">
-                                <label>Tambah unggulan tahun ajaran <strong>{{ $acsem->full_name }}</strong></label>
-                                <div class="input-group">
-                                    <input class="form-control" type="text" name="name" value="{{ request('name') }}" placeholder="Nama unggulan ...">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-primary">Simpan</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+@section('body-content')
+<div class="row container-fluid mb-2">
+    @include('components.navbar-admin')
+
+    <div class="col-md-8">
+        <x-table
+            type="material"
+            :data="$superiors"
+            :columns="$columns"
+            title="Unggulan"
+            searchRoute="{{ route('administration::scholar.superiors.index', ['academic' => request('academic')]) }}"
+            :trash="request('trash')"
+        />
+    </div>
+
+    <div class="col-md-4">
+        {{-- Tahun Ajaran --}}
+        <div class="card mb-3">
+            <div class="card-header pb-0 p-3">
+                <h6 class="text-black">Tahun Ajaran</h6>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card card-body">
-                <form class="form-block" action="{{ route('administration::scholar.superiors.index') }}" method="GET">
-                    <div class="form-group mb-0">
-                        <label>Tahun ajaran</label>
-                        <div class="input-group w-100">
-                            <select name="academic" class="form-control">
-                                @foreach ($acsems as $_acsem)
-                                    <option value="{{ $_acsem->id }}" @if (request('academic', $acsem->id) == $_acsem->id) selected @endif>{{ $_acsem->full_name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary">Tetapkan</button>
-                            </div>
-                        </div>
-                    </div>
+            <div class="card-body">
+                <form action="{{ route('administration::scholar.superiors.index') }}" method="GET">
+                    <x-input-group :isRow="true" required>
+                        <x-col size="9">
+                            <x-select
+                                name="academic"
+                                :value="request('academic', $acsem->id)"
+                                :options="$acsems->map(fn($_a) => [
+                                    'value' => $_a->id,
+                                    'label' => $_a->full_name
+                                ])"
+                            />
+                        </x-col>
+                        <x-col size="3">
+                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
+                        </x-col>
+                    </x-input-group>
                 </form>
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="h1 text-muted mb-4 text-right">
-                        <i class="mdi mdi-account-box-multiple-outline float-right"></i>
-                    </div>
-                    <div class="text-value">{{ $superiors_count }}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">Jumlah unggulan</small>
-                </div>
+        </div>
+
+        {{-- Tambah Unggulan --}}
+        <div class="card mb-3">
+            <div class="card-header pb-0 p-3">
+                <h6>Tambah Unggulan</h6>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
-                </div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::scholar.classrooms.index', ['academic' => request('academic')]) }}"><i class="mdi mdi-account-group-outline"></i> Kelola rombel</a>
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::scholar.majors.index', ['academic' => request('academic')]) }}"><i class="mdi mdi-file-settings-variant-outline"></i> Kelola jurusan</a>
-                    <a class="list-group-item list-group-item-action text-danger" href="{{ route('administration::scholar.superiors.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan unggulan yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
-                </div>
+            <div class="card-body">
+                <form action="{{ route('administration::scholar.superiors.store', ['semester_id' => $acsem->id]) }}" method="POST">
+                    @csrf
+                    <x-input-group :isRow="true" required>
+                        <x-col size="9">
+                            <x-input
+                                name="name"
+                                placeholder="Tambah unggulan tahun ajaran {{ $acsem->full_name }}"
+                                :value="request('name')"
+                            />
+                        </x-col>
+                        <x-col size="3">
+                            <x-btn type="submit" variant="dark">Simpan</x-btn>
+                        </x-col>
+                    </x-input-group>
+                </form>
+            </div>
+        </div>
+
+        {{-- Jumlah Unggulan --}}
+        <div class="card mb-3">
+            <div class="card-header pb-0 p-3">
+                <h6 class="text-black">Jumlah Unggulan</h6>
+            </div>
+            <div class="card-body text-right">
+                <div class="h1 text-muted mb-2"><i class="mdi mdi-account-box-multiple-outline"></i></div>
+                <div class="text-value">{{ $superiors_count }}</div>
+                <small class="text-muted text-uppercase font-weight-bold">Total</small>
+            </div>
+        </div>
+
+        {{-- Lanjutan --}}
+        <div class="card">
+            <div class="card-header pb-0 p-3">
+                <h6 class="text-black">Lanjutan</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a class="list-group-item text-black" href="{{ route('administration::scholar.classrooms.index', ['academic'=>$acsem->id]) }}">
+                    <i class="mdi mdi-account-group-outline"></i> Kelola rombel
+                </a>
+                <a class="list-group-item text-black" href="{{ route('administration::scholar.majors.index', ['academic'=>$acsem->id]) }}">
+                    <i class="mdi mdi-file-settings-variant-outline"></i> Kelola jurusan
+                </a>
+                <a class="list-group-item text-black" href="{{ route('administration::scholar.superiors.index', ['trash'=>request('trash',0)?null:1]) }}">
+                    <i class="mdi mdi-delete-outline"></i> Tampilkan unggulan yang {{ request('trash',0)?'tidak':'' }} dihapus
+                </a>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" data-backdrop="static">
-        <div class="modal-dialog" role="document">
-            <form class="modal-content form-block" id="modal-edit-form" method="POST"> @csrf @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title">Ubah unggulan</h5>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label>Tahun ajaran</label>
-                        <strong><span class="form-control-plaintext">{{ $acsem->full_name }}</span></strong>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label>Nama unggulan</label>
-                        <input id="modal-edit-input-name" class="form-control" type="text" name="name" value="" placeholder="Nama unggulan ...">
-                    </div>
-                    <div class="form-group mb-0">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </div>
-            </form>
+{{-- Modal Edit --}}
+<x-regular-modal id="editModal" title="Ubah Unggulan">
+    <form id="modal-edit-form" method="POST">
+        @csrf
+        @method('PUT')
+
+        <input type="hidden" name="id" id="modal-edit-input-id">
+
+        <x-input-group :isRow="true">
+            <x-col size="4"><x-label value="Tahun Ajaran" /></x-col>
+            <x-col size="8"><span class="form-control-plaintext">{{ $acsem->full_name }}</span></x-col>
+        </x-input-group>
+
+        <x-input-group :isRow="true">
+            <x-col size="4"><x-label value="Nama Unggulan" /></x-col>
+            <x-col size="8"><x-input id="modal-edit-input-name" name="name" placeholder="Nama unggulan ..." /></x-col>
+        </x-input-group>
+
+        <div class="d-flex justify-content-end gap-2">
+            <x-btn type="button" variant="secondary" data-bs-dismiss="modal">Tutup</x-btn>
+            <x-btn type="submit" variant="success">Simpan</x-btn>
         </div>
-    </div>
+    </form>
+</x-regular-modal>
 
-    @push('scripts')
-        <script>
-            const exampleModal = document.getElementById('exampleModal');
-
-            exampleModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const id = button.getAttribute('data-id');
-                const name = button.getAttribute('data-name');
-                const action = button.getAttribute('data-action')
-
-                const nameInput = exampleModal.querySelector('#modal-edit-input-name');
-                nameInput.value = name;
-
-
-                const form = exampleModal.querySelector('#modal-edit-form');
-                form.action = action;
-            });
-        </script>
-    @endpush
 @endsection
+
+@push('scripts')
+<script>
+const editModal = document.getElementById('editModal');
+editModal.addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+    const action = button.getAttribute('data-action');
+
+    editModal.querySelector('#modal-edit-input-id').value = id;
+    editModal.querySelector('#modal-edit-input-name').value = name;
+    editModal.querySelector('#modal-edit-form').action = action;
+});
+</script>
+@endpush

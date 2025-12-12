@@ -48,7 +48,7 @@ class SuperiorController extends Controller
     {
         $this->authorize('store', AcademicSuperior::class);
 
-        $superior = new AcademicSuperior(array_merge($request->only('name', 'semester_id'), 
+        $superior = new AcademicSuperior(array_merge($request->only('name', 'semester_id'),
             ['grade_id' => userGrades()]
         ));
 
