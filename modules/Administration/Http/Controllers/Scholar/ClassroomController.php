@@ -30,7 +30,7 @@ class ClassroomController extends Controller
 
         $acsems = AcademicSemester::openedByDesc()->get();
         $gradesLevels = GradeLevel::where('grade_id', userGrades())->pluck('id');
-      
+
         $classrooms = AcademicClassroom::withCount('stsems')->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
         })->where('semester_id', $request->get('academic', $acsems->first()->id))
@@ -42,7 +42,7 @@ class ClassroomController extends Controller
         if ($acsem) {
             $classrooms_count = AcademicClassroom::where('semester_id', $request->get('academic', $acsem->id))->count();
 
-            return view('administration::scholar.classrooms.index', compact('acsems', 'acsem', 'classrooms', 'classrooms_count'));
+            return view('administration::scholar.classrooms.index', compact('acsems', 'acsem', 'classrooms', 'classrooms_count', 'trashed'));
         }
 
         return abort(404);
@@ -65,7 +65,14 @@ class ClassroomController extends Controller
           ->orWhere('position_id', PositionTypeEnum::HUMAS);
         })->where('grade_id', userGrades())->get();
 
-        return view('administration::scholar.classrooms.create', compact('acsems', 'acsem', 'rooms', 'supervisors'));
+        return view('administration::scholar.classrooms.form', [
+            'mode'        => 'create',
+            'classroom'   => null,
+            'acsems'      => $acsems,
+            'acsem'       => $acsem,
+            'rooms'       => $rooms,
+            'supervisors' => $supervisors,
+        ]);
     }
 
     /**
@@ -107,7 +114,14 @@ class ClassroomController extends Controller
             $query->where('position_id', PositionTypeEnum::GURU);
         })->where('grade_id', userGrades())->get();
 
-        return view('administration::scholar.classrooms.edit', compact('acsems', 'acsem', 'rooms', 'supervisors', 'classroom'));
+        return view('administration::scholar.classrooms.form', [
+            'mode'        => 'edit',
+            'classroom'   => $classroom,
+            'acsems'      => $acsems,
+            'acsem'       => $acsem,
+            'rooms'       => $rooms,
+            'supervisors' => $supervisors,
+        ]);
     }
 
     /**
@@ -188,8 +202,8 @@ class ClassroomController extends Controller
             );
 
             return redirect()->back()->with('success', 'Rombel <strong>'.$tmp->name.'</strong> berhasil dihapus');
-        } 
-        
+        }
+
         return redirect()->back()->with('danger', 'Rombel <strong>'.$tmp->name.'</strong> gagal dihapus');
     }
 

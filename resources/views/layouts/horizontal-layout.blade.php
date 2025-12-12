@@ -68,8 +68,9 @@
         $(document).ready(function(){
             $('.select-2').select2({
                 width: '100%',
-                theme: 'bootstrap-5',
-                placeholder: 'Pilih salah satu'
+                placeholder: 'Pilih salah satu',
+                dropdownCssClass: "select2-custom-dropdown",
+                selectionCssClass: "select2-custom-selection"
             });
         });
 

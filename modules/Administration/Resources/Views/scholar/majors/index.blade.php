@@ -1,95 +1,105 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Jurusan - ')
+@section('titleTemplate', config('account.admin.name'))
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Kesiswaan</li>
     <li class="breadcrumb-item active">Jurusan</li>
 @endsection
 
-@section('content')
-    <div class="row">
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
+
+@php
+$columns = [
+    [
+        'field' => 'name',
+        'label' => 'Jurusan',
+        'slot' => fn($item) =>
+            '<h5 class="'.(request('trash') ? 'text-muted' : '').' mb-0">Jurusan '.$item->name.'</h5>'.
+
+            // list rombel (badge)
+            ($item->classrooms->take(8)->count()
+                ? $item->classrooms->take(8)->map(function($c) {
+                    return '<span class="badge '.(request('trash') ? 'badge-secondary' : 'badge-dark').'">'.$c->name.'</span>';
+                })->implode(' ')
+                : '<span class="text-muted font-italic">Tidak rombel di jurusan ini</span>'
+            ).
+
+            // jumlah + lainnya
+            ($item->classrooms->count() > 8
+                ? '<span class="badge badge-secondary">+'.($item->classrooms->count() - 8).' lainnya</span>'
+                : '')
+    ],
+
+    [
+        'field' => 'actions',
+        'label' => 'Aksi',
+        'slot' => fn($item) => $item->trashed()
+
+            // MODE TRASH (restore + kill)
+            ? '
+                <form class="d-inline form-confirm"
+                    action="'.route('administration::scholar.majors.restore', $item->id).'"
+                    method="POST">
+                    '.csrf_field().method_field('PUT').'
+                    <button class="btn btn-primary btn-sm" title="Pulihkan">
+                        <i class="mdi mdi-restore"></i>
+                    </button>
+                </form>
+
+                <form class="d-inline form-confirm"
+                    action="'.route('administration::scholar.majors.kill', $item->id).'"
+                    method="POST">
+                    '.csrf_field().method_field('DELETE').'
+                    <button class="btn btn-danger btn-sm" title="Hapus Permanen">
+                        <i class="mdi mdi-delete-forever-outline"></i>
+                    </button>
+                </form>
+            '
+
+            // MODE NORMAL (edit + delete)
+            : '
+                <button type="button"
+                    class="btn btn-warning btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    data-id="'.$item->id.'"
+                    data-name="'.$item->name.'"
+                    data-action="'.route('administration::scholar.majors.update', $item->id).'">
+                    <i class="mdi mdi-pencil"></i>
+                </button>
+
+                <form class="d-inline form-confirm"
+                    action="'.route('administration::scholar.majors.destroy', $item->id).'"
+                    method="POST">
+                    '.csrf_field().method_field('DELETE').'
+                    <button class="btn btn-danger btn-sm" title="Buang">
+                        <i class="mdi mdi-delete-outline"></i>
+                    </button>
+                </form>
+            '
+    ],
+];
+@endphp
+
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-details float-left mr-2"></i>Jurusan
-                </div>
-                <div class="card-body">
-                    <form class="form-block" action="{{ route('administration::scholar.majors.index', ['academic' => request('academic')]) }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama jurusan disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('administration::scholar.majors.index', ['academic' => request('academic')]) }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
-
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
-                </div>
-                <div class="list-group list-group-flush border-top">
-                    @forelse($majors as $major)
-                        <div class="list-group-item">
-                            <div class="row">
-                                <div class="col-9">
-                                    <h5 class="{{ request('trash') ? 'text-muted' : '' }} mb-0">Jurusan {{ $major->name }}</h5>
-                                    @forelse($major->classrooms->take(8) as $classroom)
-                                        <span class="badge {{ request('trash') ? 'badge-secondary' : 'badge-dark' }}">{{ $classroom->name }}</span>
-                                    @empty
-                                        <span class="text-muted font-italic">Tidak rombel di jurusan ini</span>
-                                    @endforelse
-                                    @if ($major->classrooms->count() > 8)
-                                        <span class="badge badge-secondary">+{{ $major->classrooms->count() - 8 }} lainnya</span>
-                                    @endif
-                                </div>
-                                <div class="col-3 align-self-center text-nowrap text-right">
-                                    @if ($major->trashed())
-                                        <form class="d-inline form-block form-confirm" action="{{ route('administration::scholar.majors.restore', ['major' => $major->id]) }}" method="POST"> @csrf @method('PUT')
-                                            <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                        </form>
-                                        <form class="d-inline form-block form-confirm" action="{{ route('administration::scholar.majors.kill', ['major' => $major->id]) }}" method="POST"> @csrf @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus permanen"><i class="mdi mdi-delete-forever-outline"></i></button>
-                                        </form>
-                                    @else
-                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{ $major->id }}" data-name="{{ $major->name }}" data-action="{{ route('administration::scholar.majors.update', ['major' => $major->id]) }}"><i class="mdi mdi-pencil"></i></button>
-                                        <form class="d-inline form-block form-confirm" action="{{ route('administration::scholar.majors.destroy', ['major' => $major->id]) }}" method="POST"> @csrf @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-forever-outline"></i></button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="list-group-item">
-                            <i>Tidak ada data jurusan</i>
-                        </div>
-                    @endforelse
-                    <div class="list-group-item">
-                        <form class="form-block" action="{{ route('administration::scholar.majors.store', ['semester_id' => $acsem->id]) }}" method="POST"> @csrf
-                            <div class="form-group mb-2">
-                                <label>Tambah jurusan tahun ajaran <strong>{{ $acsem->full_name }}</strong></label>
-                                <div class="input-group">
-                                    <input class="form-control" type="text" name="name" value="{{ request('name') }}" placeholder="Nama jurusan ...">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-primary">Simpan</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$majors"
+                :columns="$columns"
+                title="Jurusan"
+                searchRoute="{{ route('administration::scholar.majors.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-4">
             <div class="card card-body">

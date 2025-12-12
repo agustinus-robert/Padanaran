@@ -35,7 +35,7 @@ class MajorController extends Controller
         if ($acsem) {
             $majors_count = AcademicMajor::where('semester_id', $request->get('academic', $acsem->id))->count();
 
-            return view('administration::scholar.majors.index', compact('acsems', 'acsem', 'majors', 'majors_count'));
+            return view('administration::scholar.majors.index', compact('acsems', 'acsem', 'majors', 'majors_count', 'trashed'));
         }
 
         return abort(404);
@@ -60,7 +60,7 @@ class MajorController extends Controller
             );
 
             return redirect()->back()->with('success', 'Jurusan <strong>'.$major->name.'</strong> berhasil dibuat');
-        } 
+        }
 
         return redirect()->back()->with('danger', 'Jurusan <strong>'.$major->name.'</strong> berhasil dibuat');
     }
