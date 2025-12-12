@@ -65,12 +65,13 @@ class StudentController extends Controller
     {
         $this->authorize('store', Student::class);
 
-        $acdmcs = Academic::orderByDesc('id')->get();
-
+        $acdmcs  = Academic::orderByDesc('id')->get();
         $hobbies = Hobby::all();
         $desires = Desire::all();
 
-        return view('administration::scholar.students.create', compact('acdmcs', 'hobbies', 'desires'));
+        $student = null; // karena ini create
+
+        return view('administration::scholar.students.form', compact('acdmcs', 'hobbies', 'desires', 'student'));
     }
 
     /**
@@ -109,10 +110,11 @@ class StudentController extends Controller
 
         $student = $student->load('user', 'semesters');
 
+        $acdmcs  = Academic::orderByDesc('id')->get();
         $hobbies = Hobby::all();
         $desires = Desire::all();
 
-        return view('administration::scholar.students.show', compact('student', 'hobbies', 'desires'));
+        return view('administration::scholar.students.form', compact('student', 'acdmcs', 'hobbies', 'desires'));
     }
 
     /**

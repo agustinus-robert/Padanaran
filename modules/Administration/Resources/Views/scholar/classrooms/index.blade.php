@@ -5,8 +5,8 @@
 @section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">Kesiswaan</li>
-    <li class="breadcrumb-item active">Rombel</li>
+<li class="breadcrumb-item">Kesiswaan</li>
+<li class="breadcrumb-item active">Rombel</li>
 @endsection
 
 @push('nav')
