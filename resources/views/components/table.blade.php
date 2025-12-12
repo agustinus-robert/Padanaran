@@ -44,11 +44,6 @@
         </a>
     </form>
 @endif
-
-
-
-
-
         {{-- Alerts --}}
         <div class="col-12 p-2">
             <div class="container">

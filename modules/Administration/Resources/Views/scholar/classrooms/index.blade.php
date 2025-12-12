@@ -35,7 +35,7 @@ $columns = [
 @endphp
 
 @section('body-content')
-<div class="row container-fluid">
+<div class="row">
     @include('components.navbar-admin')
 
     <div class="col-md-8">
@@ -67,8 +67,7 @@ $columns = [
                                 @endforeach
                             </select>
                             <div class="input-group-append">
-                                <x-btn>Terapkan</x-btn>
-                                {{-- <button class="btn bg-gradient-dark">Tetapkan</button> --}}
+                                <button class="btn bg-gradient-dark">Tetapkan</button>
                             </div>
                         </div>
                     </div>

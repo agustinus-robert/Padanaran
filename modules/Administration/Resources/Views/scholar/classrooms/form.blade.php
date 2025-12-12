@@ -33,9 +33,6 @@
 
             <div class="card-body">
 
-                {{-- ============================
-                     FORM ACTION OTOMATIS
-                ============================== --}}
                 <form class="form-block"
                       action="
                         {{ isset($classroom)
@@ -54,10 +51,6 @@
                         @method('PUT')
                     @endif
 
-
-                    {{-- ============================
-                         TAHUN AJARAN
-                    ============================== --}}
                     <x-input-group>
                         <x-label for="semester_id" value="Tahun ajaran" col="3" />
 
@@ -68,10 +61,6 @@
                         </x-col>
                     </x-input-group>
 
-
-                    {{-- ============================
-                         JENJANG KELAS
-                    ============================== --}}
                     <x-input-group label="Jenjang kelas" required>
                         <x-select-2
                             name="level_id"
@@ -83,10 +72,6 @@
                         />
                     </x-input-group>
 
-
-                    {{-- ============================
-                         NAMA ROMBEL
-                    ============================== --}}
                     <x-input-group label="Nama rombel" required>
                         <x-input
                             name="name"
@@ -95,10 +80,6 @@
                         />
                     </x-input-group>
 
-
-                    {{-- ============================
-                         RUANGAN
-                    ============================== --}}
                     <x-input-group label="Ruangan">
                         <x-select-2
                             name="room_id"
@@ -111,10 +92,6 @@
                         />
                     </x-input-group>
 
-
-                    {{-- ============================
-                         JURUSAN
-                    ============================== --}}
                     <x-input-group label="Jurusan">
                         <x-select-2
                             name="major_id"
@@ -127,10 +104,6 @@
                         />
                     </x-input-group>
 
-
-                    {{-- ============================
-                         UNGGULAN
-                    ============================== --}}
                     <x-input-group label="Unggulan">
                         <x-select-2
                             name="superior_id"
@@ -143,10 +116,6 @@
                         />
                     </x-input-group>
 
-
-                    {{-- ============================
-                         WALI KELAS
-                    ============================== --}}
                     <x-input-group label="Wali kelas">
                         <x-select-2
                             name="supervisor_id"
@@ -159,10 +128,6 @@
                         />
                     </x-input-group>
 
-
-                    {{-- ============================
-                         SUBMIT / KEMBALI
-                    ============================== --}}
                     <x-input-group>
                         <x-col size="8" offset="3">
                             <x-btn type="submit" variant="success">

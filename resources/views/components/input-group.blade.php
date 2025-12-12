@@ -1,12 +1,15 @@
 @props([
     'label' => null,
     'required' => false,
+    'labelCol' => '3',
+    'slotCol' => '7',
+    'isRow' => false,
 ])
 
 <div class="input-group input-group-outline row mb-3">
 
     @if ($label)
-        <label class="col-md-3 col-form-label">
+        <label class="{{ $labelCol ? "col-md-$labelCol col-form-label" : '' }}">
             {{ $label }}
             @if($required)
                 <span class="text-danger">*</span>
@@ -14,8 +17,12 @@
         </label>
     @endif
 
-    <div class="col-md-7">
+    @if($isRow == false)
+        <div class="{{ $slotCol ? "col-md-$slotCol" : '' }}">
+            {{ $slot }}
+        </div>
+    @else
         {{ $slot }}
-    </div>
+    @endif
 
 </div>

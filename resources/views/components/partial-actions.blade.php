@@ -1,6 +1,7 @@
 @props([
     'item',
     'routes' => [],
+    'useModal' => false, // kalau true, edit pakai modal
 ])
 
 @php
@@ -56,9 +57,24 @@
         @endif
 
         @if(isset($routes['edit']))
-            <a class="btn btn-outline-warning btn-uniform m-0 py-2" href="{{ route($routes['edit'], $item->id) }}" title="Edit">
-                <i class="material-symbols-rounded">edit</i>
-            </a>
+            @if($useModal)
+                <button type="button"
+                    class="btn btn-outline-warning btn-uniform m-0 py-2"
+                    title="Edit"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editModal"
+                    data-id="{{ $item->id }}"
+                    data-name="{{ $item->name }}"
+                    data-action="{{ route($routes['edit'], $item->id) }}">
+                    <i class="material-symbols-rounded">edit</i>
+                </button>
+            @else
+                <a class="btn btn-outline-warning btn-uniform m-0 py-2"
+                    href="{{ route($routes['edit'], $item->id) }}"
+                    title="Edit">
+                    <i class="material-symbols-rounded">edit</i>
+                </a>
+            @endif
         @endif
 
         @if(isset($routes['destroy']))
