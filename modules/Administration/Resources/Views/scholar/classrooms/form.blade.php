@@ -159,9 +159,8 @@
 
             <div class="card-body">
                 <form class="form-block" action="{{ route('administration::scholar.classrooms.create') }}" method="GET">
-                    <div class="form-group mb-0">
-                        <div class="input-group w-100">
-
+                    <x-input-group :isRow="true" required>
+                        <x-col size="9">
                             <x-select
                                 name="academic"
                                 :value="request('academic', $acsem->id)"
@@ -170,13 +169,12 @@
                                     'label' => $_a->full_name
                                 ])"
                             />
+                        </x-col>
 
-                            <div class="input-group-append">
-                                <x-btn>Tetapkan</x-btn>
-                            </div>
-
-                        </div>
-                    </div>
+                        <x-col size="2">
+                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
+                        </x-col>
+                    </x-input-group>
                 </form>
             </div>
         </div>

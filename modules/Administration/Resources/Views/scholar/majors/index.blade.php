@@ -48,7 +48,7 @@ $columns = [
 @endphp
 
 @section('body-content')
-<div class="row container-fluid">
+<div class="row container-fluid mb-2">
     @include('components.navbar-admin')
 
     <div class="col-md-8">
