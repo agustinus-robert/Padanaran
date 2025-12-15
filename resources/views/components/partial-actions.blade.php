@@ -79,6 +79,18 @@
             @endif
         @endif
 
+        @if(empty($routes['edit']) && !empty($routes['index']))
+            <a class="btn btn-outline-warning btn-uniform m-0 py-2"
+               href="{{ is_string($routes['index']) && str_starts_with($routes['index'], 'http')
+                    ? $routes['index'].'?edit='.$item->id
+                    : route($routes['index'], array_merge(request()->query(), ['edit' => $item->id]))
+               }}"
+               title="Edit">
+                <i class="material-symbols-rounded">edit</i>
+            </a>
+        @endif
+
+
         @if(!empty($routes['destroy']))
             <form action="{{ is_string($routes['destroy']) && str_starts_with($routes['destroy'], 'http') ? $routes['destroy'] : route($routes['destroy'], $item->id) }}" method="POST" class="d-inline">
                 @csrf

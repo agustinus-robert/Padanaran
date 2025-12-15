@@ -58,13 +58,13 @@ class BatchController extends Controller
 
             return redirect()->route('administration::bill.batchs.index')
             ->with('success', 'Gelombang Pembayaran <strong>'.$batchs->name.'</strong> pada semster '.$batchs->semesters->name.' berhasil disimpan</strong>');
-        } 
+        }
 
         return redirect()->back()->with('danger', 'Gelombang Pembayaran <strong>'.$batchs->name.'</strong> semster '.$batchs->semesters->name.' gagal disimpan</strong>');
     }
 
     public function update(SchoolBillCycleSemesters $batch, Request $request){
-        
+
         $this->authorize('update', SchoolBillCycleSemesters::class);
 
         if ($batch->trashed()) abort(404);
@@ -94,12 +94,12 @@ class BatchController extends Controller
 
     public function show(SchoolBillReference $room)
     {
-        // $this->authorize('show', SchoolBuildingRoom::class);
+        $this->authorize('show', SchoolBuildingRoom::class);
 
-        // if($room->trashed()) abort(404);
+        if($room->trashed()) abort(404);
 
 
-        // return view('administration::facility.rooms.show', compact('room'));
+        return view('administration::facility.rooms.show', compact('room'));
     }
 
     public function destroy(SchoolBillCycleSemesters $batch)
