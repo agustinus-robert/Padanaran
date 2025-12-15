@@ -54,11 +54,11 @@ class SubjectController extends Controller
 
         $acsems = AcademicSemester::openedByDesc()->get();
         $acsem = $acsems->firstWhere('id', $request->get('academic', $acsems->first()->id));
- 
+
         $levels = GradeLevel::where('grade_id', userGrades())->get();
         $categories = AcademicSubjectCategory::where('grade_id', userGrades())->get();
 
-        return view('administration::curriculas.subjects.create', compact('acsems', 'acsem', 'levels', 'categories'));
+        return view('administration::curriculas.subjects.form', compact('acsems', 'acsem', 'levels', 'categories'));
     }
 
     /**
@@ -78,7 +78,7 @@ class SubjectController extends Controller
             );
 
             return redirect($request->get('next', url()->previous()))->with('success', 'Mapel <strong>'.$subject->name.'</strong> berhasil dibuat');
-        } 
+        }
 
         return redirect($request->get('next', url()->previous()))->with('danger', 'Mapel <strong>'.$subject->name.'</strong> gagal dibuat');
     }
@@ -92,7 +92,7 @@ class SubjectController extends Controller
         $levels = GradeLevel::where('grade_id', userGrades())->get();
         $categories = AcademicSubjectCategory::all();
 
-        return view('administration::curriculas.subjects.edit', compact('subject', 'levels', 'categories'));
+        return view('administration::curriculas.subjects.form', compact('subject', 'levels', 'categories'));
     }
 
     /**

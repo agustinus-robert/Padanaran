@@ -84,7 +84,7 @@ class BuildingController extends Controller
                 SchoolBuilding::class,
                 $building->id
             );
-       
+
             return redirect()
                 ->route('administration::facility.buildings.index')
                 ->with('success', 'Gedung <strong>' . $building->name . '</strong> berhasil diperbarui');

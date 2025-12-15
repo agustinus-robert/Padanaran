@@ -1,10 +1,11 @@
 @props([
     'disabled' => false,
     'value' => null,
+    'type' => 'text'
 ])
 
 <input
-    type="text"
+    type="{{ $type }}"
     value="{{ old($attributes->get('name'), $value) }}"
     {{ $disabled ? 'disabled' : '' }}
     {!! $attributes->merge([

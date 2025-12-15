@@ -1,4 +1,4 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Mapel - ')
 
@@ -8,7 +8,13 @@
     <li class="breadcrumb-item active">Tambah</li>
 @endsection
 
-@section('content')
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
+
+
+@section('body-content')
+    @include('components.navbar-admin')
     <h2 class="mb-4">
         <a class="text-decoration-none small" href="{{ request('next', route('administration::curriculas.subjects.index')) }}"><i class="mdi mdi-arrow-left-circle-outline"></i></a>
         Tambah mapel

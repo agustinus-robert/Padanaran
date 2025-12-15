@@ -1,4 +1,4 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Pertemuan - ')
 
@@ -7,135 +7,125 @@
     <li class="breadcrumb-item active">Pertemuan</li>
 @endsection
 
-@section('content')
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-details float-left mr-2"></i>Pertemuan
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('administration::curriculas.meets.index', ['academic' => request('academic')]) }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama rombel disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('administration::curriculas.meets.index', ['academic' => request('academic')]) }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
 
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
+
+@php
+    $trashed = false;
+    $columns = [
+        [
+            'label' => '',
+            'slot' => fn($item) => '
+                <div
+                    style="width:26pt;height:26pt"
+                    class="bg-'.($item->props->color ?? 'secondary').' rounded-circle d-table-cell text-center align-middle">
+                    '.$item->teacher->user->name.'
                 </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>No</th>
-                                <th></th>
-                                <th>Rombel</th>
-                                <th>Mapel</th>
-                                <th>Pengajar</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($meets as $meet)
-                                <tr @if ($meet->trashed()) class="text-muted bg-light" @endif>
-                                    <td class="align-middle">{{ $loop->iteration + ($meets->firstItem() - 1) }}</td>
-                                    <td nowrap class="align-middle">
-                                        <div style="width: 26pt; height: 26pt;" class="bg-{{ $meet->props->color ?? 'secondary' }} rounded-circle d-table-cell text-center align-middle">
-                                            {{ $meet->teacher->user->name }}
-                                        </div>
-                                    </td>
-                                    <td nowrap>
-                                        <strong>{{ $meet->classroom->name }}</strong> <br>
-                                        {{ $meet->classroom->major->name ?? '-' }} {{ $meet->classroom->superior->name }}
-                                    </td>
-                                    <td nowrap class="align-middle">
-                                        <strong>{{ $meet->subject->name }}</strong> <br>
-                                        {{ $meet->plans_count }} pertemuan
-                                    </td>
-                                    <td nowrap class="align-middle">
-                                        <strong>{{ $meet->teacher->user->name }}</strong> <br>
-                                        NIP. {{ $meet->teacher->nip }}
-                                    </td>
-                                    <td nowrap class="py-2 text-right align-middle">
-                                        @if ($meet->trashed())
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::curriculas.meets.restore', ['meet' => $meet->id]) }}" method="POST"> @csrf @method('PUT')
-                                                <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                            </form>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::curriculas.meets.kill', ['meet' => $meet->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus permanen"><i class="mdi mdi-delete-forever-outline"></i></button>
-                                            </form>
-                                        @else
-                                            <a class="btn btn-warning btn-sm" data-toggle="tooltip" title="Ubah pertemuan" href="{{ route('administration::curriculas.meets.edit', ['meet' => $meet->id]) }}"><i class="mdi mdi-pencil"></i></a>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::curriculas.meets.destroy', ['meet' => $meet->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $meets->appends(request()->all())->links() }}
-                </div>
-            </div>
+            ',
+        ],
+
+        [
+            'label' => 'Rombel',
+            'slot' => fn($item) => '
+                <strong>'.$item->classroom->name.'</strong><br>
+                '.($item->classroom->major->name ?? '-').' '.$item->classroom->superior->name.'
+            ',
+        ],
+
+        [
+            'label' => 'Mapel',
+            'slot' => fn($item) => '
+                <strong>'.$item->subject->name.'</strong><br>
+                '.$item->plans_count.' pertemuan
+            ',
+        ],
+
+        [
+            'label' => 'Pengajar',
+            'slot' => fn($item) => '
+                <strong>'.$item->teacher->user->name.'</strong><br>
+                NIP. '.$item->teacher->nip.'
+            ',
+        ],
+
+        ['field' => 'actions', 'label' => 'Aksi', 'slot' => fn($item) => view('components.partial-actions',
+        [
+        'item' => $item,
+        'routes' => [
+            'edit' => 'administration::curriculas.meets.edit',
+            'destroy' => 'administration::curriculas.meets.destroy',
+        ],
+            'useModal' => true,
+        ])->render()],
+    ];
+    @endphp
+
+@section('body-content')
+    @include('components.navbar-admin')
+    <div class="row container-fluid">
+        <div class="col-md-8">
+            <x-table
+                type="material"
+                :data="$meets"
+                :columns="$columns"
+                title="Pertemuan"
+                searchRoute="{{ route('administration::curriculas.meets.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-4">
-            <div class="card card-body">
-                <form class="form-block" action="{{ route('administration::curriculas.meets.index') }}" method="GET">
-                    <div class="form-group mb-0">
-                        <label>Tahun ajaran</label>
-                        <div class="input-group w-100">
-                            <select name="academic" class="form-control">
-                                @foreach ($acsems as $_acsem)
-                                    <option value="{{ $_acsem->id }}" @if (request('academic', $acsem->id) == $_acsem->id) selected @endif>{{ $_acsem->full_name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary">Tetapkan</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="card">
+            <div class="card mb-3">
+                <div class="card-header pb-0 p-3">
+                    <h6 class="text-black">Tahun Ajaran</h6>
+                </div>
+
                 <div class="card-body">
-                    <div class="h1 text-muted mb-4 text-right">
+                    <form class="form-block" action="{{ route('administration::curriculas.meets.index') }}" method="GET">
+                        <x-input-group :isRow="true" required>
+                            <x-col size="9">
+                                <x-select
+                                    name="academic"
+                                    class="form-control"
+                                    :value="request('academic', $acsem->id)"
+                                    :options="$acsems->map(fn($_acsem) => [
+                                        'value' => $_acsem->id,
+                                        'label' => $_acsem->full_name,
+                                    ])"
+                                />
+                            </x-col>
+
+                            <x-col size="2">
+                                <button class="btn bg-gradient-dark">Tetapkan</button>
+                            </x-col>
+                        </x-input-group>
+                    </form>
+                </div>
+            </div>
+            <div class="card mb-3">
+                 <div class="card-header pb-0 p-3">
+                    <h6 class="text-black">Jumlah pertemuan</h6>
+                </div>
+
+                <div class="card-body">
+                    <div class="h1 text-muted text-right">
                         <i class="mdi mdi-account-box-multiple-outline float-right"></i>
                     </div>
                     <div class="text-value">{{ $meets_count }}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">Jumlah pertemuan</small>
+                    <small class="text-muted text-uppercase font-weight-bold">Total</small>
                 </div>
             </div>
             <div class="card">
                 <div class="card-header">
-                    <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
+                    <h6 class="text-black">Lanjutan</h6>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::curriculas.meets.create', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-plus-circle-outline"></i> Tambah pertemuan</a>
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::scholar.classrooms.index', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-account-group-outline"></i> Kelola rombel</a>
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::curriculas.subjects.index', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-book-outline"></i> Kelola mapel</a>
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::employees.teachers.index') }}"><i class="mdi mdi-account-circle-outline"></i> Data guru</a>
-                    <a class="list-group-item list-group-item-action text-danger" href="{{ route('administration::curriculas.meets.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan pertemuan yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::curriculas.meets.create', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-plus-circle-outline"></i> Tambah pertemuan</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.classrooms.index', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-account-group-outline"></i> Kelola rombel</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::curriculas.subjects.index', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-book-outline"></i> Kelola mapel</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::employees.teachers.index') }}"><i class="mdi mdi-account-circle-outline"></i> Data guru</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::curriculas.meets.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan pertemuan yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
                 </div>
             </div>
         </div>

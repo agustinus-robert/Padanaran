@@ -1,5 +1,5 @@
 @props([
-    'name',
+    'name' => null,
     'id' => null,
     'value' => null,
     'options' => [],
@@ -9,18 +9,25 @@
 ])
 
 @php
-$id = $id ?? $name;
-$selectName = $multiple ? $name.'[]' : $name;
-$error = $errors->has($name) ? 'is-invalid' : '';
-$values = $multiple ? (array) $value : [$value];
+    $selectName = $name
+        ? ($multiple ? $name.'[]' : $name)
+        : null;
+
+    $id = $id ?? $name;
+
+    $error = $name && $errors->has($name) ? 'is-invalid' : '';
+
+    $values = $multiple
+        ? (array) old($name, $value)
+        : [old($name, $value)];
 @endphp
 
 <div style="position:relative;width:100%;">
     <select
-        name="{{ $selectName }}"
-        id="{{ $id }}"
+        @if($selectName) name="{{ $selectName }}" @endif
+        @if($id) id="{{ $id }}" @endif
         {{ $attributes->merge(['class' => $error]) }}
-        @if($required) required @endif
+        @if($required && $name) required @endif
         @if($multiple) multiple @endif
         style="
             appearance:none;
@@ -33,13 +40,13 @@ $values = $multiple ? (array) $value : [$value];
         "
     >
         @if($placeholder && !$multiple)
-            <option value="" disabled selected>{{ $placeholder }}</option>
+            <option value="">{{ $placeholder }}</option>
         @endif
 
         @foreach($options as $opt)
             <option
                 value="{{ $opt['value'] }}"
-                @selected(in_array($opt['value'], $values))
+                @selected(in_array($opt['value'], $values, true))
             >
                 {{ $opt['label'] }}
             </option>
@@ -58,7 +65,9 @@ $values = $multiple ? (array) $value : [$value];
         ">▼</span>
     @endunless
 
-    @error($name)
-        <small class="invalid-feedback d-block">{{ $message }}</small>
-    @enderror
+    @if($name)
+        @error($name)
+            <small class="invalid-feedback d-block">{{ $message }}</small>
+        @enderror
+    @endif
 </div>

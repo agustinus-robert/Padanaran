@@ -60,16 +60,16 @@ class MeetController extends Controller
             $classroom->whereIn('level_id', $grades);
         }])->openedByDesc()->get();
 
-        $acsem = $acsems->firstWhere('id', $request->get('academic', $acsems->first()->id))->load(['majors', 'superiors', 
+        $acsem = $acsems->firstWhere('id', $request->get('academic', $acsems->first()->id))->load(['majors', 'superiors',
         'subjects' => function($query) use ($grades) {
-            $query->whereIn('level_id', $grades); 
+            $query->whereIn('level_id', $grades);
          }, 'classrooms']);
 
         $teachers = Employee::whereHas('position.position', fn($p) => $p->where('type', PositionTypeEnum::GURU))
         ->where('grade_id', auth()->user()->employee->grade_id)
         ->whereNull('deleted_at')->get();
 
-        return view('administration::curriculas.meets.create', compact('acsems', 'acsem', 'teachers'));
+        return view('administration::curriculas.meets.form', compact('acsems', 'acsem', 'teachers'));
     }
 
     /**
@@ -112,14 +112,14 @@ class MeetController extends Controller
         $grades = GradeLevel::where('grade_id', auth()->user()->employee->grade_id)->pluck('id');
 
         $acsem = $meet->semester->load(['subjects' => function($query) use ($grades) {
-            $query->whereIn('level_id', $grades); 
+            $query->whereIn('level_id', $grades);
         }
         , 'classrooms']);
 
         $teachers = Employee::whereHas('position.position', fn($p) => $p->where('type', PositionTypeEnum::GURU))
         ->where('grade_id', auth()->user()->employee->grade_id)->whereNull('deleted_at')->get();
 
-        return view('administration::curriculas.meets.edit', compact('meet', 'acsem', 'teachers'));
+        return view('administration::curriculas.meets.form', compact('meet', 'acsem', 'teachers'));
     }
 
     /**
@@ -144,8 +144,8 @@ class MeetController extends Controller
             );
 
             return redirect($request->get('next', url()->previous()))->with('success', 'Pertemuan <strong>'.$meet->name.'</strong> berhasil diperbarui');
-        } 
-        
+        }
+
         return redirect($request->get('next', url()->previous()))->with('danger', 'Pertemuan <strong>'.$meet->name.'</strong> gagal diperbarui');
     }
 
@@ -175,7 +175,7 @@ class MeetController extends Controller
             );
 
             return redirect()->back()->with('success', 'Pertemuan <strong>'.$meet->name.'</strong> berhasil dihapus');
-        } 
+        }
 
         return redirect()->back()->with('danger', 'Pertemuan <strong>'.$meet->name.'</strong> berhasil dihapus');
     }
