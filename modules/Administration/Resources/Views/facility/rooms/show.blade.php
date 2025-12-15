@@ -1,6 +1,8 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Ruangan - ')
+@section('titleTemplate', config('account.admin.name'))
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Sarpras</li>
@@ -8,12 +10,14 @@
     <li class="breadcrumb-item active">Ruangan</li>
 @endsection
 
-@section('content')
-    <h2 class="mb-4">
-        <a class="text-decoration-none small" href="{{ request('next', route('administration::facility.rooms.index')) }}"><i class="mdi mdi-arrow-left-circle-outline"></i></a>
-        Lihat detail Ruang
-    </h2>
-    <div class="row">
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
+
+@section('body-content')
+   <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-sm-4">
             <div class="card mb-4">
                 <div class="card-body">
@@ -27,24 +31,53 @@
         </div>
         <div class="col-sm-8">
             <div class="card">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Edit Ruang</div>
+                <div class="card-header"><h4>Edit Ruang</h4></div>
                 <div class="card-body">
                     <form class="form-block" action="{{ route('administration::facility.rooms.update', ['room' => $room->id]) }}" method="POST"> @csrf @method('PUT')
-                        <div class="form-group mb-2">
-                            <label>Kode Ruang</label>
-                            <input type="text" class="form-control" name="kd" value="{{ $room->kd }}" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Nama Ruang</label>
-                            <input type="text" class="form-control" name="name" value="{{ $room->name }}" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Kapasitas</label>
-                            <input type="text" class="form-control" name="capacity" value="{{ $room->capacity }}" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-0">
-                            <button class="btn btn-primary">Update</button>
-                        </div>
+                        <x-input-group class="mb-2" :isRow="true">
+                            <x-label value="Kode Ruang" />
+
+                            <x-col size="12">
+                                <x-input
+                                    name="kd"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('kd', $room->kd)"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group class="mb-2" :isRow="true">
+                            <x-label value="Nama Ruang" />
+
+                            <x-col size="12">
+                                <x-input
+                                    name="name"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('name', $room->name)"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group class="mb-2" :isRow="true">
+                            <x-label value="Kapasitas" />
+
+                            <x-col size="12">
+                                <x-input
+                                    name="capacity"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('capacity', $room->capacity)"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group class="mb-0">
+                            <x-btn class="mt-2" type="submit" variant="success">
+                                Update
+                            </x-btn>
+                        </x-input-group>
                     </form>
                 </div>
             </div>

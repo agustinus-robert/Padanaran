@@ -1,137 +1,190 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Gedung - ')
+@section('titleTemplate', config('account.admin.name'))
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Sarpras</li>
     <li class="breadcrumb-item active">Gedung</li>
 @endsection
 
-@section('content')
-    <div class="row">
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
+
+@php
+$trashed = false;
+$columns = [
+    [
+        'field' => 'kd',
+        'label' => 'Kode',
+        'slot' => fn ($item) =>
+            e($item->kd) .
+            '<div><small class="text-muted">' .
+            e($item->grade->name ?? '-') .
+            '</small></div>',
+    ],
+
+    [
+        'field' => 'name',
+        'label' => 'Nama',
+    ],
+
+    [
+        'field' => 'village',
+        'label' => 'Alamat',
+    ],
+
+    ['field' => 'actions', 'label' => 'Aksi', 'slot' => fn($item) => view('components.partial-actions',
+    [
+    'item' => $item,
+    'routes' => [
+        'edit' => 'administration::facility.buildings.show',
+        'destroy' => 'administration::facility.buildings.destroy',
+        'restore' => 'administration::facility.buildings.restore',
+        'kill' => 'administration::facility.buildings.kill',
+    ]
+    ])->render()],
+];
+@endphp
+
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Data Gedung</div>
-                <div class="card-body">
-                    <form action="{{ route('administration::facility.buildings.index') }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('administration::facility.buildings.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
-
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
-                </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Alamat</th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            @forelse($buildings as $building)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>
-                                        {{ $building->kd }}
-                                        <div>
-                                            <small class="text-muted">{{ $building->grade->name }}</small>
-                                        </div>
-                                    </td>
-                                    <td>{{ $building->name }}</td>
-                                    <td>{{ $building->village }}</td>
-                                    <td>
-                                        @if ($building->trashed())
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::facility.buildings.restore', ['building' => $building->id]) }}" method="POST"> @csrf @method('PUT')
-                                                <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                            </form>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::facility.buildings.kill', ['building' => $building->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus Permanen"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @else
-                                            <a class="btn btn-warning btn-sm" data-toggle="tooltip" title="Ubah Gedung" href="{{ route('administration::facility.buildings.show', ['building' => $building->id]) }}"><i class="mdi mdi-pencil"></i></a>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::facility.buildings.destroy', ['building' => $building->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    <p style="margin-top: 10px; margin-left: 10px;">Jumlah Gedung : {{ $buildings->total() }}</p>
-                </div>
-                <div class="card-body">
-                    {{ $buildings->appends(request()->all())->links() }}
-                </div>
-            </div>
+             <x-table
+                type="material"
+                :data="$buildings"
+                :columns="$columns"
+                title="Gedung"
+                searchRoute="{{ route('administration::facility.buildings.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Tambah Gedung</div>
+                <div class="card-header pb-0 p-3">
+                    <h6 class="text-black">Tambah Gedung</h6>
+                </div>
                 <div class="card-body">
                     <form class="form-block" action="" method="POST"> @csrf
-                        <div class="form-group mb-3">
-                            <label>Kode Gedung</label>
-                            <input type="text" class="form-control" name="kd" value="" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Nama Gedung</label>
-                            <input type="text" class="form-control" name="name" value="" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Alamat</label>
-                            <input type="text" class="form-control" name="address" value="" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>RT</label>
-                            <input type="number" class="form-control" name="rt" value="" autocomplete="off">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>RW</label>
-                            <input type="number" class="form-control" name="rw" value="" autocomplete="off">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Kelurahan</label>
-                            <input type="text" class="form-control" name="village" value="" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Kecamatan</label>
-                            <select name="district_id" class="form-select">
-                                <option value="">Pilih Kecamatan</option>
-                                @foreach ($district as $value)
-                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Kode Pos</label>
-                            <input type="number" class="form-control" name="postal" value="" required autocomplete="off">
-                        </div>
-                        <div class="form-group mb-0">
-                            <button class="btn btn-primary">Simpan</button>
-                        </div>
+                        <x-input-group :isRow="true">
+
+                            <x-label value="Kode Gedung" />
+                            <x-col size="12">
+                                <x-input
+                                    name="kd"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('kd', $building->kd ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="Nama Gedung" />
+
+                            <x-col size="12">
+                                <x-input
+                                    name="name"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('name', $building->name ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="Alamat" />
+
+                            <x-col size="12">
+                                <x-input
+                                    name="address"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('address', $building->address ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="RT" />
+
+                            <x-col size="12">
+                                <x-input
+                                    type="number"
+                                    name="rt"
+                                    autocomplete="off"
+                                    :value="old('rt', $building->rt ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="RW" />
+
+                            <x-col size="12">
+                                <x-input
+                                    type="number"
+                                    name="rw"
+                                    autocomplete="off"
+                                    :value="old('rw', $building->rw ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="Kelurahan" />
+
+                            <x-col size="12">
+                                <x-input
+                                    name="village"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('village', $building->village ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="Kecamatan" />
+
+                            <x-col size="12">
+                                <x-select
+                                    name="district_id"
+                                    :options="$district->map(fn($d) => [
+                                        'value' => $d->id,
+                                        'label' => $d->name,
+                                    ])"
+                                    :selected="old('district_id', $building->district_id ?? '')"
+                                    placeholder="Pilih Kecamatan"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group :isRow="true">
+                            <x-label value="Kode Pos" />
+
+                            <x-col size="12">
+                                <x-input
+                                    type="number"
+                                    name="postal"
+                                    required
+                                    autocomplete="off"
+                                    :value="old('postal', $building->postal ?? '')"
+                                />
+                            </x-col>
+                        </x-input-group>
+
+                        <x-input-group class="mt-2">
+                            <x-btn type="submit" variant="success">
+                                Simpan
+                            </x-btn>
+                        </x-input-group>
+
                     </form>
                 </div>
             </div>
