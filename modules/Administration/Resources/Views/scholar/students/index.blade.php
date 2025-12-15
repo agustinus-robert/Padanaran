@@ -95,8 +95,8 @@ $columns = [
                     <h6 class="text-black">Lanjutan</h6>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::scholar.students.create') }}"><i class="mdi mdi-plus-circle-outline"></i> Tambah siswa</a>
-                    <a class="list-group-item list-group-item-action text-danger" href="{{ route('administration::scholar.students.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan siswa yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.students.create') }}"><i class="mdi mdi-plus-circle-outline"></i> Tambah siswa</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.students.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan siswa yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
                 </div>
             </div>
         </div>

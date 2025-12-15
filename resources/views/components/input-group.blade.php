@@ -4,10 +4,14 @@
     'labelCol' => '3',
     'slotCol' => '7',
     'isRow' => false,
+    'isForm' => false
 ])
 
-<div class="input-group input-group-outline row mb-3">
-
+@if($isForm == false)
+    <div class="input-group input-group-outline row mb-3">
+@else
+    <div class="form-group mb-3">
+@endif
     @if ($label)
         <label class="{{ $labelCol ? "col-md-$labelCol col-form-label" : '' }}">
             {{ $label }}

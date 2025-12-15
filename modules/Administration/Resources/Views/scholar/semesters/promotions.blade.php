@@ -1,4 +1,4 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Registrasi semester - ')
 
@@ -8,17 +8,19 @@
     <li class="breadcrumb-item active">Kenaikan kelas</li>
 @endsection
 
-@section('content')
-    <h2 class="mb-4">
-        <a class="text-decoration-none small" href="{{ request('next', route('administration::scholar.semesters.index')) }}"><i class="mdi mdi-arrow-left-circle-outline"></i></a>
-        Kenaikan kelas
-    </h2>
-    <div class="row">
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-details float-left mr-2"></i>Daftar siswa</strong>
-                </div>
+                <x-card-header type="{{ config('theme.default') }}">
+                    Kenaikan Kelas
+                </x-card-header>
+
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
@@ -36,59 +38,86 @@
                         </div>
                     </div>
                     <form id="filter-form" action="{{ route('administration::scholar.semesters.promotions') }}" method="GET">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Siswa T.A.</div>
-                                </div>
-                                <select class="form-control mb-sm-0 mr-sm-3 mb-2" name="acsem" required data-live-search="true">
-                                    <option value="">-- Pilih tahun ajaran --</option>
-                                    @foreach ($acsems->where('open', 1) as $_acsem)
-                                        <option value="{{ $_acsem->id }}" @if (request('acsem', $acsem->id) == $_acsem->id) selected @endif>{{ $_acsem->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                        <x-input-group isForm="true" :isRow="true" required>
+                            <x-label>Siswa T.A.</x-label>
+                            <x-select
+                                name="acsem"
+                                required
+                                placeholder="-- Pilih tahun ajaran --"
+                                :value="request('acsem', $acsem->id)"
+                                data-live-search="true"
+                                class="form-control mb-sm-0 mr-sm-3 mb-2"
+                                :options="$acsems->where('open', 1)->map(fn($_acsem) => [
+                                    'value' => $_acsem->id,
+                                    'label' => $_acsem->full_name,
+                                ])"
+                            />
+                        </x-input-group>
                     </form>
                     <form action="{{ route('administration::scholar.semesters.promote') }}" method="POST"> @csrf
-                        <div class="form-group mb-2">
-                            <select multiple="multiple" size="10" name="students[]">
-                                @foreach ($stsems as $stsem)
-                                    <option value="{{ $stsem->student->id }}">{{ $stsem->classroom->name ? $stsem->classroom->name . ' - ' . $stsem->student->user->profile->full_name : $stsem->student->user->profile->full_name }}</option>
-                                @endforeach
-                            </select>
+                        <x-input-group isForm="true" :isRow="true" required>
+                            <x-select
+                                name="students"
+                                multiple
+                                size="10"
+                                :value="old('students', [])"
+                                :options="$stsems->map(fn($stsem) => [
+                                    'value' => $stsem->student->id,
+                                    'label' => $stsem->classroom->name
+                                        ? $stsem->classroom->name . ' - ' . $stsem->student->user->profile->full_name
+                                        : $stsem->student->user->profile->full_name,
+                                ])"
+                            />
                             @error('students.0')
                                 <span class="text-danger">Siswa yang Anda pilih tidak valid</span>
                             @enderror
-                        </div>
-                        <div class="form-group required mb-2">
-                            <label>Tahun Ajaran Baru</label>
-                            <select class="form-control @error('semester_id') is-invalid @enderror" name="semester_id" required>
-                                @foreach ($acsems->where('open', 1) as $_acsem)
-                                    <option value="{{ $_acsem->id }}" data-classrooms="{{ $_acsem->classrooms }}" @if (old('semester_id') == $_acsem->id) selected @endif>{{ $_acsem->full_name }}</option>
-                                @endforeach
-                            </select>
+                        </x-input-group>
+
+                        <x-input-group isForm="true" :isRow="true" required>
+                            <x-label>Tahun Ajaran Baru</x-label>
+
+                            <x-select
+                                name="semester_id"
+                                required
+                                :value="old('semester_id')"
+                                :options="$acsems->where('open', 1)->map(fn($_acsem) => [
+                                    'value' => $_acsem->id,
+                                    'label' => $_acsem->full_name,
+                                    'attributes' => [
+                                        'data-classrooms' => $_acsem->classrooms,
+                                    ],
+                                ])"
+                            />
+
                             @error('semester_id')
-                                <small class="text-danger"> {{ $message }} </small>
+                                <small class="text-danger">{{ $message }}</small>
                             @enderror
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Rombel yang dituju</label>
-                            <select class="form-control @error('classroom_id') is-invalid @enderror" name="classroom_id">
-                                <option value="">-- Pilih rombel --</option>
-                                @foreach ($aclassRoom ?? [] as $room)
-                                    <option value="{{ $room->id }}">{{ $room->name }}</option>
-                                @endforeach
-                            </select>
+                        </x-input-group>
+
+                        <x-input-group isForm="true" :isRow="true" required>
+                            <x-label>Rombel yang dituju</x-label>
+                            <x-select
+                                name="classroom_id"
+                                placeholder="-- Pilih rombel --"
+                                :value="old('classroom_id')"
+                                :class="$errors->has('classroom_id') ? 'is-invalid' : ''"
+                                :options="collect($aclassRoom ?? [])->map(fn($room) => [
+                                    'value' => $room->id,
+                                    'label' => $room->name,
+                                ])"
+                            />
+
                             @error('classroom_id')
-                                <small class="text-danger"> {{ $message }} </small>
+                                <small class="text-danger">{{ $message }}</small>
                             @enderror
-                        </div>
+                        </x-input-group>
+
                         <div class="alert alert-info d-none" id="msg-alert">
                             Anda akan meregesitrasikan <strong><span id="msg-count">0</span> siswa</strong> ke kelas <strong><span id="msg-classroom"></span></strong>
                         </div>
+
                         <div class="form-group mb-0">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="submit" class="btn btn-success">Simpan</button>
                             <a class="btn btn-secondary" href="{{ request('next', route('administration::scholar.semesters.index')) }}"> Kembali</a>
                         </div>
                     </form>
@@ -97,12 +126,13 @@
         </div>
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header">
-                    <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
+                <div class="card-header pb-0 p-3">
+                    <h6 class="text-black">Lanjutan</h6>
                 </div>
+
                 <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::scholar.students.index') }}"><i class="mdi mdi-account-group-outline"></i> Data siswa</a>
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('administration::scholar.semesters.index') }}"><i class="mdi mdi-account-group-outline"></i> Registrasi semester</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.students.index') }}"><i class="mdi mdi-account-group-outline"></i> Data siswa</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.semesters.index') }}"><i class="mdi mdi-account-group-outline"></i> Registrasi semester</a>
                 </div>
             </div>
         </div>
