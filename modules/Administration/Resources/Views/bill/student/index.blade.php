@@ -1,14 +1,22 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
-@section('title', 'Gedung - ')
+@section('title', 'Pembayaran - ')
+@section('titleTemplate', config('account.admin.name'))
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Tagihan</li>
     <li class="breadcrumb-item active">Referensi</li>
 @endsection
 
-@section('content')
-    <div class="row align-items-stretch">
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
+
+@section('body-content')
+    <div class="row container-fluid align-items-stretch">
+        @include('components.navbar-admin')
+
         <div class="col-xl-12">
             @if (session('success'))
                 <div id="flash-success" class="alert alert-success mt-4">
@@ -26,23 +34,24 @@
             <div class="card h-100">
                 <div class="card-body d-flex">
                     <!-- Logo di kiri -->
-                    <div class="me-3 d-flex align-items-center justify-content-center" 
-                         style="width:60px; height:60px; border-radius:12px; background:#f5f6fa;">
-                        <i class="mdi mdi-account-group text-primary" style="font-size:32px;"></i>
+                    <div class="me-3 d-flex align-items-start justify-content-center">
+                        <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
+                            person_raised_hand
+                        </span>
                     </div>
 
                     <!-- Konten di kanan -->
                     <div class="d-flex flex-column w-100">
                         <h5 class="fs-17 mb-2">
                             <a href="javascript:void(0);" class="text-dark mb-3">
-                                Semua pembayaran akan didistribusikan bagi semua murid 
-                                
+                                Semua pembayaran akan didistribusikan bagi semua murid
+
                             </a>
                             <p>
                                 <small class="text-muted fw-normal">
-                                    Jenjang 
+                                    Jenjang
                                     {{ auth()->user()->employee->education->name }}
-                               
+
                                 </small>
                             </p>
                         </h5>
@@ -50,7 +59,7 @@
                         <div class="mt-auto hstack gap-2">
                             {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Murid</a> --}}
                             @if(count($semesterStudent) > 0)
-                                <a href="#applyAll" data-bs-toggle="modal" class="btn btn-soft-primary w-100">Kelola</a>
+                                <x-btn href="#applyAll" data-bs-toggle="modal" variant="dark">Kelola</x-btn>
                             @else
                                 <p class="text-danger">Belum ada siswa di semester ini</p>
                             @endif
@@ -65,9 +74,10 @@
                 <div class="card-body d-flex">
 
                     <!-- Logo di kiri -->
-                   <div class="me-3 d-flex align-items-start justify-content-center" 
-                        style="width:60px; height:60px; border-radius:12px; background:#f5f6fa;">
-                        <i class="mdi mdi-google-classroom text-success" style="font-size:32px;"></i>
+                   <div class="me-3 d-flex align-items-start justify-content-center">
+                        <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
+                            cast_for_education
+                        </span>
                     </div>
 
                     <!-- Konten di kanan -->
@@ -76,7 +86,7 @@
                             <a href="javascript:void(0);" class="text-dark mb-3">Pembayaran Per Kelas</a>
                             <p>
                                 <small class="text-muted fw-normal">
-                                    
+
                                     Jenjang {{ auth()->user()->employee->education->name }}
                                     {{-- 0 Jumlah Kelas didistribusikan pembayaran --}}
                                 </small>
@@ -86,7 +96,8 @@
                         <div class="mt-auto hstack gap-2">
                             {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Kelas</a> --}}
                             @if(count($semesterStudent) > 0)
-                                <a href="{{ !empty($semesterStudent) ? '#applyClass' : 'javascript:void(0);' }}" data-bs-toggle="modal" class="btn btn-soft-primary w-100">Kelola</a>
+                                <x-btn href="{{ !empty($semesterStudent) ? '#applyClass' : 'javascript:void(0);' }}"
+                                data-bs-toggle="modal" variant="dark">Kelola</x-btn>
                             @else
                                 <p class="text-danger">Belum ada siswa di semester ini</p>
                             @endif
@@ -100,7 +111,7 @@
         {{-- <div class="col-xl-6 col-md-6">
             <div class="card h-100">
                 <div class="card-body d-flex">
-                   <div class="me-3 d-flex align-items-start justify-content-center" 
+                   <div class="me-3 d-flex align-items-start justify-content-center"
                         style="width:60px; height:60px; border-radius:12px; background:#f5f6fa;">
                         <i class="mdi mdi mdi-account-outline text-danger" style="font-size:32px;"></i>
                     </div>
@@ -111,7 +122,7 @@
                             <a href="javascript:void(0);" class="text-dark mb-3">Pembayaran Extra Per Murid</a>
                             <p>
                                 <small class="text-muted fw-normal">
-                                    0 Jumlah komponen extra dipasang 
+                                    0 Jumlah komponen extra dipasang
                                 </small>
                             </p>
                         </h5>
@@ -210,127 +221,116 @@
         </div> --}}
     </div>
 
-    <div class="modal fade" id="applyAll" tabindex="-1" aria-labelledby="applyJobsLabel" aria-modal="false" role="dialog">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="applyJobsLabel">Pembayaran Keseluruhan Murid</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formAll" method="POST" action="{{ route('administration::bill.students.store') }}">
-                        @csrf
-                        <input type="hidden" name="status" value="1" />
-                        <input type="hidden" name="education" value="{{ request()->education }}" />
+    <x-regular-modal id="applyAll" title="Pembayaran Keseluruhan Murid">
+        <form id="formAll" method="POST" action="{{ route('administration::bill.students.store') }}">
+            @csrf
+            <input type="hidden" name="status" value="1" />
+            <input type="hidden" name="education" value="{{ request()->education }}" />
 
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Masukkan Semester</label>
-                                    <select id="semester_id" name="semester_id" class="form-select" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Masukkan Gelombang</label>
-                                    <select id="batch_id" class="form-select" name="batch_id" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
+            {{-- Semester --}}
+            <x-input-group :isRow="true">
+                <x-col size="6">
+                    <x-label value="Masukkan Semester" />
+                </x-col>
+                <x-col size="6">
+                    <x-select id="semester_id" name="semester_id" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
 
-                            <div class="col-lg-12">
-                                <div class="mb-3">
-                                    <label class="form-label">Masukkan Paket Pembayaran</label>
-                                    <select id="reference_id" class="form-select" name="package" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
+            {{-- Gelombang --}}
+            <x-input-group :isRow="true">
+                <x-col size="6">
+                    <x-label value="Masukkan Gelombang" />
+                </x-col>
+                <x-col size="6">
+                    <x-select id="batch_id" name="batch_id" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
 
-                            <div class="col-lg-12">
-                                <div class="text-end">
-                                    <button class="btn btn-success">Proses <i class="bx bx-send align-middle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            {{-- Paket Pembayaran --}}
+            <x-input-group :isRow="true">
+                <x-col size="6">
+                    <x-label value="Masukkan Paket Pembayaran" />
+                </x-col>
+                <x-col size="6">
+                    <x-select id="reference_id" name="package" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
+
+            {{-- Tombol Aksi --}}
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <x-btn type="button" variant="secondary" data-bs-dismiss="modal">Tutup</x-btn>
+                <x-btn type="submit" variant="success">Proses</x-btn>
             </div>
-        </div>
-    </div>
+        </form>
+    </x-regular-modal>
 
 
-    <div class="modal fade" id="applyClass" tabindex="-1" aria-labelledby="applyJobsLabel" aria-modal="false" role="dialog">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="applyJobsLabel">Pembayaran Per Kelas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formApply" method="POST" action="{{ route('administration::bill.students.store') }}">
-                        @csrf
-                        <input type="hidden" name="status" value="2" />
-                        <input type="hidden" name="education" value="{{ request()->education }}" />
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Pilih Kelas</label>
-                                    <select id="class_id" name="class_id" class="form-select" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Pilih Rombel</label>
-                                    <select id="classroom_id" name="classroom_id" class="form-select" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
+    <x-regular-modal id="applyClass" title="Pembayaran Per Kelas">
+        <form id="formApply" method="POST" action="{{ route('administration::bill.students.store') }}">
+            @csrf
+            <input type="hidden" name="status" value="2" />
+            <input type="hidden" name="education" value="{{ request()->education }}" />
 
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Masukkan Semester</label>
-                                    <select id="semester_id" name="semester_id" class="form-select" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Masukkan Gelombang</label>
-                                    <select id="batch_id" class="form-select" name="batch_id" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
+            {{-- Pilih Kelas --}}
+            <x-input-group :isRow="true">
+                <x-col size="4">
+                    <x-label value="Pilih Kelas" />
+                </x-col>
+                <x-col size="8">
+                    <x-select id="class_id" name="class_id" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
 
-                            <div class="col-lg-12">
-                                <div class="mb-3">
-                                    <label class="form-label">Masukkan Paket Pembayaran</label>
-                                    <select id="reference_id" class="form-select" name="package" required>
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
+            {{-- Pilih Rombel --}}
+            <x-input-group :isRow="true">
+                <x-col size="4">
+                    <x-label value="Pilih Rombel" />
+                </x-col>
+                <x-col size="8">
+                    <x-select id="classroom_id" name="classroom_id" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
 
-                            <div class="col-lg-12">
-                                <div class="text-end">
-                                    <button class="btn btn-success">Proses <i class="bx bx-send align-middle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            {{-- Masukkan Semester --}}
+            <x-input-group :isRow="true">
+                <x-col size="4">
+                    <x-label value="Masukkan Semester" />
+                </x-col>
+                <x-col size="8">
+                    <x-select id="semester_id" name="semester_id" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
+
+            {{-- Masukkan Gelombang --}}
+            <x-input-group :isRow="true">
+                <x-col size="4">
+                    <x-label value="Masukkan Gelombang" />
+                </x-col>
+                <x-col size="8">
+                    <x-select id="batch_id" name="batch_id" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
+
+            {{-- Masukkan Paket Pembayaran --}}
+            <x-input-group :isRow="true">
+                <x-col size="4">
+                    <x-label value="Masukkan Paket Pembayaran" />
+                </x-col>
+                <x-col size="8">
+                    <x-select id="reference_id" name="package" placeholder="Pilih" :options="[]" required />
+                </x-col>
+            </x-input-group>
+
+            {{-- Tombol Aksi --}}
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <x-btn type="button" variant="secondary" data-bs-dismiss="modal">Tutup</x-btn>
+                <x-btn type="submit" variant="success">Proses</x-btn>
             </div>
-        </div>
-    </div>
+        </form>
+    </x-regular-modal>
+
 @endsection
 
 @push('scripts')
@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             gradeSelect.addEventListener("change", function() {
                 let gradeId = this.value;
-        
+
                 if (!gradeId) return;
 
                 fetch(`{{ route('api::administration.classrooms') }}?class_id=${gradeId}`)
@@ -398,8 +398,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         semesterSelect.addEventListener("change", function() {
             let semesterId = this.value;
-            batchSelect.innerHTML = '<option value="">Pilih</option>'; 
-            referenceSelect.innerHTML = '<option value="">Pilih</option>'; 
+            batchSelect.innerHTML = '<option value="">Pilih</option>';
+            referenceSelect.innerHTML = '<option value="">Pilih</option>';
 
             if (!semesterId) return;
 

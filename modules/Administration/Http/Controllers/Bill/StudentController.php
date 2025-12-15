@@ -39,7 +39,7 @@ class StudentController extends Controller
 
         if(!empty($request->education)){
             $grades = GradeLevel::where('grade_id', $request->education)->with('grade')->get()->pluck('id');
-        } 
+        }
 
         $semesterStudent = StudentSemester::with('classroom')->whereHas('classroom', function($q) use ($grades) {
             $q->whereIn('level_id', $grades);
@@ -69,11 +69,11 @@ class StudentController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             foreach ($request->transform()['billings'] as $cmpStudentBill) {
                     $studentsPayComponent = SchoolBillStudent::updateOrCreate(
                     [
-                        'smt_id'   => $cmpStudentBill['smt_id'], 
+                        'smt_id'   => $cmpStudentBill['smt_id'],
                         'batch_id' => $request->transform()['batch_id']
                     ],
                     [
@@ -108,7 +108,7 @@ class StudentController extends Controller
         $this->authorize('update', SchoolBillStudent::class);
         $acsem = $this->acsem;
         $references = $student->references();
-      
+
         return view('administration::bill.student.edit', compact('student', 'references'));
     }
 
