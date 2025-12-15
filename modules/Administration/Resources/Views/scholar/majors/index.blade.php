@@ -35,11 +35,11 @@ $columns = [
         'slot' => fn($item) => view('components.partial-actions', [
             'item' => $item,
             'routes' => [
-                'show' => 'administration::scholar.majors.show',
+                // 'show' => 'administration::scholar.majors.show',
                 'edit' => 'administration::scholar.majors.edit',
                 'destroy' => 'administration::scholar.majors.destroy',
-                'restore' => 'administration::scholar.majors.restore',
-                'kill' => 'administration::scholar.majors.kill',
+                // 'restore' => 'administration::scholar.majors.restore',
+                // 'kill' => 'administration::scholar.majors.kill',
             ],
             'useModal' => true,
         ])->render()

@@ -27,7 +27,7 @@ $columns = [
     ['field' => 'actions', 'label' => '', 'slot' => fn($item) => view('components.partial-actions', [
         'item' => $item,
         'routes' => [
-            'show' => 'administration::scholar.students.show',
+            // 'show' => 'administration::scholar.students.show',
             'edit' => 'administration::scholar.students.show',
             'destroy' => 'administration::scholar.students.destroy',
             'restore' => 'administration::scholar.students.restore',

@@ -36,10 +36,10 @@
     'item' => $item,
     'routes' => [
         'show' => 'administration::scholar.students.show',
-        'edit' => 'administration::scholar.students.edit',
-        'destroy' => 'administration::scholar.students.destroy',
-        'restore' => 'administration::scholar.students.restore',
-        'kill' => 'administration::scholar.students.kill',
+        // 'edit' => 'administration::scholar.students.edit',
+        // 'destroy' => 'administration::scholar.students.destroy',
+        // 'restore' => 'administration::scholar.students.restore',
+        // 'kill' => 'administration::scholar.students.kill',
     ]
     ])->render()],
 ];
