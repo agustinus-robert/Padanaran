@@ -30,8 +30,8 @@
 
 <div class="btn-flex">
     @if($isTrashed)
-        @if(isset($routes['restore']))
-            <form action="{{ route($routes['restore'], $item->id) }}" method="POST" class="d-inline">
+        @if(!empty($routes['restore']))
+            <form action="{{ is_string($routes['restore']) && str_starts_with($routes['restore'], 'http') ? $routes['restore'] : route($routes['restore'], $item->id) }}" method="POST" class="d-inline">
                 @csrf
                 @method('PUT')
                 <button type="submit" class="btn btn-primary btn-uniform" title="Pulihkan">
@@ -40,8 +40,8 @@
             </form>
         @endif
 
-        @if(isset($routes['kill']))
-            <form action="{{ route($routes['kill'], $item->id) }}" method="POST" class="d-inline">
+        @if(!empty($routes['kill']))
+            <form action="{{ is_string($routes['kill']) && str_starts_with($routes['kill'], 'http') ? $routes['kill'] : route($routes['kill'], $item->id) }}" method="POST" class="d-inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger btn-uniform" title="Hapus permanen">
@@ -50,13 +50,15 @@
             </form>
         @endif
     @else
-        @if(isset($routes['show']))
-            <a class="btn btn-outline-info btn-uniform m-0 py-2" href="{{ route($routes['show'], $item->id) }}" title="Detail">
+        @if(!empty($routes['show']))
+            <a class="btn btn-outline-info btn-uniform m-0 py-2"
+               href="{{ is_string($routes['show']) && str_starts_with($routes['show'], 'http') ? $routes['show'] : route($routes['show'], $item->id) }}"
+               title="Detail">
                 <i class="material-symbols-rounded">visibility</i>
             </a>
         @endif
 
-        @if(isset($routes['edit']))
+        @if(!empty($routes['edit']))
             @if($useModal)
                 <button type="button"
                     class="btn btn-outline-warning btn-uniform m-0 py-2"
@@ -65,20 +67,20 @@
                     data-bs-target="#editModal"
                     data-id="{{ $item->id }}"
                     data-name="{{ $item->name }}"
-                    data-action="{{ route($routes['edit'], $item->id) }}">
+                    data-action="{{ is_string($routes['edit']) && str_starts_with($routes['edit'], 'http') ? $routes['edit'] : route($routes['edit'], $item->id) }}">
                     <i class="material-symbols-rounded">edit</i>
                 </button>
             @else
                 <a class="btn btn-outline-warning btn-uniform m-0 py-2"
-                    href="{{ route($routes['edit'], $item->id) }}"
-                    title="Edit">
+                   href="{{ is_string($routes['edit']) && str_starts_with($routes['edit'], 'http') ? $routes['edit'] : route($routes['edit'], $item->id) }}"
+                   title="Edit">
                     <i class="material-symbols-rounded">edit</i>
                 </a>
             @endif
         @endif
 
-        @if(isset($routes['destroy']))
-            <form action="{{ route($routes['destroy'], $item->id) }}" method="POST" class="d-inline">
+        @if(!empty($routes['destroy']))
+            <form action="{{ is_string($routes['destroy']) && str_starts_with($routes['destroy'], 'http') ? $routes['destroy'] : route($routes['destroy'], $item->id) }}" method="POST" class="d-inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-outline-danger btn-uniform m-0 py-2" title="Hapus">
@@ -86,5 +88,9 @@
                 </button>
             </form>
         @endif
+    @endif
+
+    @if(isset($extra) && is_callable($extra))
+        {!! $extra($item) !!}
     @endif
 </div>
