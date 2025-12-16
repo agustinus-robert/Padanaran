@@ -7,6 +7,7 @@
     'trash' => false,
     'isSearch' => true,
     'searchDynamic' => [], // <<< INI
+    'extra' => []
 ])
 
 @php
@@ -30,6 +31,14 @@
     <form action="{{ $searchRoute }}" method="GET" class="mb-2 d-flex align-items-center"
         style="border:1px solid #ced4da; border-radius:6px; padding:2px;">
         <input type="hidden" name="trash" value="{{ $trash }}">
+
+        @if(count($extra) > 0)
+            <div class="row col-12 g-2 p-2">
+                @foreach($extra as $slot)
+                    {!! $slot !!}
+                @endforeach
+            </div>
+        @endif
 
         @if(count($searchDynamic) > 0)
             @if($searchRoute)

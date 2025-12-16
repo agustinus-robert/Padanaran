@@ -82,13 +82,13 @@
                             <div class="col-lg-8 text-center">
                                 <div class="btn-group">
                                     <input class="btn-check" type="radio" id="is_visible1" name="is_visible" value="1" required autocomplete="off"
-                                        @checked(!is_null(old('is_visible', $department->is_visible)) && old('is_visible', $department->is_visible) == 1) />
+                                        @checked(!is_null(old('is_visible', $department->is_visible ?? null)) && old('is_visible', $department->is_visible ?? null) == 1) />
                                     <label class="btn btn-outline-light text-dark" for="is_visible1">
                                         <span class="material-symbols-rounded">visibility</span>
                                     </label>
 
                                     <input class="btn-check" type="radio" id="is_visible0" name="is_visible" value="0" required autocomplete="off"
-                                        @checked(!is_null(old('is_visible', $department->is_visible)) && old('is_visible', $department->is_visible) == 0) />
+                                        @checked(!is_null(old('is_visible', $department->is_visible ?? null)) && old('is_visible', $department->is_visible ?? null) == 0) />
                                     <label class="btn btn-outline-light text-dark" for="is_visible0">
                                         <span class="material-symbols-rounded">visibility_off</span>
                                     </label>

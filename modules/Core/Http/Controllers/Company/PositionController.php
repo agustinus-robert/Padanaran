@@ -54,7 +54,7 @@ class PositionController extends Controller
         })
         ->get()->groupBy('department.name');
 
-        return view('core::company.positions.create', compact('roles', 'positions', 'departments'));
+        return view('core::company.positions.form', compact('roles', 'positions', 'departments'));
     }
 
     /**
@@ -85,7 +85,7 @@ class PositionController extends Controller
             $query->where('grade_id', userGrades());
         })->get()->groupBy('department.name');
 
-        return view('core::company.positions.show', compact('position', 'roles', 'departments', 'positions'));
+        return view('core::company.positions.form', compact('position', 'roles', 'departments', 'positions'));
     }
 
     /**
