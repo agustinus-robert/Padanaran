@@ -14,99 +14,126 @@
     @include('components.navbar-admin')
 
     <div class="row container-fluid">
-        <div class="col-xl-12">
-            <div class="card border-0">
-                <div class="card-body">
-                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-md-between">
-                        <div>
-                            <img class="w-100" src="{{ asset('img/manypixels/Welcome.svg') }}" alt="" style="height: 140px;">
+        <div class="col-md-12">
+            <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 p-3">
+                <h2 class="fw-normal text-white">Selamat datang {{ Auth::user()->name }}!</h2>
+                <div class="text-light">di {{ config('modules.core.name') }}</div>
+            </div>
+        </div>
+
+        <div class="row mt-4 mb-4">
+            <div class="col-md-8">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header mx-4 p-3 text-center">
+                                <div class="icon icon-shape icon-lg bg-gradient-dark shadow text-center border-radius-lg">
+                                    <i class="material-symbols-rounded opacity-10">account_tree</i>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0 p-3 text-center">
+                                <h6 class="text-center mb-0">Departemen</h6>
+                                <span class="text-xs">Jumlah departemen</span>
+                                <hr class="horizontal dark my-3">
+                                <h5 class="mb-0">{{ $statistics['departments_count'] }}</h5>
+                            </div>
                         </div>
-                        <div class="order-md-first text-md-start text-center">
-                            <div class="px-4 py-3">
-                                <h2 class="fw-normal">Selamat datang {{ Auth::user()->name }}!</h2>
-                                <div class="text-muted">di {{ config('modules.core.name') }}</div>
+                    </div>
+
+                    {{-- JABATAN --}}
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header mx-4 p-3 text-center">
+                                <div class="icon icon-shape icon-lg bg-gradient-dark shadow text-center border-radius-lg">
+                                    <i class="material-symbols-rounded opacity-10">sell</i>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0 p-3 text-center">
+                                <h6 class="text-center mb-0">Jabatan</h6>
+                                <span class="text-xs">Jumlah jabatan</span>
+                                <hr class="horizontal dark my-3">
+                                <h5 class="mb-0">{{ $statistics['positions_count'] }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header mx-4 p-3 text-center">
+                                <div class="icon icon-shape icon-lg bg-gradient-dark shadow text-center border-radius-lg">
+                                    <i class="material-symbols-rounded opacity-10">badge</i>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0 p-3 text-center">
+                                <h6 class="text-center mb-0">Karyawan</h6>
+                                <span class="text-xs">Jumlah karyawan</span>
+                                <hr class="horizontal dark my-3">
+                                <h5 class="mb-0">{{ $statistics['employees_count'] }}</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- PENGGUNA --}}
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header mx-4 p-3 text-center">
+                                <div class="icon icon-shape icon-lg bg-gradient-dark shadow text-center border-radius-lg">
+                                    <i class="material-symbols-rounded opacity-10">groups</i>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0 p-3 text-center">
+                                <h6 class="text-center mb-0">Pengguna</h6>
+                                <span class="text-xs">Jumlah pengguna</span>
+                                <hr class="horizontal dark my-3">
+                                <h5 class="mb-0">{{ $statistics['users_count'] }}</h5>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0">
-                        <div class="card-body p-4">
-                            <div class="float-end my-4">
-                                <i class="mdi mdi-file-tree-outline h2 text-primary mb-0"></i>
+
+            <div class="col-md-4">
+                <div class="col-md-12">
+                    @can('access', \Modules\Account\Models\UserLog::class)
+                        <div class="card" style="height: 470px;"> {{-- set height sesuai kebutuhan --}}
+                            <div class="card-header pb-0">
+                                <h6>Aktivitas Terakhir Pengguna</h6>
                             </div>
-                            <div class="display-4">{{ $statistics['departments_count'] }}</div>
-                            <small class="text-muted">Jumlah departemen</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0">
-                        <div class="card-body p-4">
-                            <div class="float-end my-4">
-                                <i class="mdi mdi-tag-outline h2 text-danger mb-0"></i>
+                            <div class="card-body p-3" style="overflow-y:auto; height: calc(400px - 60px);"> {{-- scrollable --}}
+                                @forelse($recent_activities as $activity)
+                                    <div class="d-flex align-items-center mb-3 p-2 border rounded-2">
+                                        <div class="rounded-circle me-3" style="width:40px; height:40px; overflow:hidden; background:url('{{ $activity->user->profile_avatar_path }}') center center no-repeat; background-size:cover;"></div>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-0">
+                                                <strong>{{ $activity->user->display_name }}</strong> {!! $activity->message !!}
+                                            </p>
+                                            <small class="text-muted">{{ $activity->created_at->format('d M H:i') }}</small>
+                                        </div>
+                                        <i class="material-symbols-rounded text-primary ms-2">chevron_right</i>
+                                    </div>
+                                @empty
+                                    <div class="d-flex align-items-center p-3 text-muted border rounded-2">
+                                        <i class="material-symbols-rounded me-2">info</i>
+                                        <span>Tidak ada aktivitas dari pengguna akhir-akhir ini</span>
+                                    </div>
+                                @endforelse
+
+                                @if($recent_activities->count())
+                                    <div class="mt-2 text-end">
+                                        <a href="{{ route('core::system.user-logs.index') }}" class="text-danger small font-weight-bold">
+                                            Lihat selengkapnya &raquo;
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
-                            <div class="display-4">{{ $statistics['positions_count'] }}</div>
-                            <small class="text-muted">Jumlah jabatan</small>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0">
-                        <div class="card-body p-4">
-                            <div class="float-end my-4">
-                                <i class="mdi mdi-account-box-multiple-outline h2 text-success mb-0"></i>
-                            </div>
-                            <div class="display-4">{{ $statistics['employees_count'] }}</div>
-                            <small class="text-muted">Jumlah karyawan</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0">
-                        <div class="card-body p-4">
-                            <div class="float-end my-4">
-                                <i class="mdi mdi-account-group-outline h2 text-warning mb-0"></i>
-                            </div>
-                            <div class="display-4">{{ $statistics['users_count'] }}</div>
-                            <small class="text-muted">Jumlah pengguna</small>
-                        </div>
-                    </div>
+                    @endcan
                 </div>
             </div>
-        </div>
-        <div class="col-xl-8"></div>
-        <div class="col-xl-4">
-            @can('access', \Modules\Account\Models\UserLog::class)
-                <div class="card border-0">
-                    <div class="card-body">
-                        <i class="mdi mdi-history"></i> Aktivitas terakhir pengguna
-                    </div>
-                    <div class="list-group list-group-flush border-top">
-                        @forelse($recent_activities as $activity)
-                            <div class="list-group-item">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="rounded-circle" style="height: 36px; min-width: 36px; background: url('{{ $activity->user->profile_avatar_path }}') center center no-repeat; background-size: cover;"></div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <strong>{{ $activity->user->display_name }}</strong> {!! $activity->message !!}
-                                    </div>
-                                    <div class="ms-3 text-end">
-                                        <small class="text-muted">{{ $activity->created_at }}</small>
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="list-group-item py-4">
-                                <div class="text-muted">Tidak ada aktivitas dari pengguna akhir-akhir ini</div>
-                            </div>
-                        @endforelse
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::system.user-logs.index') }}">Lihat selengkapnya &raquo;</a>
-                    </div>
-                </div>
-            @endcan
+
         </div>
     </div>
 @endsection
