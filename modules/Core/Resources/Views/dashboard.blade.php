@@ -1,11 +1,19 @@
-@extends('core::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Dasbor | ')
 
 @section('navtitle', 'Dasbor')
 
-@section('content')
-    <div class="row">
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
+
+@push('nav')
+    @include('core::layouts.includes.navbar-core')
+@endpush
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-xl-12">
             <div class="card border-0">
                 <div class="card-body">
