@@ -1,133 +1,96 @@
-@extends('core::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Divisi | ')
 @section('navtitle', 'Divisi')
 
-@section('content')
-    <div class="row">
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
+
+@push('nav')
+    @include('core::layouts.includes.navbar-core')
+@endpush
+
+@php
+$trashed = request('trash') ? true : false;
+
+$columns = [
+    [
+        'label' => 'Nama',
+        'slot' => fn($department) => '
+            <strong>'.$department->name.'</strong><br>
+            <div class="text-muted">'.($department->grade->name ?? '-').'</div>
+        ',
+    ],
+
+    [
+        'label' => 'Visibilitas',
+        'slot' => fn($department) => $department->is_visible
+            ? '<i class="mdi mdi-eye-outline"></i>'
+            : '<i class="mdi mdi-eye-off-outline text-danger"></i>',
+        'class' => 'text-center',
+    ],
+
+    [
+        'label' => 'Jumlah jabatan',
+        'slot' => fn($department) => $department->positions_count.' jabatan',
+    ],
+
+    [
+        'label' => 'Dibuat pada',
+        'slot' => fn($department) => $department->created_at->diffForHumans(),
+    ],
+
+    [
+        'label' => 'Aksi',
+        'slot' => fn($department) => view('components.partial-actions', [
+            'item' => $department,
+            'routes' => [
+                'edit' => 'core::company.departments.show',
+                'destroy' => 'core::company.departments.destroy',
+                'restore' => 'core::company.departments.restore',
+            ],
+            'trashed' => $department->trashed(),
+            'useModal' => false,
+        ])->render(),
+        'class' => 'text-end',
+    ],
+];
+@endphp
+
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-md-8">
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-format-list-bulleted"></i> Daftar divisi
-                </div>
-                <div class="card-body border-top border-light">
-                    <form class="form-block row g-2" action="{{ route('core::company.departments.index') }}" method="get">
-                        <input name="trash" type="hidden" value="{{ request('trash') }}">
-                        <div class="flex-grow-1 col-auto">
-                            <input class="form-control" name="search" placeholder="Cari nama ..." value="{{ request('search') }}" onkeyup="searchTable()" />
-                        </div>
-                        <div class="col-auto">
-                            <a class="btn btn-light" href="{{ route('core::company.departments.index', request()->only('trashed', 'closed')) }}"><i class="mdi mdi-refresh"></i> <span class="d-sm-none">Reset</span></a>
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-dark"><i class="mdi mdi-magnify"></i> Cari</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-12 p-2">
-                    <div class="container">
-                        @if (Session::has('success'))
-                            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                <div class="alert alert-success">
-                                    {!! Session::get('success') !!}
-                                </div>
-                            </div>
-                        @endif 
-
-                        @if (Session::has('danger'))
-                            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                <div class="alert-danger alert">
-                                    {!! Session::get('danger') !!}
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="d-block">
-                    <div class="table-responsive">
-                        <table class="table-hover mb-0 table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nama</th>
-                                    <th class="text-center">Visibilitas</th>
-                                    <th nowrap>Jumlah jabatan</th>
-                                    <th nowrap>Dibuat pada</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($departments as $department)
-                                    <tr @if ($department->trashed()) class="table-light text-muted" @endif>
-                                        <td>{{ $loop->iteration + $departments->firstItem() - 1 }}</td>
-                                        <td nowrap>
-                                            <strong>{{ $department->name }}</strong>
-                                            <div class="text-muted">{{ $department->grade->name }}</div>
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($department->is_visible)
-                                                <i class="mdi mdi-eye-outline"></i>
-                                            @else
-                                                <i class="mdi mdi-eye-off-outline text-danger"></i>
-                                            @endif
-                                        </td>
-                                        <td nowrap>{{ $department->positions_count }} jabatan</td>
-                                        <td>{{ $department->created_at->diffForHumans() }}</td>
-                                        <td class="py-2 text-end" nowrap>
-                                            @if ($department->trashed())
-                                                @can('restore', $department)
-                                                    <form class="form-block form-confirm d-inline" action="{{ route('core::company.departments.restore', ['department' => $department->id, 'next' => url()->current()]) }}" method="post"> @csrf @method('put')
-                                                        <button class="btn btn-soft-info rounded px-2 py-1" data-bs-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-refresh"></i></button>
-                                                    </form>
-                                                @endcan
-                                            @else
-                                                @can('update', $department)
-                                                    <a class="btn btn-soft-warning rounded px-2 py-1" href="{{ route('core::company.departments.show', ['department' => $department->id, 'next' => url()->current()]) }}" method="post" data-bs-toggle="tooltip" title="Ubah"><i class="mdi mdi-pencil-outline"></i></a>
-                                                @endcan
-                                                @can('kill', $department)
-                                                    <form class="form-block form-confirm d-inline" action="{{ route('core::company.departments.destroy', ['department' => $department->id, 'next' => url()->current()]) }}" method="post"> @csrf @method('delete')
-                                                        <button class="btn btn-soft-danger rounded px-2 py-1" data-bs-toggle="tooltip" title="Hapus"><i class="mdi mdi-trash-can-outline"></i></button>
-                                                    </form>
-                                                @endcan
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            @include('components.notfound')
-                                            @if (!request('trash'))
-                                                @can('store', Modules\Core\Models\CompanyDepartment::class)
-                                                    <div class="mb-lg-5 mb-4 text-center">
-                                                        <a class="btn btn-soft-danger" href="{{ route('core::company.departments.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat departemen baru</a>
-                                                    </div>
-                                                @endcan
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {{ $departments->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$departments"
+                :columns="$columns"
+                title="Departement"
+                searchRoute="{{ route('core::company.departments.index', ['search' => request('search')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-4">
-            <div class="card card-body d-flex justify-content-between align-items-center flex-row border-0 py-4">
-                <div>
-                    <div class="display-4">{{ $departments_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Jumlah divisi</div>
+            <div class="card mb-3">
+                <div class="card-header pb-0 p-3">
+                    <h6 class="text-black">Jumlah Devisi</h6>
                 </div>
-                <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+
+                <div class="card-body">
+                    <div>
+                        <div class="display-5">{{ $departments_count }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
+                    </div>
+                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+                </div>
             </div>
-            <div class="card border-0">
-                <div class="card-body">Menu lainnya</div>
-                <div class="list-group list-group-flush border-top border-light">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="text-black">Menu lainnya</h6>
+                </div>
+
+                <div class="list-group list-group-flush">
                     @can('store', Modules\Core\Models\CompanyDepartment::class)
                         <a class="list-group-item list-group-item-action" href="{{ route('core::company.departments.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat divisi baru</a>
                     @endcan

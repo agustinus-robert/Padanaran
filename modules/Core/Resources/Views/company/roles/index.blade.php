@@ -92,14 +92,14 @@
 
                             <div class="mt-2">
                                 @can('update', $role)
-                                    <a class="btn btn-soft-primary btn-sm rounded" href="{{ route('core::company.roles.show', ['role' => $role->id]) }}">
+                                    <a class="btn btn-outline-info btn-sm rounded" href="{{ route('core::company.roles.show', ['role' => $role->id]) }}">
                                         <span class="material-symbols-rounded">visibility</span> Lihat detail
                                     </a>
                                 @endcan
                                 @can('destroy', $role)
                                     <form class="d-inline form-block form-confirm" action="{{ route('core::company.roles.destroy', ['role' => $role->id]) }}" method="POST">
                                         @csrf @method('DELETE')
-                                        <button class="btn btn-soft-danger btn-sm rounded" data-toggle="tooltip" title="Hapus permanen">
+                                        <button class="btn btn-outline-primary btn-sm rounded" data-toggle="tooltip" title="Hapus permanen">
                                             <span class="material-symbols-rounded">delete_forever</span>
                                         </button>
                                     </form>
@@ -149,12 +149,12 @@
                             <div class="mb-3">
                                 <label class="form-label">Kode</label>
 
-                                <input type="text" class="form-control border border-light rounded-2 @error('kd') is-invalid @enderror" name="kd" value="{{ old('kd') }}" required autocomplete="off">
+                                <input type="text" class="form-control p-2 border border-light rounded-2 @error('kd') is-invalid @enderror" name="kd" value="{{ old('kd') }}" required autocomplete="off">
                                 @error('kd') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Nama peran</label>
-                                <input type="text" class="form-control border border-light rounded-2 @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="off">
+                                <input type="text" class="form-control p-2 border border-light rounded-2 @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="off">
                                 @error('name') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
                             <div class="mb-0">

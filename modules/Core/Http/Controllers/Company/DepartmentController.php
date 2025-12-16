@@ -40,7 +40,7 @@ class DepartmentController extends Controller
 
         $departments = CompanyDepartment::where('grade_id', userGrades())->get();
 
-        return view('core::company.departments.create', compact('departments'));
+        return view('core::company.departments.form', compact('departments'));
     }
 
     /**
@@ -65,7 +65,8 @@ class DepartmentController extends Controller
 
         $departments = CompanyDepartment::where('grade_id', userGrades())->get();
 
-        return view('core::company.departments.show', compact('departments', 'department'));
+        return view('core::company.departments.form', compact('departments', 'department'));
+        // return view('core::company.departments.show', compact('departments', 'department'));
     }
 
     /**
