@@ -36,7 +36,7 @@
                 <form action="{{ $searchRoute }}" method="GET" class="mb-3">
                     <input type="hidden" name="trash" value="{{ $trash }}">
 
-                    <div class="row col-md-12 g-2">
+                    <div class="row col-md-12 g-2 p-2">
                         {{-- DYNAMIC SELECT --}}
                         @foreach($searchDynamic as $label => $name)
                             <div class="col-md-3 col-sm-6">
@@ -56,7 +56,7 @@
                         {{-- TEXT SEARCH --}}
                         <div class="col-md-3 col-sm-6">
                             <label for="search" class="form-label text-xs text-muted mb-1">
-                                Cari
+
                             </label>
 
                             <div class="d-flex gap-2">
