@@ -40,7 +40,7 @@ class LeaveStudentCategoryController extends Controller
 
         $categories = CompanyStudentLeaveCategory::where('grade_id', userGrades())->whereNull('parent_id')->get();
 
-        return view('core::company.services.leave-student-categories.create', compact('categories'));
+        return view('core::company.services.leave-student-categories.form', compact('categories'));
     }
 
     /**
@@ -65,7 +65,7 @@ class LeaveStudentCategoryController extends Controller
 
         $categories = CompanyStudentLeaveCategory::where('grade_id', userGrades())->whereNull('parent_id')->get();
 
-        return view('core::company.services.leave-student-categories.show', compact('categories', 'category'));
+        return view('core::company.services.leave-student-categories.form', compact('categories', 'category'));
     }
 
     /**

@@ -36,7 +36,7 @@
 
     @stack('nav')
     @if(config('theme.default') == 'material')
-        <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+        <main class="main-content d-flex flex-column min-vh-100 position-relative border-radius-lg">
             @yield('body-content')
 
             @include('layouts.component.footer')
