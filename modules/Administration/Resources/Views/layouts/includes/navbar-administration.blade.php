@@ -114,27 +114,7 @@ $menus = [
         'label' => 'Gelombang',
         'icon'  => 'waves',
         'route' => route('administration::bill.batchs.index'),
-    ],
-
-    [
-        'type' => 'dropdown',
-        'label' => 'Kelola',
-        'icon'  => 'settings',
-        'children' => array_filter([
-            auth()->user()->can('access', User::class) ? [
-                'label' => 'Pengguna',
-                'icon'  => 'person',
-                'route' => route('administration::database.manage.users.index'),
-            ] : null,
-
-            auth()->user()->can('access', Role::class) ? [
-                'label' => 'Peran',
-                'icon'  => 'badge',
-                'route' => route('administration::database.manage.roles.index'),
-            ] : null,
-        ])
-    ],
-
+    ]
 ];
 @endphp
 

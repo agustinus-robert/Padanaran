@@ -62,7 +62,7 @@ class ReferenceController extends Controller
             'type_class' => userGrades(),
             'payment_category' => $request->input('payment_category'),
             'payment_cycle' => $request->input('payment_cycle'),
-            'price' => $request->input('price'), 
+            'price' => $request->input('price'),
         ]);
 
         if($reference->save()){
@@ -74,13 +74,13 @@ class ReferenceController extends Controller
             );
 
             return redirect()->back()->with('success', 'Referensi Pembayaran <strong>'.$reference->name.'</strong> berhasil disimpan</strong>');
-        } 
+        }
 
         return redirect()->back()->with('danger', 'Referensi Pembayaran <strong>'.$reference->name.'</strong> gagal disimpan</strong>');
     }
 
     public function update(SchoolBillReference $reference, Request $request){
-        
+
         $this->authorize('update', SchoolBillReference::class);
 
         if ($reference->trashed()) abort(404);
@@ -92,7 +92,7 @@ class ReferenceController extends Controller
             'type_class' => userGrades(),
             'payment_category' => $request->input('payment_category'),
             'payment_cycle' => $request->input('payment_cycle'),
-            'price' => $request->input('price'), 
+            'price' => $request->input('price'),
             'type' => $request->input('type')
         ])){
             Auth::user()->log(

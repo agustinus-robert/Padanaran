@@ -1,11 +1,17 @@
-@extends('administration::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Gedung - ')
+@section('titleTemplate', config('account.admin.name'))
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Tagihan</li>
     <li class="breadcrumb-item active">Referensi</li>
 @endsection
+
+@push('nav')
+@include('administration::layouts.includes.navbar-administration')
+@endpush
 
 {{-- @push('styles')
 <style>
@@ -79,139 +85,90 @@
         ›
     </button>
 </div> --}}
-@section('content')
-    <div class="row">
+@php
+$trashed = false;
+$columns = [
+    [
+        'field' => 'kd',
+        'label' => 'Kode',
+        'slot' => fn ($item) => e($item->kd),
+    ],
+    [
+        'field' => 'name',
+        'label' => 'Nama',
+        'slot' => fn ($item) => e($item->name),
+    ],
+    [
+        'field' => 'batch',
+        'label' => 'Gelombang',
+        'slot' => fn ($item) => e($item->batch->name),
+    ],
+    [
+        'field' => 'payment_category',
+        'label' => 'Kategori Pembayaran',
+        'slot' => fn ($item) => e($item->payment_category->label()),
+    ],
+    [
+        'field' => 'payment_cycle',
+        'label' => 'Siklus Pembayaran',
+        'slot' => fn ($item) => e($item->payment_cycle->label()),
+    ],
+    [
+        'field' => 'price',
+        'label' => 'Harga',
+        'slot' => fn ($item) =>
+            'Rp ' . number_format($item->price, 0, ',', '.'),
+    ],
+    [
+        'field' => 'type',
+        'label' => 'Kategori',
+        'slot' => fn ($item) => e($item->type->name),
+    ],
+    [
+        'field' => 'actions',
+        'label' => '',
+        'slot' => fn ($item) => view('components.partial-actions', [
+            'item' => $item,
+            'routes' => [
+                // PENTING: edit lewat INDEX + ?edit=id
+                'index'   => 'administration::bill.references.index',
+                'destroy' => 'administration::bill.references.destroy',
+                'restore' => 'administration::bill.references.restore',
+                'kill'    => 'administration::bill.references.kill',
+            ],
+        ])->render(),
+    ],
+];
+
+$searchDynamic = [
+    'semester' => 'semester_id',
+    'gelombang' => 'batch_id',
+    'kelas' => 'class_id'
+];
+@endphp
+
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Data Referensi Pembayaran</div>
-                <div class="card-body">
-                    <form action="{{route('administration::bill.references.index')}}" method="GET">
-                        <div class="row align-items-end">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="d-block mb-2">Semester</label>
-                                    <div>
-                                        <select id="semester_id" name="semester_id" class="form-select">
-                                            <option value="">Pilih</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="d-block mb-2">Gelombang</label>
-
-                                    <div>
-                                        <select id="batch_id" name="batch_id" class="form-select">
-                                            <option value="">Pilih</option>
-                                        </select>
-                                    </div>
-                                
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="d-block mb-2">Kelas</label>
-                                    <select id="reference_id" name="class_id" class="form-select">
-                                        <option value="">Pilih</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-1">
-                                <div class="form-group">
-                                    <div>
-                                        <button class="btn btn-primary">Cari</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    {{-- <form action="{{ route('administration::bill.references.index') }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('administration::bill.references.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form> --}}
-
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
-
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
-                </div>
-
-                <div class="table-responsive">
-
-
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Gelombang</th>
-                            <th>Kategori Pembayaran</th>
-                            <th>Siklus Pembayaran</th>
-                            <th>Harga</th>
-                            <th>Kategori</th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            @forelse($bills as $bill)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $bill->kd }}</td>
-                                    <td>{{ $bill->name }}</td>
-                                    <td>{{ $bill->batch->name}}</td>
-                                    <td>{{ $bill->payment_category->label() }}</td>
-                                    <td>{{ $bill->payment_cycle->label() }}</td>
-                                    <td>{{ 'Rp ' . number_format($bill->price, 0, ',', '.') }}</td>
-                                    <td>{{ $bill->type->name }}</td>
-                                    <td nowrap>
-                                        @if ($bill->trashed())
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::bill.references.restore', ['reference' => $bill->id]) }}" method="POST"> @csrf @method('PUT')
-                                                <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                            </form>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::bill.references.kill', ['reference' => $bill->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus Permanen"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @else
-                                            <a class="btn btn-warning btn-sm" data-toggle="tooltip" title="Ubah Komponen Pembayaran" href="{{ route('administration::bill.references.index', ['edit' => $bill->id]) }}"><i class="mdi mdi-pencil"></i></a>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('administration::bill.references.destroy', ['reference' => $bill->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    <p style="margin-top: 10px; margin-left: 10px;">Jumlah Referensi Pembayaran : {{ $billCount }}</p>
-                </div>
-                <div class="card-body">
-                    {{ $bills->appends(request()->all())->links() }}
-                </div>
-            </div>
+               <x-table
+                type="material"
+                :data="$bills"
+                :isSearch="false"
+                :columns="$columns"
+                title="Referensi Tagihan"
+                :searchDynamic="$searchDynamic"
+                searchRoute="{{ route('administration::bill.references.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Kelola Referensi Pembayaran</div>
+            <div class="card mb-4 p-0">
+                <div class="card-header">
+                    <h6>Kelola Referensi Pembayaran</h6>
+                </div>
                 <div class="card-body">
                     <form class="form-block" action="{{ isset($editBill) ? route('administration::bill.references.update', $editBill->id) : route('administration::bill.references.store') }}" method="POST">
                         @csrf
@@ -220,96 +177,126 @@
                             @method('PUT')
                         @endif
 
-                        <div class="form-group mb-3">
-                            <label>Kode</label>
-                            <input type="text" class="form-control" name="kd" 
-                                value="{{ old('kd', $editBill->kd ?? '') }}" required autocomplete="off"
-                                required>
-                        </div>
+                       {{-- KODE --}}
+                      {{-- KODE --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Kode" />
+                            <x-col size="12">
+                                <x-input
+                                    name="kd"
+                                    value="{{ old('kd', $editBill->kd ?? '') }}"
+                                    autocomplete="off"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Nama</label>
-                            <input type="text" class="form-control" name="name" 
-                                value="{{ old('name', $editBill->name ?? '') }}" required autocomplete="off" 
-                                required>
-                        </div>
+                        {{-- NAMA --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Nama" />
+                            <x-col size="12">
+                                <x-input
+                                    name="name"
+                                    value="{{ old('name', $editBill->name ?? '') }}"
+                                    autocomplete="off"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Gelombang</label>
-                            <select name="batch_id" class="form-select" required>
-                                <option value="">Pilih</option>
-                                @foreach($academicBatch as $batch)
-                                    <option value="{{ $batch->id }}"
-                                         @selected(old('batch_id', $editBill->batch_id ?? null) == $batch->id)>
-                                        {{$batch->semesters->academic->name }}
-                                        {{$batch->semesters->name }} -
-                                        {{$batch->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- GELOMBANG --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Gelombang" />
+                            <x-col size="12">
+                                <x-select
+                                    name="batch_id"
+                                    placeholder="Pilih"
+                                    :value="old('batch_id', $editBill->batch_id ?? null)"
+                                    :options="$academicBatch->map(fn($batch) => [
+                                        'value' => $batch->id,
+                                        'label' =>
+                                            $batch->semesters->academic->name.' '.
+                                            $batch->semesters->name.' - '.
+                                            $batch->name
+                                    ])"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        {{-- <div class="form-group mb-3">
-                            <label>Jenjang Pendidikan</label>
-                            <select name="type_class" class="form-select" required>
-                                <option value="">Pilih</option>
-                                @foreach(\Modules\Core\Enums\StudentEducationEnum::cases() as $education)
-                                    <option value="{{ $education->value }}" @selected(old('payment_category', $editBill->type_class->value ?? null) == $education->value)>
-                                         {{ $education->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div> --}}
+                        {{-- PAKET PEMBAYARAN --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Paket Pembayaran" />
+                            <x-col size="12">
+                                <x-select
+                                    name="payment_category"
+                                    placeholder="Pilih"
+                                    :value="old('payment_category', $editBill->payment_category->value ?? null)"
+                                    :options="collect(\Modules\Core\Enums\BillReferencesCategoryEnum::cases())
+                                        ->map(fn($p) => [
+                                            'value' => $p->value,
+                                            'label' => $p->label()
+                                        ])"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Paket Pembayaran</label>
-                            <select class="form-select" name="payment_category" required>
-                                <option value="">Pilih</option>
-                                @foreach(\Modules\Core\Enums\BillReferencesCategoryEnum::cases() as $package)
-                                    <option value="{{ $package->value }}" @selected(old('payment_category', $editBill->payment_category->value ?? null) == $package->value)>
-                                        
-                                         {{ $package->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- SIKLUS PEMBAYARAN --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Siklus Pembayaran" />
+                            <x-col size="12">
+                                <x-select
+                                    name="payment_cycle"
+                                    placeholder="Pilih"
+                                    :value="old('payment_cycle', $editBill->payment_cycle->value ?? null)"
+                                    :options="collect(\Modules\Core\Enums\PaymentCycleEnum::cases())
+                                        ->map(fn($c) => [
+                                            'value' => $c->value,
+                                            'label' => $c->label()
+                                        ])"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Siklus Pembayaran</label>
-                            <select class="form-select" name="payment_cycle" required>
-                            <option value="">Pilih</option>
-                            @foreach(\Modules\Core\Enums\PaymentCycleEnum::cases() as $cycle)
-                                <option value="{{ $cycle->value }}" @selected(old('payment_cycle', $editBill->payment_cycle->value ?? null) == $cycle->value)>
-                                    {{ $cycle->label() }}
-                                </option>
-                            @endforeach
-                            </select>
-                        </div>
+                        {{-- TIPE --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Tipe" />
+                            <x-col size="12">
+                                <x-select
+                                    name="type"
+                                    placeholder="Pilih"
+                                    :value="old('type', $editBill->type->value ?? null)"
+                                    :options="collect(\Modules\Core\Enums\BillCategoryEnum::cases())
+                                        ->map(fn($t) => [
+                                            'value' => $t->value,
+                                            'label' => $t->label()
+                                        ])"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Tipe</label>
-                            <select class="form-select" name="type" required>
-                                <option value="">Pilih</option>
-                                @foreach(\Modules\Core\Enums\BillCategoryEnum::cases() as $case)
-                                    <option value="{{ $case->value }}" 
-                                            @selected(old('type', $editBill->type->value ?? null) == $case->value)>
-                                        {{ $case->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- HARGA --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Harga" />
+                            <x-col size="12">
+                                <x-input
+                                    type="number"
+                                    name="price"
+                                    value="{{ old('price', $editBill->price ?? '') }}"
+                                    autocomplete="off"
+                                    required
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label class="d-block mb-2">Harga</label>
-                            <input type="number" class="form-control" name="price" 
-                            value="{{ old('price', $editBill->price ?? '') }}" autocomplete="off"
-                            required>
-                        </div>
-                        
 
                         <div class="form-group mb-0">
-                            <button class="btn btn-primary">
+                            <x-btn variant="success">
                                 {{ isset($editBill) ? 'Update' : 'Simpan' }}
-                            </button>
+                            </x-btn>
                             @if(isset($editBill))
                                 <a href="{{ route('administration::bill.references.index') }}" class="btn btn-secondary">Batal</a>
                             @endif
@@ -318,12 +305,12 @@
 
                 </div>
             </div>
-            <div class="card">
+            <div class="card mt-2">
                 <div class="card-header">
                     <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
                 </div>
                 <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-danger" href="{{ route('administration::facility.buildings.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan Referensi Pembayaran yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
+                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::facility.buildings.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan Referensi Pembayaran yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
                 </div>
             </div>
         </div>
@@ -350,9 +337,9 @@
         // Event: pilih semester -> ambil batch berdasarkan semester
         semesterSelect.addEventListener("change", function() {
             let semesterId = this.value;
-            batchSelect.innerHTML = '<option value="">Pilih</option>'; 
-            referenceSelect.innerHTML = '<option value="">Pilih</option>'; 
-            
+            batchSelect.innerHTML = '<option value="">Pilih</option>';
+            referenceSelect.innerHTML = '<option value="">Pilih</option>';
+
             if (!semesterId) return;
 
             fetch(`{{ route('api::administration.batches') }}?semester_id=${semesterId}`)

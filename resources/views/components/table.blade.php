@@ -5,6 +5,8 @@
     'title' => 'Tabel',
     'searchRoute' => '',
     'trash' => false,
+    'isSearch' => true,
+    'searchDynamic' => [], // <<< INI
 ])
 
 @php
@@ -28,20 +30,67 @@
     <form action="{{ $searchRoute }}" method="GET" class="mb-2 d-flex align-items-center"
         style="border:1px solid #ced4da; border-radius:6px; padding:2px;">
         <input type="hidden" name="trash" value="{{ $trash }}">
-        <input type="text" name="search"
-            value="{{ request('search') }}"
-            placeholder="Cari..."
-            style="border:none; outline:none; flex:1; padding:2px 6px; font-size:12px; background:transparent; border-radius:6px;">
 
-        <button type="submit" title="Cari"
-            style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid #007bff; background:#007bff; color:white; font-size:14px; margin-left:3px;">
-            <i class="material-symbols-rounded" style="font-size:14px;">search</i>
-        </button>
+        @if(count($searchDynamic) > 0)
+            @if($searchRoute)
+                <form action="{{ $searchRoute }}" method="GET" class="mb-3">
+                    <input type="hidden" name="trash" value="{{ $trash }}">
 
-        <a href="{{ $searchRoute }}" title="Refresh"
-            style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid #6c757d; background:white; color:#6c757d; font-size:14px; margin-left:3px;">
-            <i class="material-symbols-rounded" style="font-size:14px;">refresh</i>
-        </a>
+                    <div class="row col-md-12 g-2">
+                        {{-- DYNAMIC SELECT --}}
+                        @foreach($searchDynamic as $label => $name)
+                            <div class="col-md-3 col-sm-6">
+                                <label for="{{ $name }}" class="form-label text-xs text-muted mb-1">
+                                    {{ ucfirst($label) }}
+                                </label>
+                                <select
+                                    name="{{ $name }}"
+                                    id="{{ $name }}"
+                                    class="form-select form-select-sm"
+                                >
+                                    <option value="">Pilih</option>
+                                </select>
+                            </div>
+                        @endforeach
+
+                        {{-- TEXT SEARCH --}}
+                        <div class="col-md-3 col-sm-6">
+                            <label for="search" class="form-label text-xs text-muted mb-1">
+                                Cari
+                            </label>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-sm btn-primary w-100">
+                                    Cari
+                                </button>
+                                <a href="{{ $searchRoute }}" class="btn btn-sm btn-outline-secondary w-100">
+                                    Reset
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+
+            @endif
+        @endif
+
+        @if($isSearch == true)
+            <input type="text" name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari..."
+                style="border:none; outline:none; flex:1; padding:2px 6px; font-size:12px; background:transparent; border-radius:6px;">
+
+            <button type="submit" title="Cari"
+                style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid #007bff; background:#007bff; color:white; font-size:14px; margin-left:3px;">
+                <i class="material-symbols-rounded" style="font-size:14px;">search</i>
+            </button>
+
+            <a href="{{ $searchRoute }}" title="Refresh"
+                style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid #6c757d; background:white; color:#6c757d; font-size:14px; margin-left:3px;">
+                <i class="material-symbols-rounded" style="font-size:14px;">refresh</i>
+            </a>
+        @endif
     </form>
 @endif
         {{-- Alerts --}}
