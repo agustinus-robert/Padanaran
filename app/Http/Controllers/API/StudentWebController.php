@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Modules\Administration\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Modules\Academic\Models\Student;
+use Illuminate\Support\Facades\Log;
 
 class StudentWebController extends Controller
 {
