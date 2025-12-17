@@ -65,10 +65,10 @@ class LivewireComponentServiceProvider extends ServiceProvider
     {
         $filesystem = new Filesystem();
 
-        Log::info($namespace);
+       // Log::info($namespace);
 
         if (!$filesystem->isDirectory($directory)) {
-            Log::info(!$filesystem->isDirectory($directory) ? 'break in this line' : 'next to function');
+       //     Log::info(!$filesystem->isDirectory($directory) ? 'break in this line' : 'next to function');
             return;
         }
 
@@ -92,7 +92,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
      */
     private function registerSingleComponent(string $class, string $namespace, string $aliasPrefix): void
     {
-        Log::info($class);
+      //  Log::info($class);
 
         $alias = $aliasPrefix . Str::of($class)
             ->after($namespace . '\\')
@@ -106,6 +106,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
             : Livewire::component($alias, $class);
 
         // Inside the registerComponentDirectory method
-        Log::info('Registering Livewire component: ' . $alias . ' => ' . $class);
+       // Log::info('Registering Livewire component: ' . $alias . ' => ' . $class);
     }
 }
