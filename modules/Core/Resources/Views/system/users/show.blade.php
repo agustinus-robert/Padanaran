@@ -1,19 +1,20 @@
-@extends('core::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Pengguna | ')
 @section('navtitle', 'Pengguna')
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
-@section('content')
-    <div class="d-flex align-items-center mb-4">
-        <a class="text-decoration-none" href="{{ request('next', route('core::system.users.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-        <div class="ms-4">
-            <h2 class="mb-1">Lihat detail pengguna</h2>
-            <div class="text-secondary">Menampilkan informasi pengguna, detail kontak, alamat, dan peran.</div>
-        </div>
-    </div>
-    <div class="row">
+
+@push('nav')
+    @include('core::layouts.includes.navbar-core')
+@endpush
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-sm-4">
-            <div class="card border-0">
+            <div class="card mb-3">
                 <div class="card-body text-center">
                     <div class="py-4">
                         <img class="rounded-circle" src="{{ asset('img/default-avatar.svg') }}" alt="" width="128">
@@ -35,11 +36,12 @@
                     </form>
                 </div>
             </div>
-            <div class="card border-0">
-                <div class="card-body">
-                    <h4 class="mb-1">Info akun</h4>
+            <div class="card">
+                <div class="card-header">
+                    <h6>Info akun</h6>
                     <p class="text-muted mb-2">Informasi tentang akun {{ $user->display_name }}</p>
                 </div>
+
                 <div class="list-group list-group-flush">
                     @foreach ([
             'Bergabung pada' => $user->created_at->diffForHumans(),
@@ -58,7 +60,7 @@
             </div>
         </div>
         <div class="col-sm-8">
-            <div class="card border-0">
+            <div class="card">
                 <div class="card-body text-center">
                     <ul class="nav nav-pills">
                         <li class="nav-item"> <a class="nav-link @if (request('page') == 'profile') active text-dark bg-light @endif" href="{{ route('core::system.users.show', ['user' => $user->id, 'page' => 'profile', 'next' => request('next')]) }}">Profil</a> </li>
@@ -77,22 +79,34 @@
                     @if (request('page') == 'username')
                         <form class="form-block" action="{{ route('core::system.users.update.username', ['user' => $user->id]) }}" method="POST"> @csrf @method('PUT')
                             <div class="row">
-                                <div class="col-md-10 col-lg-8">
-                                    <div class="required mb-3">
-                                        <label>Username</label>
+                                <x-input-group :isRow="true">
+                                    <x-label value="Username" required />
+
+                                    <x-col size="6">
                                         <div class="input-group">
-                                            <span class="input-group-text">@</span>
-                                            <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username', $user->username) }}" required>
+                                            <x-input
+                                                name="username"
+                                                value="{{ old('username', $user->username) }}"
+                                                required
+                                            />
+
+                                            <span class="border p-2">@</span>
                                         </div>
-                                        <small class="form-text text-muted">Nama unik pengguna (bukan nama lengkap), digunakan untuk login, terdiri dari huruf kecil, titik, dan angka, tanpa spasi.</small>
-                                        @error('username')
-                                            <small class="text-danger"> {{ $message }} </small>
-                                        @enderror
-                                    </div>
-                                </div>
+
+                                        <small class="form-text text-muted">
+                                            Nama unik pengguna (bukan nama lengkap), digunakan untuk login,
+                                            terdiri dari huruf kecil, titik, dan angka, tanpa spasi.
+                                        </small>
+                                    </x-col>
+                                </x-input-group>
                             </div>
+
                             <div class="mb-0 mb-3">
-                                <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-check"></i> Simpan</button>
+                                <x-btn variant="dark">
+                                    <span class="material-symbols-rounded">
+                                        check
+                                    </span> Simpan
+                                </x-btn>
                             </div>
                         </form>
                     @endif
