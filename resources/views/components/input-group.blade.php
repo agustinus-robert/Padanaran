@@ -4,7 +4,8 @@
     'labelCol' => '3',
     'slotCol' => '7',
     'isRow' => false,
-    'isForm' => false
+    'isForm' => false,
+    'extra' => ''
 ])
 
 @if($isForm == false)

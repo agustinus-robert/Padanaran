@@ -1,181 +1,203 @@
-@extends('core::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Komponen gaji | ')
 @section('navtitle', 'Komponen gaji')
 
-@section('content')
-    <div class="row">
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
+
+@push('nav')
+    @include('core::layouts.includes.navbar-core')
+@endpush
+
+@php
+    $trashed = null;
+    $columns = [
+        [
+            'label' => 'Kategori slip',
+            'slot'  => fn($component) => "<div>{$component->slip->name}</div><div class='small text-muted'>{$component->category->name}</div>",
+            'nowrap' => true,
+        ],
+        [
+            'label' => 'Nama komponen',
+            'slot'  => fn($component) => "<strong>{$component->name}</strong>",
+        ],
+        [
+            'label' => 'Operasi',
+            'slot'  => fn($component) => $component->operate->badge(),
+            'class' => 'text-center',
+        ],
+        [
+            'label' => 'Satuan',
+            'slot'  => fn($component) => implode(' - ', array_filter([$component->unit->prefix(), $component->unit->suffix()])),
+            'class' => 'text-muted text-center',
+        ],
+        [
+            'label' => 'Aksi',
+            'slot'  => function($component) {
+                if($component->trashed()) {
+                    return view('components.partial-actions', [
+                        'item' => $component,
+                        'routes' => [
+                            'restore' => 'core::company.salaries.components.restore',
+                        ],
+                        'trashed' => true,
+                        'useModal' => false,
+                    ])->render();
+                }
+
+                return view('components.partial-actions', [
+                    'item' => $component,
+                    'routes' => [
+                        'edit' => 'core::company.salaries.components.show',
+                        'destroy' => 'core::company.salaries.components.destroy',
+                    ],
+                    'trashed' => false,
+                    'useModal' => false,
+                ])->render();
+            },
+            'class' => 'text-end',
+            'nowrap' => true,
+        ],
+    ];
+@endphp
+
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="container-fluid row">
         <div class="col-md-8">
-            <section>
-                <div class="card border-0">
-                    <div class="card-body">
-                        <i class="mdi mdi-format-list-bulleted"></i> Daftar komponen gaji
-                    </div>
-                    <div class="card-body border-top border-light">
-                        <form class="form-block row g-2" action="{{ route('core::company.salaries.components.index') }}" method="get">
-                            <input name="trash" type="hidden" value="{{ request('trash') }}">
-                            <div class="flex-grow-1 col-auto">
-                                <input class="form-control" name="search" placeholder="Cari nama ..." value="{{ request('search') }}" />
-                            </div>
-                            <div class="col-auto">
-                                <a class="btn btn-light" href="{{ route('core::company.salaries.components.index', request()->only('trashed', 'closed')) }}"><i class="mdi mdi-refresh"></i> <span class="d-sm-none">Reset</span></a>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-dark"><i class="mdi mdi-magnify"></i> Cari</button>
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <div class="col-12 p-2">
-                        <div class="container">
-                            @if (Session::has('success'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert alert-success">
-                                        {!! Session::get('success') !!}
-                                    </div>
-                                </div>
-                            @endif 
-
-                            @if (Session::has('danger'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert-danger alert">
-                                        {!! Session::get('danger') !!}
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table-hover mb-0 table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th nowrap>Kategori slip</th>
-                                    <th nowrap>Nama komponen</th>
-                                    <th class="text-center">Operasi</th>
-                                    <th class="text-center">Satuan</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($components as $component)
-                                    <tr @if ($component->trashed()) class="table-light text-muted" @endif>
-                                        <td>{{ $loop->iteration + $components->firstItem() - 1 }}</td>
-                                        <td nowrap>
-                                            <div>{{ $component->slip->name }}</div>
-                                            <div class="small text-muted">{{ $component->category->name }}</div>
-                                        </td>
-                                        <td><strong>{{ $component->name }}</strong></td>
-                                        <td class="text-center">{!! $component->operate->badge() !!}</td>
-                                        <td class="text-muted text-center">{{ implode(' - ', array_filter([$component->unit->prefix(), $component->unit->suffix()])) }}</td>
-                                        <td class="py-2 text-end" nowrap>
-                                            @if ($component->trashed())
-                                                @can('restore', $component)
-                                                    <form class="form-block form-confirm d-inline" action="{{ route('core::company.salaries.components.restore', ['component' => $component->id, 'next' => url()->current()]) }}" method="post"> @csrf @method('put')
-                                                        <button class="btn btn-soft-info rounded px-2 py-1" data-bs-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-refresh"></i></button>
-                                                    </form>
-                                                @endcan
-                                            @else
-                                                @can('update', $component)
-                                                    <a class="btn btn-soft-warning rounded px-2 py-1" href="{{ route('core::company.salaries.components.show', ['component' => $component->id, 'next' => url()->current()]) }}" method="post" data-bs-toggle="tooltip" title="Ubah"><i class="mdi mdi-pencil-outline"></i></a>
-                                                @endcan
-                                                @can('kill', $component)
-                                                    <form class="form-block form-confirm d-inline" action="{{ route('core::company.salaries.components.destroy', ['component' => $component->id, 'next' => url()->current()]) }}" method="post"> @csrf @method('delete')
-                                                        <button class="btn btn-soft-danger rounded px-2 py-1" data-bs-toggle="tooltip" title="Hapus"><i class="mdi mdi-trash-can-outline"></i></button>
-                                                    </form>
-                                                @endcan
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            @include('components.notfound')
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-body">
-                        {{ $components->appends(request()->all())->links() }}
-                    </div>
-                </div>
-            </section>
+            <x-table
+                :isSearch="true"
+                type="material"
+                :data="$components"
+                :columns="$columns"
+                title="Daftar Komponen Gaji"
+                searchRoute="{{ route('core::company.salaries.components.index', ['search' => request('search')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-4">
-            <div class="card card-body d-flex justify-content-between align-items-center flex-row border-0 py-4">
-                <div>
-                    <div class="display-4">{{ $components_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Jumlah komponen gaji</div>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Jumlah komponen gaji</h6>
                 </div>
+
+                <div class="card-body">
+                    <div class="display-4">{{ $components_count }}</div>
+                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
+                </div>
+
                 <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
             </div>
             @can('store', Modules\Core\Models\CompanySalarySlipComponent::class)
-                <div class="card border-0">
-                    <div class="card-body"><i class="mdi mdi-plus"></i> Tambah komponen gaji baru</div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Tambah komponen gaji baru</h6>
+                    </div>
                     <div class="card-body border-top">
                         <form class="form-block" action="{{ route('core::company.salaries.components.store', ['next' => url()->full()]) }}" method="post"> @csrf
-                            <div class="mb-3">
-                                <label class="form-label required" for="ctg_id">Kategori</label>
-                                <select name="ctg_id" id="ctg_id" class="form-select @error('ctg_id') is-invalid @enderror" required>
-                                    <option value="">-- Pilih --</option>
-                                    @foreach ($slips as $slip)
-                                        <optgroup label="{{ $slip->name }}">
-                                            @forelse($slip->categories as $category)
-                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                            @empty
-                                                <option value="" disabled>-- Tidak memiliki kategori --</option>
-                                            @endforelse
-                                        </optgroup>
-                                    @endforeach
-                                </select>
-                                @error('ctg_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label required" for="unit">Satuan</label>
-                                <select name="unit" id="unit" class="form-select @error('unit') is-invalid @enderror" required>
-                                    <option value="">-- Pilih --</option>
-                                    @foreach ($units as $unit)
-                                        <option value="{{ $unit->value }}">{{ $unit->label() }} ({{ implode(' ', array_filter([$unit->prefix(), $unit->suffix()])) }})</option>
-                                    @endforeach
-                                </select>
-                                @error('unit')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="operate">Jenis operasi</label>
-                                <select name="operate" id="operate" class="form-select @error('operate') is-invalid @enderror">
-                                    @foreach ($operates as $operate)
-                                        <option value="{{ $operate->value }}">{{ $operate->label() }}</option>
-                                    @endforeach
-                                </select>
-                                @error('operate')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label required" for="name">Nama komponen</label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required>
-                                @error('name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                           @php
+                                // Slips tetap array atau collection
+                                $slips = collect($slips);
+
+                                $categoryOptions = $slips->map(fn($slip) => [
+                                    'label' => $slip->name,
+                                    'children' => collect($slip->categories ?? [])->map(fn($cat) => [
+                                        'value' => $cat->id,
+                                        'label' => $cat->name,
+                                    ])->toArray(),
+                                ])->toArray();
+
+                                // Units enum/object
+                                $unitOptions = collect($units)->map(fn($unit) => [
+                                    'value' => $unit->value,   // akses property enum
+                                    'label' => $unit->label() . ' (' . implode(' ', array_filter([$unit->prefix(), $unit->suffix()])) . ')'
+                                ])->toArray();
+
+                                // Operates enum/object
+                                $operateOptions = collect($operates)->map(fn($op) => [
+                                    'value' => $op->value,
+                                    'label' => $op->label()
+                                ])->toArray();
+                            @endphp
+
+
+
+                            {{-- Kategori --}}
+                            <x-input-group :isRow="true" required>
+                                <x-label value="Kategori" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="ctg_id"
+                                        :options="$categoryOptions"
+                                        placeholder="-- Pilih --"
+                                        required
+                                        @class(['is-invalid' => $errors->has('ctg_id')])
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- Satuan --}}
+                            <x-input-group :isRow="true" required>
+                                <x-label value="Satuan" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="unit"
+                                        :options="$unitOptions"
+                                        placeholder="-- Pilih --"
+                                        required
+                                        @class(['is-invalid' => $errors->has('unit')])
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- Jenis operasi --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Jenis operasi" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="operate"
+                                        :options="$operateOptions"
+                                        placeholder="-- Pilih --"
+                                        @class(['is-invalid' => $errors->has('operate')])
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- Nama komponen --}}
+                            <x-input-group :isRow="true" required>
+                                <x-label value="Nama komponen" />
+                                <x-col size="12">
+                                    <x-input
+                                        type="text"
+                                        name="name"
+                                        :value="old('name')"
+                                        required
+                                        @class(['is-invalid' => $errors->has('name')])
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+
                             <div>
-                                <button class="btn btn-soft-danger"><i class="mdi mdi-check"></i> Simpan</button>
+                                <x-btn class="mt-3" type="submit" variant="dark">
+                                        <span class="material-symbols-rounded">check</span> Simpan
+                                </x-btn>
                             </div>
                         </form>
                     </div>
                 </div>
             @endcan
-            <div class="card border-0">
-                <div class="card-body">Menu lainnya</div>
-                <div class="list-group list-group-flush border-top border-light">
-                    <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.components.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat komponen gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+            <div class="card">
+                <div class="card-header">
+                    <h6>Menu lainnya</h6>
+                </div>
+
+                <div class="card-body">
+                    <div class="list-group list-group-flush border-top border-light">
+                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.components.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat komponen gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -35,7 +35,7 @@ class TemplateController extends Controller
     public function create()
     {
         $defaults = collect(setting('cmp_payroll_default_components'));
-        return view('core::company.salaries.templates.create', [
+        return view('core::company.salaries.templates.form', [
             'defaults' => $defaults,
             'slips' => CompanySalarySlip::with('categories.components')->where('grade_id', userGrades())->get(),
             'items' => CompanySalarySlipComponent::where('grade_id', userGrades())->get(),
@@ -71,7 +71,7 @@ class TemplateController extends Controller
     public function show(CompanySalaryTemplate $template)
     {
         $this->authorize('update', $template);
-        return view('core::company.salaries.templates.show', [
+        return view('core::company.salaries.templates.form', [
             'template'   => $template,
             'components' => collect($template['components']),
             'slips'      => CompanySalarySlip::with('categories.components')->where('grade_id', userGrades())->get(),

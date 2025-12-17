@@ -1,44 +1,72 @@
-@extends('core::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Ubah kategori gaji | ')
 @section('navtitle', 'Ubah kategori gaji')
+@section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
-@section('content')
-<div class="row justify-content-center">
-    <div class="col-xxl-8 col-xl-10">
-        <div class="d-flex align-items-center mb-4">
-            <a class="text-decoration-none" href="{{ request('next', route('core::company.salaries.slips.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-            <div class="ms-4">
-                <h2 class="mb-1">Ubah kategori gaji</h2>
-                <div class="text-secondary">Silakan isi formulir di bawah ini untuk memperbarui informasi slip gaji {{ $slip->name }}</div>
-            </div>
-        </div>
+@push('nav')
+    @include('core::layouts.includes.navbar-core')
+@endpush
+
+@section('body-content')
+
+@include('components.navbar-admin')
+
+<div class="row container-fluid justify-content-center">
+    <div class="col-xxl-6 col-xl-10">
         <div class="card mb-4 border-0">
-            <div class="card-body">
+            <div class="card-header bg-gradient-dark text-white">
+                Ubah Slip
+            </div>
+
+            <div class="card-body shadow-sm">
                 <form class="form-block" action="{{ route('core::company.salaries.slips.update', ['slip' => $slip->id, 'next' => request('next')]) }}" method="POST"> @csrf @method('PUT')
-                    <div class="mb-3">
-                        <label class="form-label" for="az">Index urutan</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control @error('az') is-invalid @enderror" name="az" value="{{ old('az', $slip->az) }}" required>
-                            <div class="input-group-text">#</div>
-                        </div>
-                        @error('az')
-                        <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="name">Nama slip</label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $slip->name) }}" required>
-                        @error('name')
-                        <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                    <div class="mb-3 row">
-                        <div class="col-lg-8 offset-lg-4 offset-xl-3">
-                            <button class="btn btn-soft-danger"><i class="mdi mdi-check"></i> Perbarui</button>
-                            <a class="btn btn-ghost-light text-dark" href="{{ request('next', route('core::company.salaries.categories.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
-                        </div>
-                    </div>
+                    <x-input-group :isRow="true" required>
+                        <x-label value="Index urutan" />
+                        <x-col size="12">
+                            <div class="input-group">
+                                <x-input
+                                    type="number"
+                                    name="az"
+                                    :value="old('az', $slip->az)"
+                                    required
+                                    @class(['is-invalid' => $errors->has('az')])
+                                />
+                                <span class="p-2 border text-center" style="width:35px;">#</span>
+                            </div>
+                            @error('az')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </x-col>
+                    </x-input-group>
+
+                    <x-input-group :isRow="true" required>
+                        <x-label value="Nama slip" />
+                        <x-col size="12">
+                            <x-input
+                                type="text"
+                                name="name"
+                                :value="old('name', $slip->name)"
+                                required
+                                @class(['is-invalid' => $errors->has('name')])
+                            />
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </x-col>
+                    </x-input-group>
+
+                    <x-input-group :isRow="false">
+                        <x-col size="12" class="d-flex gap-2 mt-">
+                            <x-btn type="success" variant="dark">
+                                <span class="material-symbols-rounded">check</span> Perbarui
+                            </x-btn>
+                            <a class="btn btn-light text-dark" href="{{ request('next', route('core::company.salaries.categories.index')) }}">
+                                <i class="mdi mdi-arrow-left"></i> Kembali
+                            </a>
+                        </x-col>
+                    </x-input-group>
+
                 </form>
             </div>
         </div>

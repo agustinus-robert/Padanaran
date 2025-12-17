@@ -44,12 +44,35 @@
         @endif
 
         @foreach($options as $opt)
-            <option
-                value="{{ $opt['value'] }}"
-                @selected(in_array($opt['value'], $values, true))
-            >
-                {{ $opt['label'] }}
-            </option>
+            @if(isset($opt['children']))
+                <optgroup label="{{ $opt['label'] }}">
+                    @foreach($opt['children'] as $child)
+                        <option
+                            value="{{ $child['value'] }}"
+                            @selected(in_array($child['value'], $values, true))
+                            @foreach($child as $attr => $val)
+                                @if(!in_array($attr, ['value','label','children']))
+                                    {{ $attr }}="{{ $val }}"
+                                @endif
+                            @endforeach
+                        >
+                            {{ $child['label'] }}
+                        </option>
+                    @endforeach
+                </optgroup>
+            @else
+                <option
+                    value="{{ $opt['value'] }}"
+                    @selected(in_array($opt['value'], $values, true))
+                    @foreach($opt as $attr => $val)
+                        @if(!in_array($attr, ['value','label','children']))
+                            {{ $attr }}="{{ $val }}"
+                        @endif
+                    @endforeach
+                >
+                    {{ $opt['label'] }}
+                </option>
+            @endif
         @endforeach
     </select>
 
