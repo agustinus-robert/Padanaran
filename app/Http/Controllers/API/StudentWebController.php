@@ -21,12 +21,16 @@ class StudentWebController extends Controller
             . "trashed=" . ($trashed ?: 'false');
 
         $students = Cache::tags(['students'])->remember($cacheKey, now()->addMinutes(60), function () use ($trashed, $search, $gradeId) {
-            return Student::with('user')
+            Log::info('sedang membuat cache');
+            $std = Student::with('user')
                 ->where('grade_id', $gradeId)
                 ->when($search, fn($query) => $query->whereHas('user', fn($q) => $q->where('name', 'like', "%{$search}%")))
                 ->when($trashed, fn($query) => $query->onlyTrashed())
                 ->orderByDesc('id')
                 ->get(['id', 'user_id']);
+
+            Log::info('cache berhasil dibuat');
+            return $std;
         });
 
         $students = $students->map(fn($student) => [
@@ -34,6 +38,7 @@ class StudentWebController extends Controller
             'name' => $student->user->name ?? null,
         ]);
 
+        Log::info('cache di load');
         return response()->json([
             'data' => $students,
             'count' => $students->count(),
