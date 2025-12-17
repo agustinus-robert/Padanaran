@@ -40,7 +40,7 @@ class MomentController extends Controller
         $this->authorize('store', CompanyMoment::class);
         $religions = ReligionEnum::cases();
         $types = MomentTypeEnum::cases();
-        return view('core::company.moments.create', compact('types', 'religions'));
+        return view('core::company.moments.form', compact('types', 'religions'));
     }
 
     /**
@@ -62,7 +62,7 @@ class MomentController extends Controller
         $this->authorize('update', $moment);
         $religions = ReligionEnum::cases();
         $types = MomentTypeEnum::cases();
-        return view('core::company.moments.show', compact('moment', 'types', 'religions'));
+        return view('core::company.moments.form', compact('moment', 'types', 'religions'));
     }
 
     /**

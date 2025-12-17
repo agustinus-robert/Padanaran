@@ -28,7 +28,7 @@ class UserLogController extends Controller
                     ->search($request->get('search'))
                     ->whenUserId($request->get('user'))
                     ->paginate($request->get('limit', 10));
-        
+
         return view('core::system.user-logs.index', compact('logs', 'user'));
     }
 

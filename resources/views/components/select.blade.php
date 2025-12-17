@@ -24,6 +24,7 @@
 
 <div style="position:relative;width:100%;">
     <select
+        class="py-2"
         @if($selectName) name="{{ $selectName }}" @endif
         @if($id) id="{{ $id }}" @endif
         {{ $attributes->merge(['class' => $error]) }}
@@ -34,7 +35,7 @@
             width:100%;
             background:#fff;
             color:#000;
-            padding:0.35rem 1.5rem 0.25rem 0.5rem;
+            padding:0.5rem;
             border:1px solid #ced4da;
             border-radius:0.375rem;
         "

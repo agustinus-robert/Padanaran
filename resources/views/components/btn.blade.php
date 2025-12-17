@@ -1,25 +1,49 @@
 @props([
     'type' => 'button',
-    'variant' => 'dark',  // dark, primary, success, danger, etc.
+    'variant' => 'dark',   // dark, primary, success, danger, etc.
+    'size' => 'md',        // sm | md | lg
     'start' => null,
-    'end' => null
+    'end' => null,
 ])
 
 @php
-    $base = "btn bg-gradient-$variant";
+    $sizes = [
+        'sm' => 'btn-sm px-2',
+        'md' => 'px-3',
+        'lg' => 'btn-lg',
+    ];
+
+    $lineHeight = match ($size) {
+        'sm' => '1.25',
+        'md' => '1.35',
+        'lg' => '1.5',
+        default => '1.35',
+    };
+
+    $base = "btn bg-gradient-$variant {$sizes[$size]}";
 @endphp
 
-<button type="{{ $type }}" {{ $attributes->merge(['class' => $base]) }}>
-    {{-- Start slot --}}
-    @if($start)
-        {!! $start !!}
+<button
+    type="{{ $type }}"
+    style="line-height: {{ $lineHeight }};"
+    {{ $attributes->merge(['class' => $base]) }}
+>
+    {{-- Start --}}
+    @if ($start)
+        <span class="me-1 d-inline-flex align-items-center">
+            {!! $start !!}
+        </span>
     @endif
 
-    {{-- Main slot --}}
-    {{ $slot }}
+    {{-- Label --}}
+    <span class="d-inline-flex align-items-center">
+        {{ $slot }}
+    </span>
 
-    {{-- End slot --}}
-    @if($end)
-        {!! $end !!}
+    {{-- End --}}
+    @if ($end)
+        <span class="ms-1 d-inline-flex align-items-center">
+            {!! $end !!}
+        </span>
     @endif
 </button>
