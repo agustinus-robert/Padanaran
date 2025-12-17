@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Account\Models\User;
 use App\Models\References\ProvinceRegencyDistrict;
+ use App\Http\Controllers\API\StudentWebController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,3 +52,7 @@ Route::get('/getUsers', function (Request $request) {
 
     return response()->json($users);
 })->name('api.getUsers');
+
+
+
+Route::get('/students', [StudentWebController::class, 'index'])->name('student.list');
