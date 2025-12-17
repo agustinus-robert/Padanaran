@@ -40,7 +40,7 @@ class VacationCategoryController extends Controller
 
         $types = VacationTypeEnum::cases();
 
-        return view('core::company.services.vacation-categories.create', compact('types'));
+        return view('core::company.services.vacation-categories.form', compact('types'));
     }
 
     /**
@@ -66,7 +66,7 @@ class VacationCategoryController extends Controller
 
         $types = VacationTypeEnum::cases();
 
-        return view('core::company.services.vacation-categories.show', compact('category', 'types'));
+        return view('core::company.services.vacation-categories.form', compact('category', 'types'));
     }
 
     /**

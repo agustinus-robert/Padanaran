@@ -37,7 +37,7 @@ class OutworkCategoryController extends Controller
     {
         $this->authorize('store', CompanyOutworkCategory::class);
 
-        return view('core::company.services.outwork-categories.create');
+        return view('core::company.services.outwork-categories.form');
     }
 
     /**
@@ -60,7 +60,7 @@ class OutworkCategoryController extends Controller
 
         $categories = CompanyOutworkCategory::where('grade_id', userGrades())->get();
 
-        return view('core::company.services.outwork-categories.show', compact('categories', 'category'));
+        return view('core::company.services.outwork-categories.form', compact('categories', 'category'));
     }
 
     /**
