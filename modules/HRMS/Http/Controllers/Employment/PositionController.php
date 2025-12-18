@@ -24,7 +24,7 @@ class PositionController extends Controller
         $this->authorize('store', EmployeePosition::class);
 
         $departments = CompanyDepartment::all();
-        return view('hrms::employment.positions.create', compact('contract', 'departments'));
+        return view('hrms::employment.positions.form', compact('contract', 'departments'));
     }
 
     /**
@@ -48,7 +48,7 @@ class PositionController extends Controller
         $departments = CompanyDepartment::all();
         $position->load('contract');
 
-        return view('hrms::employment.positions.edit', compact('departments', 'position'));
+        return view('hrms::employment.positions.form', compact('departments', 'position'));
     }
 
     /**

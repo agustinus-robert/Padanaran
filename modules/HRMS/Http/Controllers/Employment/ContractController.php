@@ -27,14 +27,14 @@ class ContractController extends Controller
 
         $contracts = EmployeeContract::with('contract', 'employee.user')
             ->whereHas('employee', function ($q) {
-              $q->where('grade_id', userGrades()); 
+              $q->where('grade_id', userGrades());
             })
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
 
         $contracts_count = EmployeeContract::whereHas('employee', function ($q) {
-              $q->where('grade_id', userGrades()); 
+              $q->where('grade_id', userGrades());
             })->active()->count();
 
         return view('hrms::employment.contracts.index', compact('contracts', 'contracts_count'));
@@ -49,7 +49,7 @@ class ContractController extends Controller
 
         $employee = Employee::where('grade_id', userGrades())->withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee')));
         $contracts = CompanyContract::where('grade_id', userGrades())->get();
-        return view('hrms::employment.contracts.create', compact('contracts', 'employee'));
+        return view('hrms::employment.contracts.form', compact('contracts', 'employee'));
     }
 
     /**
@@ -93,7 +93,7 @@ class ContractController extends Controller
     {
         $this->authorize('update', $contract);
 
-        return view('hrms::employment.contracts.edit', [
+        return view('hrms::employment.contracts.form', [
             'cmpcontracts' => CompanyContract::all(),
             'employee' => Employee::where('grade_id', userGrades())->withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee'))),
             'contract' => $contract

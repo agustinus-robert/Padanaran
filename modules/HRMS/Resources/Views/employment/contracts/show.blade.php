@@ -1,23 +1,23 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Detail perjanjian kerja | ')
 @section('navtitle', 'Detail perjanjian kerja')
 
-@section('content')
-    <div class="d-flex align-items-center mb-4">
-        <a class="text-decoration-none" href="{{ request('next', route('hrms::employment.employees.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-        <div class="ms-4">
-            <h2 class="mb-1">Lihat detail perjanjian kerja</h2>
-            <div class="text-secondary">Menampilkan informasi perjanjian kerja, detail kontak, alamat, dan peran.</div>
-        </div>
-    </div>
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-sm-4">
-            <div class="card border-0">
-                <div class="card-body">
-                    <h4 class="mb-1">Info perjanjian kerja</h4>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3>Info perjanjian kerja</h3>
                     <p class="text-muted mb-2">Informasi detail perjanjian kerja</p>
                 </div>
+
                 <div class="list-group list-group-flush">
                     <div class="list-group-item border-0">
                         Nama karyawan <br> <strong>{{ $contract->employee->user->name }}</strong>
@@ -39,10 +39,12 @@
                     </a>
                 </div>
             </div>
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-tag-outline"></i> Jabatan
+            <div class="card">
+                <div class="card-header">
+                    <h3>Jabatan</h3>
+                    <p class="text-muted mb-2">Informasi jabatan</p>
                 </div>
+
                 <div class="list-group list-group-flush border-top">
                     @forelse($contract->positions as $position)
                         <div class="list-group-item @if ($position->trashed()) text-muted @endif">
@@ -58,8 +60,8 @@
                                 </div>
                                 @if (!$position->trashed())
                                     <form class="d-inline form-block form-confirm" action="{{ route('hrms::employment.contract-positions.delete', ['position' => $position->id]) }}" method="post"> @csrf @method('DELETE')
-                                        <a class="btn btn-soft-warning btn-sm mb-1 rounded" href="{{ route('hrms::employment.contract-positions.edit', ['position' => $position->id, 'next' => url()->current()]) }}"><i class="mdi mdi-pencil-outline"></i></a>
-                                        <button class="btn btn-soft-danger btn-sm mb-1 rounded" href=""><i class="mdi mdi-trash-can-outline"></i></button>
+                                        <a class="btn btn-warning btn-sm mb-1 rounded" href="{{ route('hrms::employment.contract-positions.edit', ['position' => $position->id, 'next' => url()->current()]) }}"><i class="material-symbols-rounded">edit</i></a>
+                                        <button class="btn btn-danger btn-sm mb-1 rounded" href=""><i class="material-symbols-rounded">delete</i></button>
                                     </form>
                                 @endif
                             </div>
@@ -71,7 +73,7 @@
                     @endforelse
                 </div>
                 <div class="card-body border-top">
-                    <a class="btn btn-soft-danger" href="{{ route('hrms::employment.contracts.positions.create', ['contract' => $contract->id, 'next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Tambahkan jabatan baru</a>
+                    <a class="btn btn-light" href="{{ route('hrms::employment.contracts.positions.create', ['contract' => $contract->id, 'next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Tambahkan jabatan baru</a>
                 </div>
             </div>
         </div>
@@ -103,7 +105,7 @@
                                     <td>
                                         @can('destroy', $contract)
                                             <form class="form-block form-confirm d-inline" action="{{ route('hrms::employment.contracts.addendum.destroy', ['contract' => $contract->id, 'addendum' => $key, 'next' => url()->current()]) }}" method="post"> @csrf @method('delete')
-                                                <button class="btn btn-soft-danger rounded px-2 py-1" data-bs-toggle="tooltip" title="Hapus"><i class="mdi mdi-trash-can-outline"></i></button>
+                                                <button class="btn btn-light rounded px-2 py-1" data-bs-toggle="tooltip" title="Hapus"><i class="mdi mdi-trash-can-outline"></i></button>
                                             </form>
                                         @endcan
                                     </td>
@@ -117,12 +119,12 @@
                     </table>
                 </div>
                 <div class="card-body">
-                    <a class="btn btn-soft-danger" href="{{ route('hrms::employment.contracts.addendum.create', ['contract' => $contract->id, 'employee' => $contract->employee->id, 'next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Buat adendum</a>
+                    <a class="btn btn-light" href="{{ route('hrms::employment.contracts.addendum.create', ['contract' => $contract->id, 'employee' => $contract->employee->id, 'next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Buat adendum</a>
                 </div>
             </div>
             <div class="card border-0">
-                <a class="card-body text-dark" href="javascript:;" data-bs-toggle="collapse" data-bs-target="#worktimes_default">
-                    <i class="mdi mdi-account-clock-outline"></i> Jam kerja bawaan
+                <a class="card-body text-dark p-2" href="javascript:;" data-bs-toggle="collapse" data-bs-target="#worktimes_default">
+                    <i class="material-symbols-rounded">timer</i> Jam kerja bawaan
                     <i class="mdi mdi-chevron-down float-end"></i>
                 </a>
                 <div class="collapse" id="worktimes_default">

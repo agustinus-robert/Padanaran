@@ -21,7 +21,7 @@ class ContractAddendumController extends Controller
      */
     public function index(Request $request)
     {
-        // 
+        //
     }
 
     /**
@@ -29,7 +29,7 @@ class ContractAddendumController extends Controller
      */
     public function create(EmployeeContract $contract, Request $request)
     {
-        return view('hrms::employment.contracts.addendums.create', [
+        return view('hrms::employment.contracts.addendums.form-addendum', [
             'departments'   => CompanyDepartment::all(),
             'cmpcontracts'  => CompanyContract::all(),
             'employee'      => Employee::withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee'))),

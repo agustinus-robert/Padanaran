@@ -2,10 +2,9 @@
     'label' => null,
     'required' => false,
     'labelCol' => '3',
-    'slotCol' => '7',
-    'isRow' => false,
+    'slotCol' => '12',
     'isForm' => false,
-    'extra' => ''
+    'isRow' => false
 ])
 
 @if($isForm == false)
@@ -13,8 +12,9 @@
 @else
     <div class="form-group mb-3">
 @endif
+
     @if ($label)
-        <label class="{{ $labelCol ? "col-md-$labelCol col-form-label" : '' }}">
+        <label class="col-md-{{ $labelCol }} col-form-label">
             {{ $label }}
             @if($required)
                 <span class="text-danger">*</span>
@@ -22,12 +22,17 @@
         </label>
     @endif
 
-    @if($isRow == false)
-        <div class="{{ $slotCol ? "col-md-$slotCol" : '' }}">
+
+    <div class="col-md-12">
+
+        @if($isRow == true)
+            <div class="row">
+                {{ $slot }}
+            </div>
+        @else
             {{ $slot }}
-        </div>
-    @else
-        {{ $slot }}
-    @endif
+        @endif
+    </div>
+
 
 </div>
