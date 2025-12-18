@@ -32,8 +32,9 @@ class EmployeeController extends Controller
             ->paginate($request->get('limit', 10));
 
         $employees_count = Employee::where('grade_id', userGrades())->count();
+        $employee = null;
 
-        return view('hrms::employment.employees.index', compact('employees', 'employees_count'));
+        return view('hrms::employment.employees.index', compact('employees', 'employees_count', 'employee'));
     }
 
     /**
@@ -44,8 +45,12 @@ class EmployeeController extends Controller
         $this->authorize('store', Employee::class);
 
         $acdmcs = Academic::orderByDesc('id')->get();
-        $contracts = CompanyContract::all();
-        return view('hrms::employment.employees.create', compact('contracts', 'acdmcs'));
+        $contracts = CompanyContract::all()->map(fn($c) => [
+          'value' => $c->id,
+          'label' => $c->name
+        ])->toArray();
+
+        return view('hrms::employment.employees.form', compact('contracts', 'acdmcs'));
     }
 
     /**
@@ -114,7 +119,7 @@ class EmployeeController extends Controller
 
         $employee = $employee->load('user.meta', 'contracts', 'positions');
 
-        return view('hrms::employment.employees.show', compact('employee'));
+        return view('hrms::employment.employees.form', compact('employee'));
     }
 
     /**
