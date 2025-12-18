@@ -19,6 +19,13 @@
     <meta property="og:image" content="">
 
 
+    <style>
+        .form-check-cs {
+            display: block;
+            min-height: auto;
+            margin-bottom: 0.125rem;
+        }
+    </style>
     @if(config('theme.default') == 'material')
         @include('layouts.component.material-style')
     @elseif(config('theme.default') == 'skote')

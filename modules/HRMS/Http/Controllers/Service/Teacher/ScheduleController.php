@@ -79,7 +79,7 @@ class ScheduleController extends Controller
     {
 
         $file = $request->file('scheduleFile');
-        
+
         if (!$request->hasFile('scheduleFile') || !$request->file('scheduleFile')->isValid()) {
             return redirect()->back()->with('danger', 'Silakan unggah file Excel terlebih dahulu.');
         }
@@ -125,7 +125,7 @@ class ScheduleController extends Controller
 
                     foreach ($employeeIds as $row => $emplId) {
                         $dataValue = $worksheet->getCellByColumnAndRow($shiftCol, $row)->getValue();
-                        
+
                         if (!empty($dataValue)) {
                             $shiftData[$emplId] = optional(AcademicSubject::where('kd', $dataValue)->first())->id; // bisa mapel atau tanda X
                         }
@@ -262,7 +262,7 @@ class ScheduleController extends Controller
         $defaultLessons = EmployeeScheduleLesson::where('category_schedule_id', 1)->get();
         $defaultCategoryLessons = EmployeeScheduleCategory::get();
         $defaultClassroom = AcademicClassroom::whereNull('deleted_at')->get();
-        
+
         switch ($employee->position->position->type) {
             case PositionTypeEnum::GURU:
                 $workshifts = WorkShiftEnum::cases();

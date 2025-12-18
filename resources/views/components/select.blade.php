@@ -9,14 +9,18 @@
 ])
 
 @php
+    // Nama input
     $selectName = $name
         ? ($multiple ? $name.'[]' : $name)
         : null;
 
+    // Id input
     $id = $id ?? $name;
 
+    // Error class
     $error = $name && $errors->has($name) ? 'is-invalid' : '';
 
+    // Value(s)
     $values = $multiple
         ? (array) old($name, $value)
         : [old($name, $value)];
@@ -24,10 +28,9 @@
 
 <div style="position:relative;width:100%;">
     <select
-        class="py-2"
+        class="py-2 form-select {{ $error }}"
         @if($selectName) name="{{ $selectName }}" @endif
         @if($id) id="{{ $id }}" @endif
-        {{ $attributes->merge(['class' => $error]) }}
         @if($required && $name) required @endif
         @if($multiple) multiple @endif
         style="
@@ -45,33 +48,33 @@
         @endif
 
         @foreach($options as $opt)
-            @if(isset($opt['children']))
-                <optgroup label="{{ $opt['label'] }}">
+            @if(isset($opt['children']) && is_array($opt['children']))
+                <optgroup label="{{ $opt['label'] ?? '' }}">
                     @foreach($opt['children'] as $child)
                         <option
-                            value="{{ $child['value'] }}"
-                            @selected(in_array($child['value'], $values, true))
+                            value="{{ $child['value'] ?? '' }}"
+                            @selected(isset($child['value']) && in_array($child['value'], $values, true))
                             @foreach($child as $attr => $val)
                                 @if(!in_array($attr, ['value','label','children']))
                                     {{ $attr }}="{{ $val }}"
                                 @endif
                             @endforeach
                         >
-                            {{ $child['label'] }}
+                            {{ $child['label'] ?? '' }}
                         </option>
                     @endforeach
                 </optgroup>
             @else
                 <option
-                    value="{{ $opt['value'] }}"
-                    @selected(in_array($opt['value'], $values, true))
+                    value="{{ $opt['value'] ?? '' }}"
+                    @selected(isset($opt['value']) && in_array($opt['value'], $values, true))
                     @foreach($opt as $attr => $val)
                         @if(!in_array($attr, ['value','label','children']))
                             {{ $attr }}="{{ $val }}"
                         @endif
                     @endforeach
                 >
-                    {{ $opt['label'] }}
+                    {{ $opt['label'] ?? '' }}
                 </option>
             @endif
         @endforeach

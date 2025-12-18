@@ -30,7 +30,7 @@
                         {{-- <input type="month" class="form-control" value="{{ $schedule->period }}" disabled /> --}}
                     </div>
                 </div>
-           
+
                 <div class="mb-3" style="max-height: 480px; overflow-y: auto;">
                     <div class="row d-none d-lg-block sticky-top bg-white pb-3">
                         <div class="col-xl-9 offset-lg-4 offset-xl-3">

@@ -1,6 +1,7 @@
 @props([
     'item',
     'routes' => [],
+    'params' => [], // tambahkan ini
     'useModal' => false, // kalau true, edit pakai modal
 ])
 
@@ -52,9 +53,21 @@
     @else
         @if(!empty($routes['show']))
             <a class="btn btn-outline-info btn-uniform m-0 py-2"
-               href="{{ is_string($routes['show']) && str_starts_with($routes['show'], 'http') ? $routes['show'] : route($routes['show'], $item->id) }}"
+               href="{{ is_string($routes['show']) && str_starts_with($routes['show'], 'http')
+                        ? $routes['show']
+                        : route($routes['show'], $params['show'] ?? $item->id) }}"
                title="Detail">
                 <i class="material-symbols-rounded">visibility</i>
+            </a>
+        @endif
+
+        @if(!empty($routes['create']))
+            <a class="btn btn-outline-success btn-uniform m-0 py-2"
+               href="{{ is_string($routes['create']) && str_starts_with($routes['create'], 'http')
+                        ? $routes['create']
+                        : route($routes['create'], $params['create'] ?? $item->id) }}"
+               title="Buat Baru">
+                <i class="material-symbols-rounded">add_circle</i>
             </a>
         @endif
 
