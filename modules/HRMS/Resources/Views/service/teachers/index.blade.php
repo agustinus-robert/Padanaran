@@ -8,7 +8,7 @@
 @endpush
 
 @php
-$trashed = request('trashed', false);
+$trashed = false;
 
 $columns = [
     [
@@ -48,7 +48,7 @@ $columns = [
                 if ($schedule && \Gate::allows('show', $schedule)) {
                     $routes['show'] = 'hrms::service.teacher.schedule.show';
                     $params['show'] = [
-                        'schedule' => $schedule->id,
+                        'schedule' => $employee->id,
                         'start_at' => request('start_at'),
                         'end_at'   => request('end_at'),
                         'next'     => url()->full(),
@@ -73,7 +73,7 @@ $columns = [
                 'item'     => $schedule ?? $employee,
                 'routes'   => $routes,
                 'params'   => $params, // partial bisa gunakan route + params
-                'trashed'  => $schedule?->trashed() ?? false,
+                'trashed'  => false,
                 'useModal' => false,
             ])->render();
         },

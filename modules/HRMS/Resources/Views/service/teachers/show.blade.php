@@ -1,106 +1,177 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Jadwal kerja | ')
 @section('navtitle', 'Jadwal kerja')
 
-@section('content')
-    <div class="d-flex align-items-center mb-4">
-        <a class="text-decoration-none" href="{{ request('next', route('hrms::service.teacher.schedule.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-        <div class="ms-4">
-            <h2 class="mb-1">Ubah jadwal kerja</h2>
-            <div class="text-secondary">Anda dapat membuat jadwal kerja dengan mengisi formulir di bawah</div>
-        </div>
-    </div>
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@section('body-content')
+@include('components.navbar-admin')
+
+<div class="row container-fluid">
     <div class="card mb-4 border-0">
-        <div class="card-body">
-            {{-- <form class="form-block" action="{{ route('hrms::service.teacher.schedule.update', ['schedule' => $schedule->id, 'next' => request('next')]) }}" method="POST"> @csrf @method('PUT') --}}
-                <input type="hidden" name="start_at" value="{{ $schedule->start_at }}" />
-                <input type="hidden" name="start_at" value="{{ $schedule->end_at }}" />
+        <x-card-header type="{{ config('theme.default') }}">
+            <h6 class="text-white">Lihat Jadwal</h6>
+        </x-card-header>
 
+        <div class="card-body shadow-sm">
+
+            {{-- FORM --}}
+            <form class="form-block"
+                action="{{ route('hrms::service.teacher.schedule.update', ['schedule' => $schedule->id, 'next' => request('next')]) }}"
+                method="POST">
+                @csrf
+                @method('PUT')
+
+                {{-- HIDDEN --}}
+                <x-input type="hidden" name="start_at" :value="$schedule->start_at"/>
+                <x-input type="hidden" name="end_at" :value="$schedule->end_at"/>
+
+                {{-- NAMA --}}
                 <div class="row required mb-3">
-                    <label class="col-lg-4 col-xl-3 col-form-label">Nama lengkap</label>
+                    <label class="col-lg-4 col-xl-3 col-form-label">
+                        Nama lengkap
+                    </label>
                     <div class="col-xl-8 col-xxl-6">
-                        <input type="text" class="form-control" value="{{ $schedule->employee->user->name }}" disabled />
+                        <x-input
+                            type="text"
+                            :value="$schedule->employee->user->name"
+                            disabled
+                        />
                     </div>
                 </div>
+
+                {{-- PERIODE --}}
                 <div class="row required mb-3">
-                    <label class="col-lg-4 col-xl-3 col-form-label">Periode</label>
+                    <label class="col-lg-4 col-xl-3 col-form-label">
+                        Periode
+                    </label>
                     <div class="col-xl-8 col-xxl-6">
-                        {{-- {{  }} --}}
-                        {{-- <input type="month" class="form-control" value="{{ $schedule->period }}" disabled /> --}}
+                        <x-input
+                            type="month"
+                            :value="$schedule->period"
+                            disabled
+                        />
                     </div>
                 </div>
 
-                <div class="mb-3" style="max-height: 480px; overflow-y: auto;">
-                    <div class="row d-none d-lg-block sticky-top bg-white pb-3">
-                        <div class="col-xl-9 offset-lg-4 offset-xl-3">
-                            <div class="row">
-                                {{-- @foreach ($workshifts as $shift)
-                                    <div class="col-xl-{{ 12 / count($workshifts) }} fw-bold text-center">{{ $shift->label() }}</div>
-                                @endforeach --}}
-                            </div>
-                        </div>
-                    </div>
-
+                {{-- JADWAL --}}
+                <div class="mb-3" style="max-height:480px;overflow-y:auto;">
                     <div class="accordion" id="datesAccordion">
+
                         @foreach ($allDates as $date => $lessons)
+
                             @php
                                 $formattedDate = strftime('%A, %d %B %Y', strtotime($date));
-                                $accordionId = 'accordion-' . str_replace([' ', ':', '.'], '-', $date);
+                                $accordionId = 'accordion-'.str_replace([' ',':','.'],'-',$date);
                             @endphp
 
                             <div class="accordion-item">
-                                <h2 class="accordion-header" id="heading-{{ $accordionId }}">
-                                    <div class="accordion-button bg-light" style="cursor: default;">
+                                <h6 class="accordion-header" id="heading-{{ $accordionId }}">
+                                    <div class="accordion-button bg-light p-2" style="cursor:default;">
                                         {{ $formattedDate }}
+
                                         @if (empty($lessons))
-                                            <span class="badge badge-pill badge-soft-danger font-size-11 ms-2">Tidak ada Jadwal</span>
+                                            <span class="badge badge-soft-danger ms-2">
+                                                Tidak ada Jadwal
+                                            </span>
                                         @endif
                                     </div>
-                                </h2>
+                                </h6>
 
                                 @if (!empty($lessons))
-                                    <div id="collapse-{{ $accordionId }}" class="accordion-collapse collapse show" aria-labelledby="heading-{{ $accordionId }}" data-bs-parent="#datesAccordion">
-                                        <div class="accordion-body">
-                                            <div class="row">
-                                                @foreach ($lessons as $i => $lessonItem)
-                                                    <div class="col-xl-{{ 12 / count($lessons) }} mb-4">
-                                                        <div class="row">
-                                                            <div class="col-md-2">
-                                                                <b>{{ $lessonItem[0] }} - {{ $lessonItem[1] }}</b>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <select class="form-select" name="dates[{{ $date }}][{{ $i }}][lesson_id]">
-                                                                    <option value="">Pilih Mata Pelajaran</option>
-                                                                    @foreach ($gradeLevel as $grade)
+                                <div id="collapse-{{ $accordionId }}"
+                                    class="accordion-collapse collapse show">
+
+                                    <div class="accordion-body">
+                                        <div class="row">
+
+                                            @foreach ($lessons as $i => $lessonItem)
+                                                <div class="col-xl-{{ 12 / count($lessons) }} mb-4">
+                                                    <div class="row align-items-center">
+
+                                                        <div class="col-md-3">
+                                                            <b>
+                                                                {{ $lessonItem[0] }}
+                                                                -
+                                                                {{ $lessonItem[1] }}
+                                                            </b>
+                                                        </div>
+
+                                                        <div class="col-md-9">
+
+                                                            {{-- MATA PELAJARAN --}}
+                                                            <x-select
+                                                                name="dates[{{ $date }}][{{ $i }}][lesson_id]"
+                                                                placeholder="Pilih Mata Pelajaran"
+                                                                :value="isset($lessonItem['lesson'][0]) ? $lessonItem['lesson'][0] : null"
+                                                            >
+                                                                <option value="">
+                                                                    Pilih Mata Pelajaran
+                                                                </option>
+
+                                                                @foreach ($gradeLevel as $grade)
+                                                                    <optgroup label="Kelas {{ $grade->name }}">
                                                                         @foreach ($defaultCategoryAcademic as $acCategory)
                                                                             @foreach ($academicSubject as $subject)
-                                                                                @if ($subject->level_id == $grade->id && $subject->category_id == $acCategory->id)
-                                                                                    <option {{ isset($lessonItem['lesson'][0]) && $lessonItem['lesson'][0] == $subject->id ? 'selected' : '' }} value="{{ $subject->id }}">
-                                                                                        {{ $subject->name }}
+                                                                                @if (
+                                                                                    $subject->level_id == $grade->id &&
+                                                                                    $subject->category_id == $acCategory->id
+                                                                                )
+                                                                                    <option
+                                                                                        value="{{ $subject->id }}"
+                                                                                        @selected(
+                                                                                            isset($lessonItem['lesson'][0]) &&
+                                                                                            $lessonItem['lesson'][0] == $subject->id
+                                                                                        )
+                                                                                    >
+                                                                                        {{ $acCategory->name }}
+                                                                                        - {{ $subject->name }}
                                                                                     </option>
                                                                                 @endif
                                                                             @endforeach
                                                                         @endforeach
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
+                                                                    </optgroup>
+                                                                @endforeach
+
+                                                            </x-select>
+
                                                         </div>
                                                     </div>
-                                                @endforeach
-                                            </div>
+                                                </div>
+                                            @endforeach
+
                                         </div>
                                     </div>
+                                </div>
                                 @endif
                             </div>
                         @endforeach
-                    </div>
 
+                    </div>
                 </div>
-            {{-- </form> --}}
+
+                {{-- ACTION --}}
+                <div class="row mt-4">
+                    <div class="col-lg-8 offset-lg-4 offset-xl-3">
+                        <button class="btn btn-soft-danger">
+                            <i class="mdi mdi-check"></i> Simpan
+                        </button>
+                        <a class="btn btn-ghost-light text-dark"
+                        href="{{ request('next', route('hrms::service.teacher.schedule.index')) }}">
+                            Kembali
+                        </a>
+                    </div>
+                </div>
+
+            </form>
         </div>
     </div>
+</div>
 @endsection
+
 
 @push('scripts')
     <script type="text/javascript">

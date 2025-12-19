@@ -12,11 +12,10 @@
 <div class="row container-fluid justify-content-center">
     <div class="col-md-8">
         <div class="card mb-4 border-0 shadow-sm">
-            <div class="card-header">
-                <x-card-header type="{{ config('theme.default') }}">
-                    <h6 class="text-white">Buat Jadwal</h6>
-                </x-card-header>
-            </div>
+            <x-card-header type="{{ config('theme.default') }}">
+                <h6 class="text-white">Buat Jadwal</h6>
+            </x-card-header>
+
             <div class="card-body">
                 <form action="{{ route('hrms::service.teacher.schedule.store', ['next' => request('next')]) }}" method="POST">
                     @csrf
@@ -138,14 +137,14 @@
                     </x-input-group>
 
                     {{-- Checkbox & tombol --}}
-                    <div class="row mb-3">
-                        <div class="col-lg-8 offset-lg-4 offset-xl-3">
+                    <div class="row mb-3 text-center">
+                        <div class="col-lg-6 offset-lg-4 offset-xl-3">
                             <div class="form-check mb-3">
                                 <input class="form-check-input" id="agreement" type="checkbox" required>
                                 <label class="form-check-label" for="agreement">Dengan ini saya menyatakan data di atas adalah valid</label>
                             </div>
-                            <x-btn variant="soft-danger"><i class="mdi mdi-check"></i> Simpan</x-btn>
-                            <a class="btn btn-ghost-light text-dark" href="{{ request('next', route('hrms::service.attendance.schedules.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
+                            <x-btn type="submit" variant="dark"><i class="mdi mdi-check"></i> Simpan</x-btn>
+                            <a class="btn btn-light text-dark" href="{{ request('next', route('hrms::service.attendance.schedules.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
                         </div>
                     </div>
                 </form>
