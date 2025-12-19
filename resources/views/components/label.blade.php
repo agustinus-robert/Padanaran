@@ -1,31 +1,45 @@
 @props([
-    'for' => null,
+    'for'   => null,
     'value' => null,
-    'col' => null, // contoh: "3", "3 6 12", "3-lg 4-md"
+    'col'   => null,
+    'size'  => 'md',
+    'muted' => false,
 ])
 
 @php
-    $theme = config('theme.default');
-
-    $classes = "col-form-label";
+    $classes = 'col-form-label';
 
     if ($col) {
-        $colParts = explode(' ', $col);
-
-        foreach ($colParts as $part) {
+        foreach (explode(' ', $col) as $part) {
             if (str_contains($part, '-')) {
-                [$size, $bp] = explode('-', $part);
-                $classes = "col-$bp-$size " . $classes;
+                [$sizeCol, $bp] = explode('-', $part);
+                $classes = "col-$bp-$sizeCol $classes";
             } else {
-                $classes = "col-$part " . $classes;
+                $classes = "col-$part $classes";
             }
         }
     }
+
+    $textClass = match ($size) {
+        'sm' => 'small',
+        'lg' => 'fs-5 fw-semibold',
+        default => '',
+    };
+
+    $mutedClass = $muted ? 'text-muted' : '';
 @endphp
 
 <label
     @if($for) for="{{ $for }}" @endif
     {{ $attributes->merge(['class' => $classes]) }}
 >
-    {{ $value ?? $slot }}
+    @if($size === 'sm')
+        <small class="{{ $mutedClass }}">
+            {{ $value ?? $slot }}
+        </small>
+    @else
+        <span class="{{ trim("$textClass $mutedClass") }}">
+            {{ $value ?? $slot }}
+        </span>
+    @endif
 </label>

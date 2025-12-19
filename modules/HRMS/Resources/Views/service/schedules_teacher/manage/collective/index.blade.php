@@ -1,117 +1,94 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Jadwal kerja | ')
 @section('container-type', 'container-fluid px-5')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@php
+$trashed = false;
+$columns = [
+    [
+        'label' => 'Nama',
+        'slot'  => fn ($employee) =>
+            '<strong>'.$employee->user->name.'</strong>',
+    ],
+    [
+        'label' => 'Hari Kerja',
+        'slot'  => fn ($employee) =>
+            $employee->schedulesDutyTeacher->first()?->workdays_count ?? 0,
+        'class' => 'text-center',
+    ],
+    [
+        'label' => '',
+        'slot'  => function ($employee) {
+
+            $schedule = $employee->schedulesDutyTeacher->first();
+            $routes   = [];
+            $params   = [];
+
+            // SHOW
+            if ($schedule && \Gate::allows('show', $employee)) {
+                $routes['show'] = 'hrms::service.teacher.duty.show';
+                $params['show'] = [
+                    'duty'     => $employee->id,
+                    'start_at' => request('start_at'),
+                    'end_at'   => request('end_at'),
+                    'next'     => url()->full(),
+                ];
+            }
+
+            // DESTROY
+            if ($schedule && \Gate::allows('destroy', $employee)) {
+                $routes['destroy'] = 'hrms::service.teacher.duty.destroy';
+                $params['destroy'] = [
+                    'duty'     => $employee->id,
+                    'start_at' => request('start_at'),
+                    'end_at'   => request('end_at'),
+                    'next'     => url()->full(),
+                ];
+            }
+
+            return view('components.partial-actions', [
+                'item'     => $employee,
+                'routes'   => $routes,
+                'params'   => $params,
+                'trashed'  => false,
+                'useModal' => false,
+            ])->render();
+        },
+        'class' => 'text-end',
+    ],
+];
+@endphp
+
+@section('body-content')
+    @include('components.navbar-admin')
+    <div class="row container-fluid">
         <div class="col-xl-8">
-            <div class="card border-0">
-                <div class="card-body border-bottom">
-                    <i class="mdi mdi-format-list-bulleted"></i> Kelola Jadwal Piket
-                </div>
-
-                <div class="col-12 p-2">
-                        <div class="container">
-                            @if (Session::has('success'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert alert-success">
-                                        {!! Session::get('success') !!}
-                                    </div>
-                                </div>
-                            @endif 
-
-                            @if (Session::has('error'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert-danger alert">
-                                        {!! Session::get('error') !!}
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                <div class="table-responsive">
-                    <table class="mb-0 table align-middle">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nama</th>
-                                <th>Hari Kerja</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($employees as $employee)
-                                <tr>
-                                    <td>{{ $loop->iteration + $employees->firstItem() - 1 }}</td>
-                                    <td>
-                                        {{ $employee->user->name }}
-                                    </td>
-                                    <td>
-                                        {{ $employee->schedulesDutyTeacher->first()->workdays_count ?? 0 }}
-                                    </td>
-                                    <td>
-                                        @if ($employee)
-                                            @if(isset($employee->schedulesDutyTeacher->first()->workdays_count) > 0)
-                                                @can('show', $employee)
-                                                    <a class="btn btn-soft-primary rounded px-2 py-1" href="{{ route('hrms::service.teacher.duty.show', ['duty' => $employee->id, 
-                                                    'start_at' => request('start_at'),
-                                                    'end_at'   => request('end_at'),
-                                                    'next' => url()->full()]) }}" data-bs-toggle="tooltip" title="Ubah"><i class="mdi mdi-eye-outline"></i></a>
-                                                @endcan
-                                            @endif
-                                        @endif
-                                        @can('destroy', $employee)
-                                            @if(isset($employee->schedulesDutyTeacher->first()->workdays_count) > 0)
-                                                <form action="{{ route('hrms::service.teacher.duty.destroy', ['duty' => $employee->id,
-                                                'start_at' => request('start_at'),
-                                                'end_at'   => request('end_at'),
-                                                'next' => url()->full()]) }}" 
-                                                    method="POST" 
-                                                    class="form-block form-confirm d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-soft-danger rounded px-2 py-1" 
-                                                            data-bs-toggle="tooltip" 
-                                                            title="Hapus">
-                                                        <i class="mdi mdi-trash-can-outline"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9">@include('components.notfound')</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $employees->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                :isSearch="true"
+                type="material"
+                :data="$employees"
+                :columns="$columns"
+                title="Kelola Jadwal Piket"
+                searchRoute="{{ route('hrms::service.teacher.duty.index', ['search' => request('search')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-xl-4">
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-filter-outline"></i> Filter
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Filter</h6>
                 </div>
+
                 <div class="card-body border-top">
                     <form class="form-block" action="{{ route('hrms::service.teacher.duty.index') }}" method="get">
                         <div class="mb-3">
-                            <label class="form-label required">Periode</label>
-                            <div class="input-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                    <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                    <span class="d-none d-sm-inline">Rentang waktu</span>
-                                </button>
-                                <input class="form-control" type="date" name="start_at" value="{{ $start_at }}" required>
-                                <input class="form-control" type="date" name="end_at" value="{{ $end_at }}" required>
-                            </div>
+                            <label class="form-label required">Periode pengajuan</label>
+                            <x-date-range-select />
                         </div>
 
                         <div class="mb-3">
@@ -119,7 +96,7 @@
                             <input class="form-control" name="search" placeholder="Cari nama karyawan ..." value="{{ request('search') }}" onkeyup="searchTable()" />
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
+                            <div class="form-check p-0">
                                 <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" @if (request('trashed', 0)) checked @endif>
                                 <label class="form-check-label" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
                             </div>

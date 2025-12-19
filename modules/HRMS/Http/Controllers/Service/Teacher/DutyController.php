@@ -32,7 +32,7 @@ class DutyController extends Controller
         $employee = $user->employee->load('position.position.children');
 
         $startM = Carbon::parse($request->get('start_at', now()));
-        
+
         $month = $request->filled('month')
         ? Carbon::parse($request->get('month'))
         : $startM->copy();
@@ -70,7 +70,7 @@ class DutyController extends Controller
             ->when($type, fn($t) => $t->whereHas('position.position', fn($q) => $q->where('type', $type)))
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
-            ->paginate(10); 
+            ->paginate(10);
 
 
         $empPersonil = [];
@@ -84,7 +84,7 @@ class DutyController extends Controller
         $calendarData = EmployeeTeacherDuty::whereMonth('start_at', $month)
             ->with(['employee.user', 'employee.position.position'])
             ->whereHas('employee', function ($q) {
-                $q->where('grade_id', userGrades()); 
+                $q->where('grade_id', userGrades());
             })
             ->get()
             ->groupBy('empl_id');
@@ -100,7 +100,7 @@ class DutyController extends Controller
                     $result[$keyShowData][$type] = [];
                     foreach ($valLevel2->dates as $keyLevel3 => $valLevel3) {
                         foreach ($valLevel3 as $keyLevel4 => $valLevel4) {
-                            if (is_array($valLevel4) && isset($valLevel4[0]) && $valLevel4[0] != null) {                                
+                            if (is_array($valLevel4) && isset($valLevel4[0]) && $valLevel4[0] != null) {
                                 $result[$keyShowData][$type][$keyLevel3][] = $keyLevel4 + 1;
                             }
                         }
@@ -113,7 +113,7 @@ class DutyController extends Controller
         if (count($result) > 0) {
             $databaseResult = json_encode($result);
         }
-        
+
         $room = SchoolBuildingRoom::with('building')
         ->whereHas('building', function($q){
             $q->where('grade_id', userGrades());
@@ -121,7 +121,7 @@ class DutyController extends Controller
         ->whereNull('deleted_at')->get();
 
 
-        return view('hrms::service.schedules_teacher.manage.collective.index', compact('user', 'employees', 'employee_count', 
+        return view('hrms::service.schedules_teacher.manage.collective.index', compact('user', 'employees', 'employee_count',
         'month', 'workshifts', 'calendarData', 'type', 'databaseResult', 'label', 'start_at', 'end_at', 'shiftDatabs', 'startDate',
         'room'));
     }
@@ -140,7 +140,7 @@ class DutyController extends Controller
         $employee = $user->employee->load('position.position.children');
 
         $startM = Carbon::parse($request->get('start_at', now()));
-        
+
         $month = $request->filled('month')
         ? Carbon::parse($request->get('month'))
         : $startM->copy();
@@ -189,7 +189,7 @@ class DutyController extends Controller
         $calendarData = EmployeeTeacherDuty::whereMonth('start_at', $month)
             ->with(['employee.user', 'employee.position.position'])
             ->whereHas('employee', function ($q) {
-                  $q->where('grade_id', userGrades()); 
+                  $q->where('grade_id', userGrades());
             })
             ->get()
             ->groupBy('empl_id');
@@ -205,7 +205,7 @@ class DutyController extends Controller
                     $result[$keyShowData][$type] = [];
                     foreach ($valLevel2->dates as $keyLevel3 => $valLevel3) {
                         foreach ($valLevel3 as $keyLevel4 => $valLevel4) {
-                            if (is_array($valLevel4) && isset($valLevel4[0]) && $valLevel4[0] != null) {                                
+                            if (is_array($valLevel4) && isset($valLevel4[0]) && $valLevel4[0] != null) {
                                 $result[$keyShowData][$type][$keyLevel3][] = $keyLevel4 + 1;
                             }
                         }
@@ -218,10 +218,10 @@ class DutyController extends Controller
         if (count($result) > 0) {
             $databaseResult = json_encode($result);
         }
-        
+
         $room = SchoolBuildingRoom::with('building')->whereNull('deleted_at')->get();
 
-        return view('hrms::service.schedules_teacher.manage.collective.create', array_merge(compact('user', 'employees', 'employee_count', 
+        return view('hrms::service.schedules_teacher.manage.collective.create', array_merge(compact('user', 'employees', 'employee_count',
         'month', 'workshifts', 'calendarData', 'type', 'databaseResult', 'label', 'start_at', 'end_at', 'shiftDatabs', 'startDate',
         'room')), $this->loadModal($startM));
     }
@@ -239,7 +239,7 @@ class DutyController extends Controller
         $calendarData = EmployeeTeacherDuty::whereMonth('start_at', $month)
             ->with(['employee.user', 'employee.position.position'])
             ->whereHas('employee', function ($q) {
-              $q->where('grade_id', userGrades()); 
+              $q->where('grade_id', userGrades());
             })
             ->get()
             ->groupBy('empl_id');
@@ -255,7 +255,7 @@ class DutyController extends Controller
                     $result[$keyShowData][$type] = [];
                     foreach ($valLevel2->dates as $keyLevel3 => $valLevel3) {
                         foreach ($valLevel3 as $keyLevel4 => $valLevel4) {
-                            if (is_array($valLevel4) && isset($valLevel4[0]) && $valLevel4[0] != null) {                                
+                            if (is_array($valLevel4) && isset($valLevel4[0]) && $valLevel4[0] != null) {
                                 $result[$keyShowData][$type][$keyLevel3][] = $keyLevel4 + 1;
                             }
                         }
@@ -349,7 +349,7 @@ class DutyController extends Controller
         ]);
 
         $date = Carbon::parse($request->date);
-        
+
         $startOfMonth = $date->copy()->startOfMonth()->toDateString();
         $endOfMonth   = $date->copy()->endOfMonth()->toDateString();
 
@@ -386,9 +386,9 @@ class DutyController extends Controller
 
         if (!isset($dates[$targetDate])) {
             $dates[$targetDate] = [
-                '08:00',       
-                '16:00',       
-                [$request->shift => (int) $request->room]  
+                '08:00',
+                '16:00',
+                [$request->shift => (int) $request->room]
             ];
         } else {
             $dates[$targetDate][2][$request->shift] = (int) $request->room;
@@ -474,13 +474,13 @@ class DutyController extends Controller
 
 
 
-    
+
     public function destroySch(Request $request)
     {
         $emp_id_arr = $request->input('emp_id_arr');
-        $start_at   = Carbon::parse($request->start_at); 
-        $end_at     = Carbon::parse($request->end_at);   
-        $dayz       = $request->day; 
+        $start_at   = Carbon::parse($request->start_at);
+        $end_at     = Carbon::parse($request->end_at);
+        $dayz       = $request->day;
 
         $employeeIds = [];
 
