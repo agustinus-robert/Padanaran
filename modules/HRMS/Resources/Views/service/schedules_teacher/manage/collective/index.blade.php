@@ -91,9 +91,10 @@ $columns = [
                             <x-date-range-select />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="select-positions">Nama</label>
-                            <input class="form-control" name="search" placeholder="Cari nama karyawan ..." value="{{ request('search') }}" onkeyup="searchTable()" />
+                        <div class="input-group input-group-dynamic mb-3">
+                            <label class="form-label">Cari Nama Karyawan</label>
+                            <x-input size="sm" type="text" name="search" value="{{ request('search') }}" onkeyup="searchTable()"></x-input>
+                            {{-- <input class="form-control" name="search" placeholder="Cari nama karyawan ..." value="{{ request('search') }}" onkeyup="searchTable()" /> --}}
                         </div>
                         <div class="mb-3">
                             <div class="form-check p-0">
@@ -102,7 +103,7 @@ $columns = [
                             </div>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-filter-outline"></i> Terapkan</button>
+                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
                             <a class="btn btn-light" href="{{ route('hrms::service.teacher.duty.create') }}"><i class="mdi mdi-refresh"></i> Reset</a>
                         </div>
                     </form>
@@ -117,15 +118,18 @@ $columns = [
                 <div>Absensi jadwal piket kolektif <br> <small style="opacity: 0.6;"></small></div>
             </a>
 
-            <div class="card border-0">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Laporan</h6>
+                </div>
+
                 <div class="card-body">
-                    <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
-                </div>
-                <div class="list-group list-group-flush border-top">
-                    <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi izin</a>
-                </div>
-                <div class="card-body border-top">
-                    <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni mulai tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
+                    <div class="list-group list-group-flush border-top">
+                        <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi izin</a>
+                    </div>
+                    <div class="card-body border-top">
+                        <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni mulai tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
+                    </div>
                 </div>
             </div>
         </div>

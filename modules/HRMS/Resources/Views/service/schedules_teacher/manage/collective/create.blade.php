@@ -1,19 +1,23 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Jadwal kerja | ')
 @section('container-type', 'container-fluid px-5')
 
-@section('content')
-    <div class="d-flex align-items-center mb-4">
-        <a class="text-decoration-none" href=""><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-        <div class="ms-4">
-            <h2 class="mb-1">Kelola jadwal piket</h2>
-            <div class="text-secondary">Anda dapat membuat jadwal piket dengan mengisi formulir di bawah</div>
-        </div>
-    </div>
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-xl-12 col-sm-12">
-            <div class="card border-0">
+            <div class="card shadow-sm">
+
+                <x-card-header type="{{ config('theme.default') }}">
+                    Kelola Jadwal Anda
+                </x-card-header>
+
                 {{-- <div class="card-body d-flex align-items-center justify-content-between py-2">
                     <div><i class="mdi mdi-calendar-multiselect"></i> Jadwal kerja </div>
                     <form class="tg-steps-presence-history" action="{{ route('portal::schedule-teacher.manages.collective') }}" method="GET">
@@ -40,8 +44,8 @@
                             $startFormatted = \Carbon::parse($start_at)->translatedFormat('d F Y');
                             $endFormatted = \Carbon::parse($end_at)->translatedFormat('d F Y');
 
-                            $now = now(); 
-                            $monthStart = $now->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY); 
+                            $now = now();
+                            $monthStart = $now->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
                             $currentWeekStart = $now->copy()->startOfWeek(Carbon::MONDAY);
 
                             $weekNumber = $monthStart->diffInWeeks($currentWeekStart) + 1;
@@ -67,7 +71,7 @@
                                     </div>
 
                                     <p class="text-center"><input type="checkbox" name="is_active" {{ request('is_active') ? 'checked' : '' }} /> Centang jika ingin mematikan jadwal pegawai berdasarkan periode yang sudah ada sebelumnya</p>
-                                    
+
                                     <div class="text-center">
                                         <button type="submit" class="btn btn-primary">Terapkan</button>
                                         <a href="{{ route('hrms::service.teacher.duty.create') }}" class="btn btn-secondary">Clear</a>
@@ -99,7 +103,7 @@
                                     {!! Session::get('success') !!}
                                 </div>
                             </div>
-                        @endif 
+                        @endif
 
                         @if (Session::has('danger'))
                             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
@@ -120,7 +124,7 @@
                             <tbody>
                                 @php($daynames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'])
                                 @php($types = [1 => 'Putri', 2 => 'Putra'])
-                                
+
                                 @foreach ($types as $keyType => $label)
                                     <tr>
                                         <td colspan="{{ count($daynames) }}">
@@ -133,7 +137,7 @@
                                             <td style="height: 100px; min-height: 100px; min-width: 120px;">
 
                                                 @foreach ($workshifts as $keyShift => $workshift)
-                                        
+
                                                 <input type="hidden" class="room-value" value="{{ $keyType }}" />
 
                                                     <div class="position-relative h-100 float-start">
@@ -176,8 +180,8 @@
                                                             </div>
 
                                                                 <div class="input-group mb-3" data-shift-id="{{ $workshift->value }}" data-date="{{ $dayIndex }}">
-                                                            
-                                                                    @php($displayed = [])                               
+
+                                                                    @php($displayed = [])
 
                                                                     @foreach ($calendarData as $entry)
                                                                         @foreach ($entry as $getEntry => $vEntry)
@@ -185,7 +189,7 @@
                                                                                 @php($carbonDate = \Carbon\Carbon::parse($keyEntryDate))
                                                                                 @php($dayOfWeekName = $daynames[$carbonDate->dayOfWeek])
                                                                                 @php($emplDayKey = $vEntry->empl_id . '_' . $dayOfWeekName)
-                                                                               
+
 
                                                                                 @if ($dayOfWeekName == $dayname)
                                                                                     @if ($vEntry->employee->position->position->type->value == $type)
@@ -193,10 +197,10 @@
                                                                                             isset($valEntryDate[2]) &&
                                                                                             in_array($keyType, $valEntryDate[2])
                                                                                         )
-                                                                                            
+
                                                                                             @if (!in_array($emplDayKey, $displayed))
                                                                                                 @php($displayed[] = $emplDayKey)
-                                                                                                
+
                                                                                                     <div style="border:1px dotted gray;" class="p-2 d-flex align-items-start justify-content-between w-100 mb-2" data-date="{{ $dayIndex }}" data-empl_id="{{ $vEntry->empl_id }}">
 
                                                                                                         <div>
@@ -227,7 +231,7 @@
                                                                         <div style="border:1px dotted gray; min-height: 40px;" class="p-2 d-flex align-items-start justify-content-between w-100 mb-2" data-date="{{ $dayIndex }}" data-empl_id="{{ $vEntry->empl_id }}">
 
                                                                             <div>
-                                                                                
+
                                                                             </div>
                                                                         </div>
                                                                     </a> --}}
@@ -238,13 +242,13 @@
                                                                 <div style="border:1px dotted gray; min-height: 40px;" class="p-2 d-flex align-items-start justify-content-between w-100 mb-2" data-date="{{ $dayIndex }}">
 
                                                                     <div>
-                                                                        
+
                                                                     </div>
                                                                 </div>
                                                             </a>
                                                         @endforeach
                                                     </div>
-                                                
+
                                             </td>
                                         @endforeach
                                     </tr>
@@ -291,20 +295,9 @@
 @endsection
 
 <!-- MODAL HTML -->
-<div class="modal fade" id="shiftModal" tabindex="-1" aria-labelledby="shiftModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="shiftModalLabel">Tambah Shift</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-            </div>
-            <div class="mbody">
-                {{-- Konten akan dimuat via AJAX --}}
-                @include('hrms::service.schedules_teacher.manage.collective.modal');
-            </div>
-        </div>
-    </div>
-</div>
+<x-regular-modal id="shiftModal" title="Tambah Shift">
+    @include('hrms::service.schedules_teacher.manage.collective.modal');
+</x-regular-modal>
 
 @push('styles')
 <style>
@@ -607,7 +600,7 @@ updateScheduleResult();
                     // console.log(count)
                 });
             });
-        
+
 
 
         function collectDropzoneData() {

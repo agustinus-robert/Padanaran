@@ -93,6 +93,7 @@
             <x-label value="Tanggal Awal" />
             <x-input
                 type="date"
+                size="sm"
                 id="start_at"
                 :name="$startName"
                 :value="$startAt"
@@ -107,6 +108,7 @@
             <x-label value="Tanggal Akhir" />
             <x-input
                 type="date"
+                size="sm"
                 id="end_at"
                 :name="$endName"
                 :value="$endAt"
