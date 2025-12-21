@@ -79,7 +79,10 @@ class ScheduleController extends Controller
         $gradeLevel = GradeLevel::where('grade_id', userGrades())->get();
         //set pertamat kali di pengajaran umum
         $defaultLessons = EmployeeScheduleLesson::where(['category_schedule_id' => 1])->get();
-        $defaultCategoryLessons = EmployeeScheduleCategory::where('grade_id', userGrades())->get();
+        $defaultCategoryLessons = EmployeeScheduleCategory::where('grade_id', userGrades())->get()->map(fn($item) => [
+            'label' => $item->name,
+            'value' => $item->id
+        ]);
 
         switch ($employee->position->position->type) {
             case PositionTypeEnum::GURU:
@@ -107,8 +110,9 @@ class ScheduleController extends Controller
 
         $moments = CompanyMoment::holiday()->whenMonthOfYear($month)->get();
         $academicSubject = AcademicSubject::whereIn('level_id', $gradeLevel->pluck('id'))->get();
+        $schedule = null;
 
-        return view('hrms::service.attendance.schedules.create', compact('employee', 'dates', 'workshifts', 'moments', 'academicSubject', 'defaultLessons', 'defaultCategoryLessons', 'defaultCategoryAcademic', 'gradeLevel', 'start_at', 'end_at'));
+        return view('hrms::service.attendance.schedules.form', compact('employee', 'schedule', 'dates', 'workshifts', 'moments', 'academicSubject', 'defaultLessons', 'defaultCategoryLessons', 'defaultCategoryAcademic', 'gradeLevel', 'start_at', 'end_at'));
     }
 
     /**
@@ -151,7 +155,7 @@ class ScheduleController extends Controller
 
         $moments = CompanyMoment::holiday()->whenMonthOfYear($schedule->period)->get();
 
-        return view('hrms::service.attendance.schedules.show', compact('schedule', 'workshifts', 'dates', 'moments', 'academicSubject', 'defaultCategoryAcademic', 'gradeLevel', 'defaultLessons', 'defaultCategoryLessons', 'start_at', 'end_at'));
+        return view('hrms::service.attendance.schedules.form', compact('schedule', 'workshifts', 'dates', 'moments', 'academicSubject', 'defaultCategoryAcademic', 'gradeLevel', 'defaultLessons', 'defaultCategoryLessons', 'start_at', 'end_at'));
     }
 
     /**

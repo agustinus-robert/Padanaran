@@ -1,137 +1,137 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Jadwal kerja | ')
 @section('navtitle', 'Jadwal kerja')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@php
+$trashed = false;
+$columns = [
+    [
+        'label' => '',
+        'slot'  => fn ($employee) =>
+            '<div class="rounded-circle"
+                style="
+                    background: url(\''.$employee->user->profile_avatar_path.'\')
+                    center center no-repeat;
+                    background-size: cover;
+                    width: 32px;
+                    height: 32px;
+                ">
+            </div>',
+        'class' => 'text-center',
+    ],
+    [
+        'label' => 'Nama',
+        'slot'  => fn ($employee) =>
+            '<strong>'.($employee->user->profile->name ?? $employee->user->name).'</strong><br>
+             <small class="text-muted">'.($employee->contract->position?->position->name ?? '').'</small>',
+    ],
+    [
+        'label' => 'Periode',
+        'slot'  => fn () =>
+            strftime('%B %Y', strtotime(request('month', date('Y-m')))),
+    ],
+    [
+        'label' => 'Jumlah hari kerja',
+        'slot'  => fn ($employee) =>
+            $employee->schedules->first()?->workdays_count ?: '-',
+        'class' => 'text-center',
+    ],
+    [
+        'label' => '',
+        'slot'  => function ($employee) {
+
+            $schedule = $employee->schedules->first();
+            $routes   = [];
+            $params   = [];
+
+            if ($employee->contract) {
+
+                // EDIT / SHOW
+                if ($schedule && \Gate::allows('show', $schedule)) {
+                    $routes['show'] = 'hrms::service.attendance.schedules.show';
+                    $params['show'] = [
+                        'schedule' => $schedule->id,
+                        'next'     => url()->full(),
+                    ];
+                }
+
+                // CREATE
+                if (!$schedule && \Gate::allows('store', Modules\HRMS\Models\EmployeeSchedule::class)) {
+                    $routes['create'] = 'hrms::service.attendance.schedules.create';
+                    $params['create'] = [
+                        'employee' => $employee->id,
+                        'month'    => request('month', date('Y-m')),
+                        'next'     => url()->full(),
+                    ];
+                }
+
+                // DELETE
+                if ($schedule && \Gate::allows('destroy', $schedule)) {
+                    $routes['destroy'] = 'hrms::service.attendance.schedules.destroy';
+                    $params['destroy'] = [
+                        'schedule' => $schedule->id,
+                        'next'     => url()->full(),
+                    ];
+                }
+            }
+
+            return view('components.partial-actions', [
+                'item'     => $schedule ?? $employee,
+                'routes'   => $routes,
+                'params'   => $params,
+                'trashed'  => false,
+                'useModal' => false,
+            ])->render();
+        },
+        'class' => 'text-end',
+    ],
+];
+@endphp
+
+@section('body-content')
+    @include('components.navbar-admin')
+    <div class="row container-fluid">
         <div class="col-md-8">
-            <section>
-                <div class="card border-0">
-                    <div class="card-body">
-                        <i class="mdi mdi-format-list-bulleted"></i> Daftar jadwal kerja karyawan
-                    </div>
-
-                    <div class="col-12 p-2">
-                        <div class="container">
-                            @if (Session::has('success'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert alert-success">
-                                        {!! Session::get('success') !!}
-                                    </div>
-                                </div>
-                            @endif 
-
-                            @if (Session::has('danger'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert-danger alert">
-                                        {!! Session::get('danger') !!}
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="table-responsive border-top border-light">
-                        <table class="table-hover mb-0 table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th></th>
-                                    <th>Nama</th>
-                                    <th>Periode</th>
-                                    <th class="text-center">Jumlah hari kerja</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($employees as $employee)
-                                    @php($schedule = $employee->schedules->first())
-                                    <tr @class(['table-active' => is_null($employee->contract)])>
-                                        <td>{{ $loop->iteration + $employees->firstItem() - 1 }}</td>
-                                        <td width="10">
-                                            <div class="rounded-circle" style="background: url('{{ $employee->user->profile_avatar_path }}') center center no-repeat; background-size: cover; width: 32px; height: 32px;"></div>
-                                        </td>
-                                        <td nowrap>
-                                            <strong>{{ $employee->user->profile->name ?? $employee->user->name }}</strong> <br>
-                                            <small class="text-muted">{{ $employee->contract->position?->position->name ?? '' }}</small>
-                                        </td>
-                                        <td>{{ strftime('%B %Y', strtotime(request('month', date('Y-m')))) }}</td>
-                                        <td class="text-center">{{ $schedule?->workdays_count ?: '-' }}</td>
-                                        <td class="py-2 text-end" nowrap>
-                                            @if ($employee->contract)
-                                                @if ($schedule)
-                                                    @can('show', $schedule)
-                                                        <a class="btn btn-soft-warning rounded px-2 py-1" href="{{ route('hrms::service.attendance.schedules.show', ['schedule' => $schedule->id, 'next' => url()->full()]) }}" data-bs-toggle="tooltip" title="Ubah"><i class="mdi mdi-pencil-outline"></i></a>
-                                                    @endcan
-                                                @else
-                                                    @can('store', Modules\HRMS\Models\EmployeeSchedule::class)
-                                                        <a class="btn btn-soft-primary rounded px-2 py-1" href="{{ route('hrms::service.attendance.schedules.create', ['employee' => $employee->id, 'month' => request('month', date('Y-m')), 'next' => url()->full()]) }}" data-bs-toggle="tooltip" title="Buat baru"><i class="mdi mdi-plus-circle-outline"></i></a>
-                                                    @endcan
-                                                @endif
-                                                @can('destroy', $schedule)
-                                                    @if($schedule)
-                                                        <form class="form-block form-confirm d-inline" action="{{ route('hrms::service.attendance.schedules.destroy', ['schedule' => $schedule->id, 'next' => url()->full()]) }}" method="post"> @csrf @method('delete')
-                                                            <button class="btn btn-soft-danger rounded px-2 py-1" data-bs-toggle="tooltip" title="Hapus"><i class="mdi mdi-trash-can-outline"></i></button>
-                                                        </form>
-                                                    @endif
-                                                @endcan
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            @include('components.notfound')
-                                            @if (!request('trash'))
-                                                @can('store', Modules\HRMS\Models\EmployeeSchedule::class)
-                                                    <div class="mb-lg-5 mb-4 text-center">
-                                                        <a class="btn btn-soft-danger" href="{{ route('hrms::service.attendance.schedules.create', ['next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Buat jadwal kerja baru</a>
-                                                    </div>
-                                                @endcan
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-body">
-                        {{ $employees->appends(request()->all())->links() }}
-                    </div>
-                </div>
-            </section>
+            <x-table
+                :isSearch="true"
+                type="material"
+                :data="$employees"
+                :columns="$columns"
+                title="Kelola Jadwal Kehadiran"
+                searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}"
+                :trash="$trashed"
+            />
         </div>
+
         <div class="col-xl-4">
-            <div class="card border-0">
+            <div class="card mb-3">
                 <div class="card-body">
-                    <i class="mdi mdi-filter-outline"></i> Filter
+                    <h6>Filter</h6>
                 </div>
                 <div class="card-body border-top">
-                    <form class="form-block" action="{{ route('hrms::service.vacation.manage.index') }}" method="get">
+                    <form class="form-block" action="{{ route('hrms::service.attendance.schedules.index') }}" method="get">
                         <div class="mb-3">
-                            <label class="form-label required">Periode</label>
-                            <div class="input-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                    <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                    <span class="d-none d-sm-inline">Rentang waktu</span>
-                                </button>
-                                <input class="form-control" type="date" name="start_at" value="{{ $start_at }}" required>
-                                <input class="form-control" type="date" name="end_at" value="{{ $end_at }}" required>
-                            </div>
+                            <label class="form-label required">Periode Pengajuan</label>
+                             <x-date-range-select />
+                        </div>
+                        <div class="input-group input-group-dynamic mb-3">
+                            <label class="form-label">Cari Nama Karyawan</label>
+                            <x-input size="sm" type="text" name="search" value="{{ request('search') }}" onkeyup="searchTable()"></x-input>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="select-positions">Nama</label>
-                            <input class="form-control" name="search" placeholder="Cari nama karyawan ..." value="{{ request('search') }}" onkeyup="searchTable()" />
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
+                            <div class="form-check p-0">
                                 <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" @if (request('trashed', 0)) checked @endif>
                                 <label class="form-check-label" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-filter-outline"></i> Terapkan</button>
-                            <a class="btn btn-light" href="{{ route('hrms::service.vacation.manage.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
+                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
+                            <a class="btn btn-light" href="{{ route('hrms::service.attendance.schedules.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
                         </div>
                     </form>
                 </div>
@@ -144,14 +144,16 @@
                 </a>
             @endcan --}}
 
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
+            <div class="card">
+                <div class="card-header">
+                    <h6>Laporan</h6>
                 </div>
-                <div class="list-group list-group-flush border-top">
-                    <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi mengajar</a>
-                </div>
+
                 <div class="card-body border-top">
+                    <div class="list-group list-group-flush border-top">
+                        <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi mengajar</a>
+                    </div>
+
                     <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
                 </div>
             </div>

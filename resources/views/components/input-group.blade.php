@@ -1,38 +1,76 @@
 @props([
     'label' => null,
     'required' => false,
-    'labelCol' => '3',
-    'slotCol' => '12',
-    'isForm' => false,
-    'isRow' => false
+    'isRow' => false,
+
+    // control tampilan
+    'isInputGroup' => true,      // wrapper mb-3
+    'isOutline' => true,         // outline / non-outline
+    'isLegend' => false,         // fieldset + legend
+    'legendSize' => 'sm',        // sm | md
 ])
 
-@if($isForm == false)
-    <div class="input-group input-group-outline row mb-3">
-@else
-    <div class="form-group mb-3">
+@php
+    $legendClass = match($legendSize) {
+        'md' => 'fs-6',
+        default => 'fs-7'
+    };
+@endphp
+
+@if($isInputGroup)
+<div class="mb-3">
 @endif
 
-    @if ($label)
-        <label class="col-md-{{ $labelCol }} col-form-label">
-            {{ $label }}
-            @if($required)
-                <span class="text-danger">*</span>
-            @endif
-        </label>
+{{-- ===== FIELDSET MODE ===== --}}
+@if($isLegend)
+<fieldset class="border rounded p-3">
+    <legend class="float-none w-auto px-2 {{ $legendClass }}">
+        {{ $label }}
+        @if($required)
+            <span class="text-danger">*</span>
+        @endif
+    </legend>
+@endif
+
+{{-- ===== LABEL NORMAL ===== --}}
+@if(!$isLegend && $label)
+<label class="form-label">
+    {{ $label }}
+    @if($required)
+        <span class="text-danger">*</span>
     @endif
+</label>
+@endif
 
-
-    <div class="col-md-12">
-
-        @if($isRow == true)
-            <div class="row">
+{{-- ===== CONTENT ===== --}}
+@if($isOutline)
+    {{-- INPUT GROUP OUTLINE --}}
+    <div class="input-group input-group-outline">
+        @if($isRow)
+            <div class="row w-100">
                 {{ $slot }}
             </div>
         @else
             {{ $slot }}
         @endif
     </div>
+@else
+    {{-- INPUT GROUP BIASA (TANPA OUTLINE) --}}
+    <div class="input-group">
+        @if($isRow)
+            <div class="row w-100">
+                {{ $slot }}
+            </div>
+        @else
+            {{ $slot }}
+        @endif
+    </div>
+@endif
 
+@if($isLegend)
+</fieldset>
+@endif
 
+@if($isInputGroup)
 </div>
+@endif

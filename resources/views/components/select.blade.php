@@ -28,7 +28,7 @@
 
 <div style="position:relative;width:100%;">
     <select
-        class="py-2 form-select {{ $error }}"
+        class="form-select {{ $error }}"
         @if($selectName) name="{{ $selectName }}" @endif
         @if($id) id="{{ $id }}" @endif
         @if($required && $name) required @endif
