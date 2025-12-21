@@ -73,7 +73,7 @@
     $isCustom = $selected === 'custom';
 @endphp
 
-<div class="row g-2 align-items-end">
+{{-- <div class="row g-2 align-items-end"> --}}
 
     {{-- SELECT RANGE --}}
     <div class="col-12">
@@ -123,7 +123,7 @@
         <input type="hidden" name="{{ $startName }}" value="{{ $startAt }}">
         <input type="hidden" name="{{ $endName }}" value="{{ $endAt }}">
     @endunless
-</div>
+{{-- </div> --}}
 
 <script>
     const ranges = @json($rangeJs);

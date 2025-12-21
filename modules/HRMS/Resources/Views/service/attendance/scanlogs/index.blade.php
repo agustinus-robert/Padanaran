@@ -1,144 +1,183 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Daftar scanlog | ')
 @section('navtitle', 'Daftar scanlog')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@php
+$trashed = false;
+$columns = [
+    [
+        'label' => '#',
+        'slot'  => fn($scanlog, $loop) => $loop->iteration + $scanlogs->firstItem() - 1,
+    ],
+    [
+        'label' => '',
+        'slot'  => fn($scanlog) =>
+            '<div class="rounded-circle" style="
+                background: url(\'' . ($scanlog->employee?->user?->profile_avatar_path ?? '') . '\') center center no-repeat;
+                background-size: cover;
+                width: 32px;
+                height: 32px;
+            "></div>',
+        'class' => 'text-center',
+    ],
+    [
+        'label' => 'Nama',
+        'slot'  => fn($scanlog) =>
+            '<strong class="d-block">' . ($scanlog->employee?->user?->name ?? '-') . '</strong>
+            <small class="text-muted">' . ($scanlog->employee->contract->position?->position->name ?? '') . '</small>',
+    ],
+    [
+        'label' => 'Waktu scan',
+        'slot'  => fn($scanlog) =>
+            '<div class="text-center">' . $scanlog->created_at->format('H:i:s') . '</div>
+            <small class="text-muted">' . $scanlog->created_at->isoFormat('LL') . '</small>',
+        'class' => 'text-center',
+    ],
+    [
+        'label' => 'IP',
+        'slot'  => fn($scanlog) => $scanlog->ip,
+        'class' => 'text-center',
+    ],
+    [
+        'label' => 'Lokasi',
+        'slot'  => fn($scanlog) => $locations[$scanlog->location] ?? '-',
+        'class' => 'text-center small text-muted',
+    ],
+    [
+        'label' => 'Lokasi presensi',
+        'slot'  => function($scanlog) {
+            if (!count($scanlog->latlong ?? [])) return '';
+            $lat = $scanlog->latlong[0];
+            $long = $scanlog->latlong[1];
+            $coords = implode(', ', $scanlog->latlong);
+            return '<a href="https://www.google.com/maps/@' . $lat . ',' . $long . ',20z" target="_blank" data-bs-toggle="tooltip" title="' . $coords . '">
+                        <i class="mdi mdi-google-maps"></i>
+                        <span class="text-dark">' . $coords . '</span>
+                    </a>';
+        },
+        'class' => 'text-center small text-muted',
+    ],
+    [
+        'label' => 'Agent',
+        'slot'  => function($scanlog) {
+            $icon = $scanlog->user_agent->is_desktop ? 'mdi-monitor' : 'mdi-cellphone';
+            return '<div class="d-flex align-items-center">
+                        <i class="mdi ' . $icon . ' text-muted me-3"></i>
+                        <div>
+                            <div>' . $scanlog->user_agent->browser . ' ' . $scanlog->user_agent->browser_version . '</div>
+                            <small class="text-muted">' . $scanlog->user_agent->platform . ' ' . $scanlog->user_agent->platform_version . '</small>
+                        </div>
+                    </div>';
+        },
+    ],
+];
+@endphp
+
+
+@section('body-content')
+    @include('components.navbar-admin')
+    <div class="container-fluid row">
         <div class="col-xl-8">
-            <div class="card border-0">
-                <div class="card-body border-bottom">
-                    <i class="mdi mdi-format-list-bulleted"></i> Kelola presensi karyawan
-                </div>
-                <div class="table-responsive">
-                    <table class="mb-0 table align-middle">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th></th>
-                                <th>Nama</th>
-                                <th class="text-center" nowrap>Waktu scan</th>
-                                <th class="text-center">IP</th>
-                                <th class="text-center">Lokasi</th>
-                                <th class="text-center" nowrap>Lokasi presensi</th>
-                                <th class="text-center">Agent</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($scanlogs as $scanlog)
-                                <tr @class(['table-active' => is_null($scanlog->employee?->contract)])>
-                                    <td>{{ $loop->iteration + $scanlogs->firstItem() - 1 }}</td>
-                                    <td width="10">
-                                        <div class="rounded-circle" style="background: url('{{ $scanlog->employee?->user?->profile_avatar_path }}') center center no-repeat; background-size: cover; width: 32px; height: 32px;"></div>
-                                    </td>
-                                    <td>
-                                        <strong class="d-block">{{ $scanlog->employee?->user?->name }}</strong>
-                                        <small class="text-muted">{{ $scanlog->employee->contract->position?->position->name ?? '' }}</small>
-                                    </td>
-                                    <td class="text-center" nowrap>
-                                        <div>{{ $scanlog->created_at->format('H:i:s') }}</div>
-                                        <small class="text-muted">{{ $scanlog->created_at->isoFormat('LL') }}</small>
-                                    </td>
-                                    <td class="text-center">{{ $scanlog->ip }}</td>
-                                    <td class="small text-muted text-center" nowrap>
-                                        {{ $locations[$scanlog->location] }}
-                                    </td>
-                                    <td class="small text-muted text-center" nowrap>
-                                        @if (count($scanlog->latlong ?? []))
-                                            <a href="https://www.google.com/maps/{{ '@' . $scanlog->latlong[0] }},{{ $scanlog->latlong[1] }},20z" target="_blank" data-bs-toggle="tooltip" title="{{ implode(', ', $scanlog->latlong) }}"><i class="mdi mdi-google-maps"></i>
-                                                <span class="text-dark">
-                                                    {{ implode(', ', $scanlog->latlong) }}
-                                                </span>
-                                            </a>
-                                        @endif
-                                    </td>
-                                    <td class="d-flex align-items-center">
-                                        <i class="mdi {{ $scanlog->user_agent->is_desktop ? 'mdi-monitor' : 'mdi-cellphone' }} text-muted me-3"></i>
-                                        <div>
-                                            <div>{{ $scanlog->user_agent->browser }} {{ $scanlog->user_agent->browser_version }}</div>
-                                            <small class="text-muted">{{ $scanlog->user_agent->platform }} {{ $scanlog->user_agent->platform_version }}</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7">@include('components.notfound')</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $scanlogs->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                :isSearch="true"
+                type="material"
+                :data="$scanlogs"
+                :columns="$columns"
+                title="Kelola presensi karyawan"
+                searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-xl-4">
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-filter-outline"></i> Filter
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Filter</h6>
                 </div>
                 <div class="card-body border-top">
                     <form class="form-block" action="{{ route('hrms::service.attendance.scanlogs.index') }}" method="get">
-                        <div class="mb-3">
-                            <label class="form-label required">Periode</label>
-                            <div class="input-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                    <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                    <span class="d-none d-sm-inline">Rentang waktu</span>
-                                </button>
-                                <input class="form-control" type="date" name="start_at" value="{{ date('Y-m-d', strtotime($start_at)) }}" required>
-                                <input class="form-control" type="date" name="end_at" value="{{ date('Y-m-d', strtotime($end_at)) }}" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-departments">Departemen</label>
-                            <select class="form-select" id="select-departments" name="department">
-                                <option value>Semua departemen</option>
-                                @foreach ($departments as $department)
-                                    <option value="{{ $department->id }}" @selected(request('department') == $department->id) data-positions="{{ $department->positions->pluck('name', 'id') }}">{{ $department->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-positions">Jabatan</label>
-                            <select class="form-select" id="select-positions" name="position">
-                                <option value>Semua jabatan</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-positions">Nama</label>
-                            <input class="form-control" name="search" placeholder="Cari nama karyawan, ip, atau browser ..." value="{{ request('search') }}" onkeyup="searchTable()" />
-                        </div>
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Periode">
+                             <x-date-range-select />
+                        </x-input-group>
+
+                         <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
+                             <x-select
+                                id="select-departments"
+                                name="department"
+                                placeholder="Semua departemen"
+                                data-dependent="#select-positions"
+                                data-source="positions"
+                                :options="$departments->map(function($department) {
+                                    return [
+                                        'value' => $department->id,
+                                        'label' => $department->name,
+                                        'data-positions' => $department->positions->pluck('name', 'id'),
+                                        'selected' => request('department') == $department->id
+                                    ];
+                                })->toArray()"
+                            />
+                        </x-input-group>
+
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
+                            <x-select
+                                id="select-positions"
+                                name="position"
+                                placeholder="Semua jabatan"
+                            />
+                        </x-input-group>
+
+
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
+                            <x-input
+                                class="form-control"
+                                name="search"
+                                placeholder="Cari nama karyawan ..."
+                                value="{{ request('search') }}"
+                                onkeyup="searchTable()"
+                            />
+                        </x-input-group>
+
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-filter-outline"></i> Terapkan</button>
+                            <x-btn type="submit" varitant="dark">Terapkan</x-btn>
                             <a class="btn btn-light" href="{{ route('hrms::service.attendance.scanlogs.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
                         </div>
                     </form>
                 </div>
             </div>
             @can('store', \Modules\HRMS\Models\EmployeeScanLog::class)
-                <div class="card border-0">
-                    <div class="card-body">
-                        <i class="mdi mdi-calendar-import"></i> Input presensi manual
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Input presensi manual</h6>
                     </div>
                     <div class="card-body">
                         <form class="form-block" action="{{ route('hrms::service.attendance.scanlogs.store') }}" method="post"> @csrf
-                            <div class="mb-3">
-                                <label class="form-label">Nama karyawan</label>
-                                <select class="form-select @error('employee') is-invalid @enderror" name="employee" required>
-                                    @isset($employee)
-                                        <option value="{{ $employee->id }}" selected>{{ $employee->user->name }}</option>
-                                    @endisset
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Tanggal & waktu</label>
-                                <input type="datetime-local" class="form-control @error('datetime') is-invalid @enderror" name="datetime" value="{{ old('datetime', now()) }}" required />
-                                @error('datetime')
-                                    <small class="text-danger d-block"> {{ $message }} </small>
-                                @enderror
-                            </div>
+                             <x-input-group :isRow="false" :isInputGroup="true" label="Nama Karyawan">
+                                <x-select
+                                    name="employee"
+                                    :options="isset($employee) ? [
+                                        [
+                                            'value' => $employee->id,
+                                            'label' => $employee->user->name,
+                                            'selected' => true
+                                        ]
+                                    ] : []"
+                                    required
+                                />
+                             </x-input-group>
+
+                            <x-input-group :isRow="false" :isInputGroup="true" label="Tanggal & Waktu">
+                                <x-input
+                                    type="datetime-local"
+                                    name="datetime"
+                                    value="{{ old('datetime', now()->format('Y-m-d\TH:i')) }}"
+                                    required
+                                />
+                            </x-input-group>
+
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="btn-group">
@@ -151,23 +190,23 @@
                                         <small class="text-danger d-block"> {{ $message }} </small>
                                     @enderror
                                 </div>
-                                <button class="btn btn-soft-danger"><i class="mdi mdi-check"></i> Simpan</button>
+                                <x-btn variant="dark">Simpan</x-btn>
                             </div>
                         </form>
                     </div>
                 </div>
             @endcan
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-cog-outline"></i> Lanjutan
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Lanjutan</h6>
                 </div>
                 <div class="list-group list-group-flush border-top">
                     <a class="list-group-item list-group-item-action py-3" href="{{ route('hrms::service.attendance.manage.index') }}"><i class="mdi mdi-calendar-alert"></i> Kelola presensi</a>
                 </div>
             </div>
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
+            <div class="card">
+                <div class="card-header">
+                    <h6>Laporan</h6>
                 </div>
                 <div class="list-group list-group-flush border-top">
                     <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi presensi</a>
