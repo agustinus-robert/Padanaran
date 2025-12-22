@@ -142,27 +142,39 @@
                         </tr>
                     @else
                         @foreach($data as $index => $item)
-                        <tr>
-                            <td>{{ isset($data->firstItem) ? $data->firstItem() + $index : $loop->iteration }}</td>
-                            @foreach($columns as $col)
-                                <td class="align-items-center">
-                                    @if(isset($col['slot']) && is_callable($col['slot']))
-                                        {!! $col['slot']($item) !!}
-                                    @else
+                            <tr>
+                                <td>{{ isset($data->firstItem) ? $data->firstItem() + $index : $loop->iteration }}</td>
+
+                                @foreach($columns as $col)
+                                    <td class="align-items-center">
                                         @php
-                                            $value = data_get($item, $col['field']);
-                                            if(is_object($value)) $value = method_exists($value,'name') ? $value->name : json_encode($value);
+                                            $value = '-';
+
+                                            if(isset($col['field'])) {
+                                                if(is_callable($col['field'])) {
+                                                    $value = $col['field']($item);
+                                                } else {
+                                                    $value = data_get($item, $col['field'], '-');
+                                                }
+
+                                                if(is_object($value)) {
+                                                    $value = method_exists($value, 'name') ? $value->name : json_encode($value);
+                                                }
+                                            }
                                         @endphp
-                                        {{ $value ?? '-' }}
-                                    @endif
-                                </td>
-                            @endforeach
-                        </tr>
 
-                        @if(isset($extracollapse['row']) && is_callable($extracollapse['row']))
-                            {!! $extracollapse['row']($item, count($columns) + 1) !!}
-                        @endif
+                                        @if(isset($col['slot']) && is_callable($col['slot']))
+                                            {!! $col['slot']($item) !!}
+                                        @else
+                                            {!! $value !!}
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
 
+                            @if(isset($extracollapse['row']) && is_callable($extracollapse['row']))
+                                {!! $extracollapse['row']($item, count($columns) + 1) !!}
+                            @endif
                         @endforeach
                     @endif
                 </tbody>

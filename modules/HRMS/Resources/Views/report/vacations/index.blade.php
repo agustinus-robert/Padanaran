@@ -1,59 +1,117 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Laporan cuti | ')
 @section('navtitle', 'Laporan cuti')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@php
+$trashed = false;
+$columns = [
+    [
+        'label' => '',
+        'field' => fn($employee) => '<div class="rounded-circle" style="background: url(\''.$employee->user->profile_avatar_path.'\') center center no-repeat; background-size: cover; width: 32px; height: 32px;"></div>',
+        'raw' => true,
+        'class' => 'text-center',
+        'width' => '10',
+    ],
+    [
+        'label' => 'Nama',
+        'field' => fn($employee) => '<div class="fw-bold">'.$employee->user->name.'</div>'
+            . '<div class="small text-muted">'.optional(optional($employee->contracts->last())->position)->position->name ?? '-'.'</div>',
+        'raw' => true,
+        'nowrap' => true,
+    ],
+];
+
+foreach ($categories as $category) {
+    $columns[] = [
+        'label' => $category->name,
+        'field' => function($employee) use ($category, $end_at) {
+            $count = $employee->vacations
+                ->filter(fn($v) => $v->hasAllApprovableResultIn('APPROVE') && ($v->quota->ctg_id ?? null) == $category->id)
+                ->flatMap(fn($v) => collect($v->dates)->pluck('d'))
+                ->unique()
+                ->filter(fn($date) => $end_at->gte(\Carbon\Carbon::parse($date)))
+                ->count();
+            return $count;
+        },
+        'class' => 'text-center',
+    ];
+}
+
+$extra = [
+    'row' => function($employee, $colspan) {
+        return '<tr class="table-secondary"><td colspan="'.$colspan.'">Detail tambahan untuk '.$employee->user->name.'</td></tr>';
+    }
+];
+@endphp
+
+
+@section('body-content')
+    @include('components.navbar-admin')
+    <div class="container-fluid row">
         <div class="col-md-4">
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-filter-outline"></i> Filter
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Filter</h6>
                 </div>
                 <div class="card-body border-top">
                     <form class="form-block" action="{{ route('hrms::report.vacations.index') }}" method="get">
                         <div class="mb-3">
-                            <label class="form-label">Periode</label>
-                            <div class="flex-grow-1 col-auto">
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-light dropdown-toggle" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                        <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                        <span class="d-none d-sm-inline">Rentang waktu</span>
-                                    </button>
-                                    <input class="form-control" type="date" name="start_at" value="{{ $start_at->format('Y-m-d') }}" required>
-                                    <input class="form-control" type="date" name="end_at" value="{{ $end_at->format('Y-m-d') }}" required>
-                                </div>
-                            </div>
+                            <label class="form-label required">Periode</label>
+                            <x-date-range-select />
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-departments">Departemen</label>
-                            <select class="form-select" id="select-departments" name="department">
-                                <option value>Semua departemen</option>
-                                @foreach ($departments as $department)
-                                    <option value="{{ $department->id }}" @selected(request('department') == $department->id) data-positions="{{ $department->positions->pluck('name', 'id') }}">{{ $department->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-positions">Jabatan</label>
-                            <select class="form-select" id="select-positions" name="position_id">
-                                <option value>Semua jabatan</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Pencarian</label>
-                            <input class="form-control" name="search" placeholder="Cari nama atau nip ..." value="{{ request('search') }}" />
-                        </div>
+
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
+                             <x-select
+                                id="select-departments"
+                                name="department"
+                                placeholder="Semua departemen"
+                                data-dependent="#select-positions"
+                                data-source="positions"
+                                :options="$departments->map(function($department) {
+                                    return [
+                                        'value' => $department->id,
+                                        'label' => $department->name,
+                                        'data-positions' => $department->positions->pluck('name', 'id'),
+                                        'selected' => request('department') == $department->id
+                                    ];
+                                })->toArray()"
+                            />
+                         </x-input-group>
+
+                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
+                            <x-select
+                                id="select-positions"
+                                name="position"
+                                placeholder="Semua jabatan"
+                            />
+                        </x-input-group>
+
+
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
+                            <x-input
+                                class="mb-3"
+                                name="search"
+                                placeholder="Cari nama karyawan ..."
+                                value="{{ request('search') }}"
+                                onkeyup="searchTable()"
+                            />
+                        </x-input-group>
+
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-filter-outline"></i> Terapkan</button>
+                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
                             <a class="btn btn-light" href="{{ route('hrms::report.vacations.index', ['start_at' => $start_at->format('Y-m-d'), 'end_at' => $end_at->format('Y-m-d')]) }}"><i class="mdi mdi-refresh"></i> Reset</a>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Laporan</h6>
                 </div>
                 <div class="list-group list-group-flush border-top">
                     <button class="list-group-item list-group-item-action" onclick="summaryExportExcel()"><i class="mdi mdi-file-excel-outline me-3"></i> Unduh laporan data cuti</button>
@@ -65,63 +123,12 @@
         </div>
         <div class="col-md-8 order-md-first">
             <section>
-                <div class="card border-0">
-                    <div class="card-body">
-                        <i class="mdi mdi-format-list-bulleted"></i> Daftar karyawan aktif
-                    </div>
-                    <div class="table-responsive">
-                        <table class="mb-0 table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th></th>
-                                    <th>Nama</th>
-                                    @foreach ($categories as $category)
-                                        <th>{{ $category->name }}</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($employees as $employee)
-                                    @php
-                                        $contract = $employee->contracts->last();
-                                    @endphp
-                                    <tr>
-                                        <td width="10">{{ $loop->iteration + $employees->firstItem() - 1 }}</td>
-                                        <td width="10">
-                                            <div class="rounded-circle" style="background: url('{{ $employee->user->profile_avatar_path }}') center center no-repeat; background-size: cover; width: 32px; height: 32px;"></div>
-                                        </td>
-                                        <td nowrap>
-                                            <div class="fw-bold">{{ $employee->user->name }}</div>
-                                            <div class="small text-muted">{{ $contract->position?->position->name }}</div>
-                                        </td>
-                                        @foreach ($categories as $category)
-                                            @php
-                                                $count = $employee->vacations
-                                                ->filter(fn ($v) =>
-                                                    $v->hasAllApprovableResultIn('APPROVE') &&
-                                                    ($v->quota->ctg_id ?? null) == $category->id
-                                                )
-                                                ->flatMap(function ($v) {
-                                                    return collect($v->dates)->pluck('d');
-                                                })
-                                                ->unique()
-                                                ->filter(function ($date) use ($end_at) {
-                                                    return $end_at->gte(Carbon::parse($date));
-                                                })
-                                                ->count();
-                                            @endphp
-                                            <td>{{ $count }}</td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-body">
-                        {{ $employees->appends(request()->all())->links() }}
-                    </div>
-                </div>
+               <x-table
+                    :data="$employees"
+                    :columns="$columns"
+                    title="Daftar karyawan aktif"
+                    :extra="$extra"
+                />
             </section>
         </div>
     </div>
