@@ -120,7 +120,7 @@ $columns = [
                                     ];
                                 })->toArray()"
                             />
-                        </x-input-group>
+                         </x-input-group>
 
                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
                             <x-select
