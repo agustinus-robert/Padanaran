@@ -1,36 +1,38 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Distribusi cuti | ')
 @section('navtitle', 'Distribusi cuti')
 
-@section('content')
-    <div class="d-flex align-items-center mb-4">
-        <a class="text-decoration-none" href="{{ request('next', route('hrms::service.vacation.quotas.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-        <div class="ms-4">
-            <h2 class="mb-1">Distribusi cuti karyawan</h2>
-            <div class="text-secondary">Anda dapat menambahkan pembagian cuti karyawan dengan mengisi formulir di bawah</div>
-        </div>
-    </div>
-    <div class="card mb-4 border-0">
-        <div class="card-body">
-            <form class="form-block" action="{{ route('hrms::service.vacation.quotas.store', ['next' => request('next')]) }}" method="POST"> @csrf
-                <div class="row required mb-3">
-                    <label class="col-lg-4 col-xl-3 col-form-label">Nama guru</label>
-                    <div class="col-lg-8 col-xl-7 col-xxl-4">
-                        <select class="@error('employee') is-invalid @enderror form-select" name="employee" required>
-                            @isset($employee)
-                                <option value="{{ $employee->id }}" selected>{{ $employee->user->name ?? $employee->user->profile->name }}</option>
-                            @endisset
-                        </select>
-                        @error('employee')
-                            <small class="text-danger d-block"> {{ $message }} </small>
-                        @enderror
-                    </div>
-                </div>
-                <div class="row required mb-3">
-                    <label class="col-lg-4 col-xl-3 col-form-label">Kategori cuti</label>
-                    <div class="col-xl-9 col-xxl-9">
-                        <div class="table-responsive rounded border">
+@push('nav')
+@include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@section('body-content')
+<div class="row container-fluid justify-content-center">
+    @include('components.navbar-admin')
+
+    <div class="col-xxl-8 col-xl-10">
+        <div class="card mb-4 border-0 shadow-sm">
+            <x-card-header type="{{ config('theme.default') }}">
+                Distribusi Cuti Karyawan
+            </x-card-header>
+
+            <div class="card-body">
+                <form class="form-block" action="{{ route('hrms::service.vacation.quotas.store', ['next' => request('next')]) }}" method="POST"> @csrf
+                    <x-input-group label="Nama guru" required>
+                        <x-select
+                            name="employee"
+                            :options="[
+                                ['value' => $employee->id, 'label' => $employee->user->name ?? $employee->user->profile->name]
+                            ]"
+                            :value="old('employee', $employee->id ?? '')"
+                            required
+                        />
+                    </x-input-group>
+
+
+                    <x-input-group :isRow="false" label="Kategori cuti" required>
+                        <div class="table table-responsive rounded border">
                             <table class="table-hover mb-0 table">
                                 <thead>
                                     <tr>
@@ -44,83 +46,93 @@
                                     @foreach (setting('cmp_services_vacation_quotas', collect(json_decode('[{}]'))) as $quota)
                                         <tr @if ($loop->first) id="categories-template" @endif>
                                             <td>
-                                                <select class="categories-select form-select" name="quotas[category][]" onchange="applyQuota(event)" required>
-                                                    <option value="">-- Pilih kategori --</option>
-                                                    @foreach ($categories->groupBy(fn($ctg) => $ctg->type->label()) as $type => $_categories)
-                                                        <optgroup class="{{ $type }}" label="{{ $type }}">
-                                                            @foreach ($_categories as $category)
-                                                                <option value="{{ $category->id }}" data-quota="{{ $category->meta->quota ?? -1 }}" @selected(old('quotas.category.*', optional($quota)['ctg_id']) == $category->id)>{{ $category->name }}</option>
-                                                            @endforeach
-                                                        </optgroup>
-                                                    @endforeach
-                                                </select>
-                                                @error('quotas.category.*')
-                                                    <small class="text-danger d-block"> {{ $message }} </small>
-                                                @enderror
+                                               @php
+                                                    $categoryOptions = $categories->groupBy(fn($ctg) => $ctg->type->label())->map(function($group, $type) {
+                                                        return [
+                                                            'label' => $type,
+                                                            'children' => $group->map(fn($ctg) => [
+                                                                'value' => $ctg->id,
+                                                                'label' => $ctg->name,
+                                                                'data-quota' => $ctg->meta->quota ?? -1
+                                                            ])->toArray()
+                                                        ];
+                                                    })->values()->toArray();
+                                                @endphp
+
+                                                <x-select
+                                                    name="quotas[category][]"
+                                                    class="categories-select"
+                                                    :options="$categoryOptions"
+                                                    :value="old('quotas.category.*', optional($quota)['ctg_id'] ?? '')"
+                                                    required
+                                                    onchange="applyQuota(event)"
+                                                    placeholder="-- Pilih kategori --"
+                                                />
+                                            </td>
+
+                                            <td>
+                                                <x-input-group>
+                                                    <x-input type="date" name="quotas[start_at][]" :value="old('quotas.start_at.*', request('year', date('Y')).'-01-01')" required />
+                                                    <p class="m-2">s.d.</p>
+                                                    <x-input type="date" name="quotas[end_at][]" :value="old('quotas.end_at.*', request('year', date('Y')).'-12-31')" />
+                                                </x-input-group>
                                             </td>
                                             <td>
-                                                <div class="input-group">
-                                                    <input type="date" class="form-control @error('start_at') is-invalid @enderror" name="quotas[start_at][]" value="{{ old('quotas.start_at.*', request('year', date('Y')) . '-01-01') }}" required />
-                                                    <div class="input-group-text">s.d.</div>
-                                                    <input type="date" class="form-control @error('end_at') is-invalid @enderror" name="quotas[end_at][]" value="{{ old('quotas.end_at.*', request('year', date('Y')) . '-12-31') }}" />
-                                                </div>
-                                                @error('quotas.start_at.*')
-                                                    <small class="text-danger d-block"> {{ $message }} </small>
-                                                @enderror
-                                                @error('quotas.end_at.*')
-                                                    <small class="text-danger d-block"> {{ $message }} </small>
-                                                @enderror
+                                                <x-input type="number" name="quotas[quota][]" :value="old('quotas.quota.*', optional($quota)['quota'])" class="qty" />
                                             </td>
                                             <td>
-                                                <input type="number" class="form-control qty @error('quota') is-invalid @enderror" name="quotas[quota][]" value="{{ old('quotas.quota.*', optional($quota)['quota']) }}" />
-                                                @error('quotas.quota.*')
-                                                    <small class="text-danger d-block"> {{ $message }} </small>
-                                                @enderror
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-light btn-delete text-danger @if ($loop->first) d-none @endif" onclick="removeRow(event)"><i class="mdi mdi-trash-can-outline"></i></button>
+                                                <button type="button" class="btn btn-danger btn-delete @if($loop->first) d-none @endif" onclick="removeRow(event)">
+                                                    <i class="material-symbols-rounded">delete</i>
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                             <div class="p-2">
-                                <button id="categories-add" type="button" class="btn btn-light text-danger"><i class="mdi mdi-plus-circle-outline"></i> Tambah kategori baru</button>
+                                <button id="categories-add" type="button" class="btn btn-sm btn-info text-white">
+                                    <i class="material-symbols-rounded text-white fs-5">add</i> Tambah kategori baru
+                                </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label class="col-lg-4 col-xl-3 col-form-label">Tampilkan di user mulai tanggal</label>
-                    <div class="col-lg-8 col-xl-7 col-xxl-4">
-                        <input type="datetime-local" class="form-control @error('visible_at') is-invalid @enderror" name="visible_at">
-                        @error('visible_at')
-                            <small class="text-danger d-block"> {{ $message }} </small>
-                        @enderror
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-lg-8 offset-lg-4 offset-xl-3">
-                        <div class="card card-body border">
-                            <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" id="as_template" name="as_template" type="checkbox" value="1">
-                                <label class="form-check-label ms-3" for="as_template">
-                                    <div><strong>Jadikan sebagai template default</strong></div>
-                                    <div class="text-muted">Jika dicentang, maka penambahan distribusi karyawan selanjutnya akan menggunakan kategori yang sama.</div>
+                    </x-input-group>
+
+                    <x-input-group label="Tampilkan di user mulai tanggal">
+                        <x-input type="datetime-local" name="visible_at" :value="old('visible_at')" />
+                    </x-input-group>
+
+
+                    <div class="card card-body border mb-3 justify checklist-item checklist-item-primary">
+                        <x-input-group :isRow="true" :isOutline="false">
+                            <div class="form-check is-filled">
+                                <x-input type="checkbox" name="as_template" id="as_template" value="1" />
+                                <label for="as_template" class="ms-2">
+                                    <strong>Jadikan sebagai template default</strong><br>
+                                    <span class="text-muted">Jika dicentang, maka penambahan distribusi karyawan selanjutnya akan menggunakan kategori yang sama.</span>
                                 </label>
                             </div>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" id="agreement" type="checkbox" required>
-                            <label class="form-check-label" for="agreement">Dengan ini saya menyatakan data di atas adalah valid</label>
-                        </div>
-                        <button class="btn btn-soft-danger"><i class="mdi mdi-check"></i> Simpan</button>
-                        <a class="btn btn-ghost-light text-dark" href="{{ request('next', route('hrms::service.vacation.quotas.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
+                        </x-input-group>
                     </div>
-                </div>
-            </form>
+
+                    <div class="card card-body border mb-3 justify checklist-item checklist-item-primary">
+                        <x-input-group :isRow="true" :isOutline="false">
+                                <div class="form-check is-filled">
+                                    <x-input type="checkbox" name="agreement" id="agreement" required />
+                                    <label for="agreement" class="ms-2">Dengan ini saya menyatakan data di atas adalah valid</label>
+                                </div>
+                        </x-input-group>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <x-btn variant="dark"><i class="mdi mdi-check"></i> Simpan</x-btn>
+                        <a class="btn btn-light text-dark" href="{{ request('next', route('hrms::service.vacation.quotas.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
+</div>
 @endsection
 
 @push('styles')
@@ -134,7 +146,7 @@
         let religion = {!! json_encode($employee->user->getMeta('profile_religion') ?? '') !!};
 
         document.addEventListener("DOMContentLoaded", () => {
-            renderTomSelect();
+            //renderTomSelect();
             renderYearlyQuota();
             document.getElementById('categories-add').addEventListener('click', addRow);
         });

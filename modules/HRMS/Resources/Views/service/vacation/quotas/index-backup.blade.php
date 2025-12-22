@@ -81,10 +81,12 @@ $columns = [
 
             if ($employee->contract) {
 
+                // SHOW (collapse handled di view)
                 if (\Gate::allows('viewAny', Modules\HRMS\Models\EmployeeVacationQuota::class)) {
                     $routes['show'] = '#collapse-'.$employee->id;
                 }
 
+                // CREATE
                 if (\Gate::allows('store', Modules\HRMS\Models\EmployeeVacationQuota::class)) {
                     $routes['create'] = 'hrms::service.vacation.quotas.create';
                     $params['create'] = [
@@ -120,32 +122,27 @@ $columns = [
                 title="Kelola Distribusi Quota"
                 searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}"
                 :trash="$trashed"
-                :extracollapse="[
-                    'row' => function($employee, $colspan) {
-                        return view('hrms::service.vacation.quotas.extras-collapse', compact('employee','colspan'))->render();
-                    }
-                ]"
             />
         </div>
         <div class="col-md-4">
-            <div class="card mb-3">
+            <div class="card border-0">
                 <div class="card-header">
                     <h6>Filter</h6>
                 </div>
                 <div class="card-body border-top">
                     <form class="form-block" action="{{ route('hrms::service.vacation.quotas.index') }}" method="get">
-                        <x-input-group label="Tahun" required>
-                            <x-input type="number" min="1970" max="{{ date('Y', strtotime('+10 years')) }}" id="year" name="year" value="{{ request('year', date('Y')) }}" required />
-                        </x-input-group>
-
+                        <div class="mb-3">
+                            <label class="form-label required" for="year">Tahun</label>
+                            <input type="number" min="1970" max="{{ date('Y', strtotime('+10 years')) }}" step="1" class="form-control" id="year" name="year" value="{{ request('year', date('Y')) }}" required>
+                        </div>
                         <div>
-                            <x-btn type="submit" variant="dark">Filter</x-btn>
+                            <button class="btn btn-soft-danger"><i class="mdi mdi-magnify"></i> Filter</button>
                         </div>
                     </form>
                 </div>
             </div>
             @if (false)
-                <div class="card mb-3">
+                <div class="card mb-3 border-0">
                     <div class="card-header">
                         <h6>Menu lainnya</h6>
                     </div>

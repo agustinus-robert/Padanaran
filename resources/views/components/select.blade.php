@@ -106,7 +106,6 @@
 
 </div>
 
-{{-- JS DI DALAM KOMPONEN --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('select[data-dependent]').forEach(function (select) {

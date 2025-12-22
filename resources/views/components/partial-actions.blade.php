@@ -52,14 +52,26 @@
         @endif
     @else
         @if(!empty($routes['show']))
-            <a class="btn btn-outline-info btn-uniform m-0 py-2"
-               href="{{ is_string($routes['show']) && str_starts_with($routes['show'], 'http')
-                        ? $routes['show']
-                        : route($routes['show'], $params['show'] ?? $item->id) }}"
-               title="Detail">
-                <i class="material-symbols-rounded">visibility</i>
-            </a>
+            @if(is_string($routes['show']) && str_starts_with($routes['show'], '#'))
+                <button type="button"
+                    class="btn btn-outline-info btn-uniform m-0 py-2"
+                    data-bs-toggle="collapse"
+                    data-bs-target="{{ $routes['show'] }}"
+                    title="Detail">
+                    <i class="material-symbols-rounded">apartment</i>
+                </button>
+            @else
+                <a class="btn btn-outline-info btn-uniform m-0 py-2"
+                href="{{ is_string($routes['show']) && str_starts_with($routes['show'], 'http')
+                            ? $routes['show']
+                            : route($routes['show'], $params['show'] ?? $item->id) }}"
+                title="Detail">
+                    <i class="material-symbols-rounded">visibility</i>
+                </a>
+            @endif
+
         @endif
+
 
         @if(!empty($routes['create']))
             <a class="btn btn-outline-success btn-uniform m-0 py-2"

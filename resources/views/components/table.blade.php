@@ -7,7 +7,8 @@
     'trash' => false,
     'isSearch' => true,
     'searchDynamic' => [], // <<< INI
-    'extra' => []
+    'extra' => [],
+    'extracollapse' => []
 ])
 
 @php
@@ -157,6 +158,11 @@
                                 </td>
                             @endforeach
                         </tr>
+
+                        @if(isset($extracollapse['row']) && is_callable($extracollapse['row']))
+                            {!! $extracollapse['row']($item, count($columns) + 1) !!}
+                        @endif
+
                         @endforeach
                     @endif
                 </tbody>
@@ -235,6 +241,10 @@
                                 </td>
                             @endforeach
                         </tr>
+
+                        @if(isset($extracollapse['row']) && is_callable($extracollapse['row']))
+                            {!! $extracollapse['row']($item, count($columns) + 1) !!}
+                        @endif
                     @endforeach
                 @endif
             </tbody>
