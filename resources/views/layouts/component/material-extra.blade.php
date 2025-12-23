@@ -93,8 +93,27 @@
 
             </div>
         </div>
-    </div>
 
+        <hr class="horizontal dark my-sm-4">
+
+        <div class="row">
+            <div class="col-12">
+                <a href="{{ route('account::user.profile') }}"
+                    class="btn bg-gradient-info  d-flex align-items-center gap-2 bg-body-secondary rounded">
+                        <span class="material-symbols-rounded fs-4">account_circle</span>
+                        <span class="menu-label" style="font-size:15px;">Profil anda</span>
+                </a>
+            </div>
+
+            <div class="col-12">
+                <a href="{{ route('logout') }}"
+                    class="btn bg-gradient-primary d-flex align-items-center gap-2 bg-body-secondary rounded">
+                        <span class="material-symbols-rounded fs-4">logout</span>
+                        <span class="menu-label" style="font-size:15px;">Keluar</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     </div>
   </div>
