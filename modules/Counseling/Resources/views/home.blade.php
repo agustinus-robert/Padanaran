@@ -1,9 +1,15 @@
-@extends('counseling::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Beranda - ')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('counseling::layouts.includes.navbar-counseling')
+@endpush
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-md-7 col-lg-8">
             <div class="jumbotron mb-4 border bg-white p-2">
                 <h2>Assalamu'alaikum {{ \Str::title(auth()->user()->profile->full_name) }}!</h2>
