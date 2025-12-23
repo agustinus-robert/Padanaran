@@ -116,7 +116,7 @@ class AttendanceController extends Controller
         $overtime_days = $presences->count() >= $workDays ? $presences->take(($presences->count() - $workDays) * -1) : collect([]);
         $overtime_holidays = $entries->flatten()->whereIn('date', $moments->pluck('date'))->values();
 
-        return view('hrms::summary.attendances.create', compact('employee', 'start_at', 'end_at', 'locations', 'leaves', 'vacations', 'overtimes', 'moments', 'schedules', 'entries', 'overtime_days', 'overtime_holidays', 'adtDays', 'workDays', 'presences', 'adtList', 'scanlogs'));
+        return view('hrms::summary.attendances.form', compact('employee', 'start_at', 'end_at', 'locations', 'leaves', 'vacations', 'overtimes', 'moments', 'schedules', 'entries', 'overtime_days', 'overtime_holidays', 'adtDays', 'workDays', 'presences', 'adtList', 'scanlogs'));
     }
 
     /**
@@ -160,7 +160,7 @@ class AttendanceController extends Controller
 
         $entries = $schedules->pluck('entries')->mapWithKeys(fn($k) => $k)->filter(fn($v, $k) => $attendance->start_at->lte(Carbon::parse($k)) && $attendance->end_at->gte(Carbon::parse($k)));
 
-        return view('hrms::summary.attendances.edit', [
+        return view('hrms::summary.attendances.form', [
             'attendance' => $attendance,
             'entries' => $entries,
             'locations' => $locations,

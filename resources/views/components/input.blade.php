@@ -20,10 +20,17 @@
 @endphp
 
 <input
-    type="{{ $type }}"
+    type="{{ $type == 'number' ? 'text' : $type }}"
     value="{{ $inputValue }}"
     {{ $disabled ? 'disabled' : '' }}
-    {!! $attributes->merge([
-        'class' => $form
-    ]) !!}
+
+    {{-- Tambahkan Validasi Jika Type adalah Number --}}
+    @if($type === 'number')
+        pattern="[0-9]*"
+        inputmode="numeric"
+        onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+    @endif
+
+    {!! $attributes->merge(['class' => $form]) !!}
 />

@@ -8,6 +8,7 @@
     'isOutline' => true,         // outline / non-outline
     'isLegend' => false,         // fieldset + legend
     'legendSize' => 'sm',        // sm | md
+    'prepend' => null
 ])
 
 @php
@@ -56,14 +57,24 @@
     </div>
 @else
     {{-- INPUT GROUP BIASA (TANPA OUTLINE) --}}
-    <div class="input-group">
-        @if($isRow)
+    <div class="input-group input-group-dynamic">
+        @if(!empty($prepend))
+            <span class="input-group-text">{{ $prepend }}</span>
+        @endif
+        {{ $slot }}
+                {{-- @if($isRow)
             <div class="row w-100">
+                @if(!empty($prepend))
+                    <span class="input-group-text">{{ $prepend }}</span>
+                @endif
                 {{ $slot }}
             </div>
         @else
+            @if(!empty($prepend))
+                <span class="input-group-text">{{ $prepend }}</span>
+            @endif
             {{ $slot }}
-        @endif
+        @endif --}}
     </div>
 @endif
 

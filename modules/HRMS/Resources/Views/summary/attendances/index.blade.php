@@ -107,9 +107,6 @@ $columns = [
 ];
 @endphp
 
-
-
-
 @section('body-content')
     @include('components.navbar-admin')
 

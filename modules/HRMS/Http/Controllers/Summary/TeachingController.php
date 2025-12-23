@@ -378,7 +378,7 @@ class TeachingController extends Controller
         */
 
         // $employeeVacationsSums = 0;
-        return view('hrms::summary.teacher.create', compact('employee', 'start_at', 'end_at', 'locations', 'leaves', 'vacations', 'overtimes', 'moments', 'schedules', 'entries', 'overtime_days', 'overtime_holidays', 'adtDays', 'workDays', 'presences', 'adtWfo', 'scanlogs', 'extraOver', 'hourExtra', 'workHour', 'hourReguler', 'hourTotal', 'userNow', 'presencesTotal', 'adtWfh', 'presenced', 'employeeLeaves', 'employeeVacations'));
+        return view('hrms::summary.teacher.form', compact('employee', 'start_at', 'end_at', 'locations', 'leaves', 'vacations', 'overtimes', 'moments', 'schedules', 'entries', 'overtime_days', 'overtime_holidays', 'adtDays', 'workDays', 'presences', 'adtWfo', 'scanlogs', 'extraOver', 'hourExtra', 'workHour', 'hourReguler', 'hourTotal', 'userNow', 'presencesTotal', 'adtWfh', 'presenced', 'employeeLeaves', 'employeeVacations'));
     }
 
     /**
@@ -780,7 +780,7 @@ class TeachingController extends Controller
             $hourExtra = 0;
         }
 
-        return view('administration::summary.teacher.edit', [
+        return view('hrms::summary.teacher.form', [
             'attendance' => $filteredRecap[0],
             'teach' => $filteredRecap[1],
             'entries' => $entries,
