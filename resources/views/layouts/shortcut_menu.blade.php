@@ -12,7 +12,7 @@
                                 <i class="bx bxs-user-rectangle" style='font-size:30px;'></i>
                                 <span>Dashboard</span>
                             </a>
-                        </div> 
+                        </div>
                     @endcan
 
                     @can('core::access')
@@ -59,7 +59,7 @@
                         </a>
                     </div>
                     @endcan
-            
+
                     @can('teacher::access')
                         <div class="col-md-4">
                             <a class="dropdown-icon-item" href="{{ route('teacher::home') }}">
@@ -113,7 +113,7 @@
                         </a>
                     </div>
                     @endcan
-                
+
 
 
                     @can('portal::access')
@@ -122,11 +122,11 @@
                                 <i class="bx bxs-user-rectangle" style='font-size:30px;'></i>
                                 <span>Dashboard MSDM</span>
                             </a>
-                        </div> 
+                        </div>
                     @endcan
                 @endif
             </div>
-            
+
         </div>
     </div>
 </div>

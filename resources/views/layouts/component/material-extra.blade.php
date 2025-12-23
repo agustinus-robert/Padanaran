@@ -11,9 +11,91 @@
         <!-- End Toggle Button -->
       </div>
       <hr class="horizontal dark my-1">
-      <div class="card-body pt-sm-3 pt-0">
 
-      </div>
+      <div class="card-body pt-0">
+        <div class="container-fluid px-0">
+
+            <div class="row text-center">
+
+                <!-- Setting -->
+
+                <div class="col-4 border border-light">
+                    <a class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5"
+                    href="{{ route('core::dashboard') }}" class="menu-tile">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">settings</span>
+                        <span class="menu-label" style="font-size:15px;">Setting</span>
+                    </a>
+                </div>
+
+                <!-- Tata Usaha -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('administration::dashboard') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">apartment</span>
+                        <span class="menu-label" style="font-size:15px;">Administrasi</span>
+                    </a>
+                </div>
+
+                <!-- Guru -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('teacher::home') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">menu_book</span>
+                        <span class="menu-label" style="font-size:15px;">Guru</span>
+                    </a>
+                </div>
+
+                <!-- Akademik -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('academic::home') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">school</span>
+                        <span class="menu-label" style="font-size:15px;">Akademik</span>
+                    </a>
+                </div>
+
+                <!-- Konseling -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('counseling::home') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">record_voice_over</span>
+                        <span class="menu-label" style="font-size:15px;">Konseling</span>
+                    </a>
+                </div>
+
+                <!-- HRMS -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('hrms::dashboard') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">badge</span>
+                        <span class="menu-label" style="font-size:15px;">HRMS</span>
+                    </a>
+                </div>
+
+                <!-- MSDM -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('portal::dashboard-msdm.index') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">groups</span>
+                        <span class="menu-label" style="font-size:15px;">MSDM</span>
+                    </a>
+                </div>
+
+                <!-- Finance -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('finance::dashboard') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">payments</span>
+                        <span class="menu-label" style="font-size:15px;">Finance</span>
+                    </a>
+                </div>
+
+                <!-- Pondok -->
+                <div class="col-4 border border-light">
+                    <a href="{{ route('boarding::dashboard') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">home_work</span>
+                        <span class="menu-label" style="font-size:15px;">Pondok</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
     </div>
   </div>
 

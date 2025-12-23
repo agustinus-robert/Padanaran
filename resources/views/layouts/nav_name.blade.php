@@ -14,7 +14,7 @@
             \Modules\Core\Enums\PositionTypeEnum::KASIRTOKO->value,
             \Modules\Core\Enums\PositionTypeEnum::KASIRSWALAYAN->value,
             \Modules\Core\Enums\PositionTypeEnum::SUPPLIER->value,
-        ])) 
+        ]))
             <a class="dropdown-item" href="{{ route('portal::dashboard.index') }}"><i class="bx bxs-dashboard  font-size-16 me-1 align-middle"></i> <span key="t-profile">Dashboard</span></a>
         @else
             <a class="dropdown-item" href="{{ route('portal::dashboard-msdm.index') }}"><i class="bx bxs-dashboard  font-size-16 me-1 align-middle"></i> <span key="t-profile">Dashboard</span></a>
