@@ -1,155 +1,227 @@
-@extends('hrms::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Persetujuan gaji | ')
 @section('navtitle', 'Persetujuan gaji')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('hrms::layouts.includes.navbar-hrms')
+@endpush
+
+@php
+$trashed = false;
+$columns = [
+    [
+        'label' => '',
+        'slot' => function ($employee) {
+            return '
+                <div class="rounded-circle"
+                    style="
+                        background: url(\''.$employee->user->profile_avatar_path.'\') center center no-repeat;
+                        background-size: cover;
+                        width: 32px;
+                        height: 32px;">
+                </div>
+            ';
+        },
+        'raw' => true,
+        'attributes' => ['width' => 10],
+    ],
+    [
+        'label' => 'Nama',
+        'slot' => function ($employee) {
+
+            $position = $employee->position?->position
+                ? '<div class="small text-muted">'.$employee->position->position->name.'</div>'
+                : '';
+
+            return '
+                <div class="fw-bold">'.$employee->user->name.'</div>
+                '.$position.'
+            ';
+        },
+        'raw' => true,
+        'attributes' => ['nowrap' => true],
+    ],
+    [
+        'label' => 'Periode',
+        'class' => 'text-center',
+        'slot' => function ($employee) use ($start_at, $end_at) {
+
+            $html = '<div class="d-flex align-items-center justify-content-center">';
+
+            if (!$start_at->isSameDay($end_at)) {
+                $html .= '
+                    <div>
+                        <h6 class="mb-0">'.$start_at->format('d-M').'</h6>
+                        <small class="text-muted">'.$start_at->format('Y').'</small>
+                    </div>
+                    <div class="text-muted small mx-2">&mdash; s.d. &mdash;</div>
+                ';
+            }
+
+            $html .= '
+                <div>
+                    <h6 class="mb-0">'.$end_at->format('d-M').'</h6>
+                    <small class="text-muted">'.$end_at->format('Y').'</small>
+                </div>
+            </div>';
+
+            return $html;
+        },
+        'raw' => true,
+    ],
+    [
+        'label' => 'THP (Rp)',
+        'class' => 'text-center',
+        'slot' => function ($employee) {
+
+            $salary = optional($employee->salaries->first())->amount;
+
+            return $salary
+                ? number_format($salary, 0, ',', '.')
+                : '-';
+        },
+    ],
+    [
+        'label' => 'Tgl terbit',
+        'class' => 'text-center',
+        'slot' => function ($employee) {
+
+            $date = optional($employee->salaries->first()?->validated_at);
+
+            return $date
+                ? '<span class="badge bg-light fw-normal text-dark">'
+                    .$date->isoFormat('DD MMM YYYY').
+                  '</span>'
+                : '-';
+        },
+        'raw' => true,
+    ],
+    [
+        'label' => 'Tgl persetujuan',
+        'class' => 'text-center',
+        'slot' => function ($employee) {
+
+            $date = optional($employee->salaries->first()?->approved_at);
+
+            return $date
+                ? '<span class="badge bg-soft-success fw-normal text-success">'
+                    .$date->isoFormat('DD MMM YYYY').
+                  '</span>'
+                : '-';
+        },
+        'raw' => true,
+    ],
+    [
+        'label' => '',
+        'class' => 'text-end',
+        'slot' => function ($employee) {
+
+            $salary = $employee->salaries->first();
+
+            if (!$salary || !$salary->amount || !$salary->validated_at) {
+                return '-';
+            }
+
+            $routes = [];
+            $params = [];
+
+            // PRINT / SHOW
+            if (\Gate::allows('show', $salary)) {
+                $routes['show'] = 'hrms::payroll.approvals.show';
+                $params['show'] = [
+                    'salary' => $salary->id,
+                ];
+            }
+
+            // DETAIL / EDIT
+            if (\Gate::allows('update', $salary)) {
+                $routes['edit'] = 'hrms::payroll.approvals.edit';
+                $params['edit'] = [
+                    'salary' => $salary->id,
+                    'next'   => url()->full(),
+                ];
+            }
+
+            return view('components.partial-actions', [
+                'item'     => $salary,
+                'routes'   => $routes,
+                'params'   => $params,
+                'trashed'  => false,
+                'useModal' => false,
+            ]);
+        },
+    ],
+];
+@endphp
+
+@section('body-content')
+     @include('components.navbar-admin')
+    <div class="row container-fluid">
         <div class="col-md-8">
             <section>
-                <div class="card border-0">
-                    <div class="card-body">
-                        <i class="mdi mdi-format-list-bulleted"></i> Daftar karyawan
-                    </div>
-
-                    <div class="col-12 p-2">
-                        <div class="container">
-                            @if (Session::has('success'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert alert-success">
-                                        {!! Session::get('success') !!}
-                                    </div>
-                                </div>
-                            @endif 
-
-                            @if (Session::has('danger'))
-                                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                                    <div class="alert-danger alert">
-                                        {!! Session::get('danger') !!}
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="table-responsive border-top border-light">
-                        <table class="mb-0 table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th></th>
-                                    <th>Nama</th>
-                                    <th class="text-center">Periode</th>
-                                    <th class="text-center">THP (Rp)</th>
-                                    <th class="text-center">Tgl terbit</th>
-                                    <th class="text-center">Tgl persetujuan</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($employees as $employee)
-                                    @php($salary = $employee->salaries->first())
-                                    <tr>
-                                        <td width="10">{{ $loop->iteration + $employees->firstItem() - 1 }}</td>
-                                        <td width="10">
-                                            <div class="rounded-circle" style="background: url('{{ $employee->user->profile_avatar_path }}') center center no-repeat; background-size: cover; width: 32px; height: 32px;"></div>
-                                        </td>
-                                        <td nowrap>
-                                            <div class="fw-bold">{{ $employee->user->name }}</div>
-                                            @isset($employee->position?->position)
-                                                <div class="small text-muted">{{ $employee->position?->position->name ?? '' }}</div>
-                                            @endisset
-                                        </td>
-                                        <td nowrap class="text-center">
-                                            <div class="justify-content-center align-items-center d-flex">
-                                                @if (!$start_at->isSameDay($end_at))
-                                                    <div class="">
-                                                        <h6 class="mb-0">{{ $start_at->format('d-M') }}</h6> <small class="text-muted">{{ $start_at->format('Y') }}</small>
-                                                    </div>
-                                                    <div class="text-muted small mx-2">&mdash; s.d. &mdash;</div>
-                                                @endif
-                                                <div class="">
-                                                    <h6 class="mb-0">{{ $end_at->format('d-M') }}</h6> <small class="text-muted">{{ $end_at->format('Y') }}</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">{{ isset($salary->amount) ? number_format($salary->amount, 0, ',', '.') : '-' }}</td>
-                                        <td class="text-center">
-                                            @isset($salary->validated_at)
-                                                <span class="badge bg-light fw-normal text-dark">{{ $salary->validated_at->isoFormat('DD MMM YYYY') }}</span>
-                                            @else
-                                                -
-                                            @endisset
-                                        </td>
-                                        <td class="text-center">
-                                            @isset($salary->approved_at)
-                                                <span class="badge bg-soft-success fw-normal text-success">{{ $salary->approved_at->isoFormat('DD MMM YYYY') }}</span>
-                                            @else
-                                                -
-                                            @endisset
-                                        </td>
-                                        <td class="py-2 text-end" nowrap>
-                                            @if ($salary?->amount && $salary?->validated_at)
-                                                <a class="btn btn-soft-success rounded px-2 py-1" href="{{ route('hrms::payroll.approvals.show', ['salary' => $salary->id]) }}" data-bs-toggle="tooltip" title="Cetak slip" target="_blank"><i class="mdi mdi-printer"></i></a>
-                                                <a class="btn btn-soft-primary rounded px-2 py-1" href="{{ route('hrms::payroll.approvals.edit', ['salary' => $salary->id, 'next' => url()->full()]) }}" data-bs-toggle="tooltip" title="Lihat detail"><i class="mdi mdi-eye-outline"></i></a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8">
-                                            @include('components.notfound')
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-body">
-                        {{ $employees->appends(request()->all())->links() }}
-                    </div>
-                </div>
+                <x-table
+                :isSearch="true"
+                type="material"
+                :data="$employees"
+                :columns="$columns"
+                title="Daftar karyawan"
+                {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
+                :trash="$trashed"
+            />
             </section>
         </div>
         <div class="col-md-4">
-            <div class="card border-0">
-                <div class="card-body">
-                    <i class="mdi mdi-filter-outline"></i> Filter
+            <div class="card">
+                <div class="card-header">
+                    <h6>Filter</h6>
                 </div>
                 <div class="card-body border-top">
                     <form class="form-block" action="{{ route('hrms::payroll.approvals.index') }}" method="get">
                         <div class="mb-3">
-                            <label class="form-label">Periode</label>
-                            <div class="input-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                    <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                    <span class="d-none d-sm-inline">Rentang waktu</span>
-                                </button>
-                                <input class="form-control" type="date" name="start_at" value="{{ $start_at->format('Y-m-d') }}" required>
-                                <input class="form-control" type="date" name="end_at" value="{{ $end_at->format('Y-m-d') }}" required>
-                            </div>
+                            <label class="form-label required">Periode</label>
+                            <x-date-range-select />
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-departments">Departemen</label>
-                            <select class="form-select" id="select-departments" name="department">
-                                <option value>Semua departemen</option>
-                                @foreach ($departments as $department)
-                                    <option value="{{ $department->id }}" @selected(request('department') == $department->id) data-positions="{{ $department->positions->pluck('name', 'id') }}">{{ $department->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="select-positions">Jabatan</label>
-                            <select class="form-select" id="select-positions" name="position_id">
-                                <option value>Semua jabatan</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Pencarian</label>
-                            <input class="form-control" name="search" placeholder="Cari nama atau nip ..." value="{{ request('search') }}" />
-                        </div>
+
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
+                             <x-select
+                                id="select-departments"
+                                name="department"
+                                placeholder="Semua departemen"
+                                data-dependent="#select-positions"
+                                data-source="positions"
+                                :options="$departments->map(function($department) {
+                                    return [
+                                        'value' => $department->id,
+                                        'label' => $department->name,
+                                        'data-positions' => $department->positions->pluck('name', 'id'),
+                                        'selected' => request('department') == $department->id
+                                    ];
+                                })->toArray()"
+                            />
+                         </x-input-group>
+
+                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
+                            <x-select
+                                id="select-positions"
+                                name="position"
+                                placeholder="Semua jabatan"
+                            />
+                        </x-input-group>
+
+
+                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
+                            <x-input
+                                class="mb-3"
+                                name="search"
+                                placeholder="Cari nama karyawan ..."
+                                value="{{ request('search') }}"
+                                onkeyup="searchTable()"
+                            />
+                        </x-input-group>
+
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-filter-outline"></i> Terapkan</button>
+                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
                             <a class="btn btn-light" href="{{ route('hrms::payroll.approvals.index', ['start_at' => $start_at->format('Y-m-d'), 'end_at' => $end_at->format('Y-m-d')]) }}"><i class="mdi mdi-refresh"></i> Reset</a>
                         </div>
                     </form>
