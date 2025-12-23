@@ -11,7 +11,7 @@ use Modules\Admin\Http\Controllers\Builder\DataTableBuilderController;
 use Modules\Admin\Http\Controllers\Configure\DataTableConfigureController;
 use Modules\Admin\Http\Controllers\CustomFeature\DataTableCustomController;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facade\URL;
+use Illuminate\Support\Facades\URL;
 
 
 class AppServiceProvider extends ServiceProvider
