@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card mb-3">
     <div class="card-header"><i class="mdi mdi-account-circle-outline"></i> Informasi akun</div>
     <div class="card-body">
         @foreach ([
@@ -10,7 +10,7 @@
         @endforeach
     </div>
     <div class="list-group list-group-flush border-top">
-        <a class="list-group-item list-group-item-action text-primary" href="{{ route('account::index') }}">
+        <a class="list-group-item list-group-item-action text-muted" href="{{ route('account::index') }}">
             <i class="mdi mdi-eye-outline"></i> Lihat detail
         </a>
     </div>

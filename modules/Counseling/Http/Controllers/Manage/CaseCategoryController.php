@@ -52,7 +52,7 @@ class CaseCategoryController extends Controller
             array_merge(
             $request->only('name'),
             [
-                'grade_id' => userGrades() 
+                'grade_id' => userGrades()
             ])
         );
         $category->save();
@@ -80,7 +80,7 @@ class CaseCategoryController extends Controller
         $category->update(array_merge(
             $request->only('name'),
             [
-                'grade_id' => userGrades() 
+                'grade_id' => userGrades()
             ])
         );
 

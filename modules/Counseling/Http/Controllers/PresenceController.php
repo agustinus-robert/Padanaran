@@ -87,7 +87,7 @@ class PresenceController extends Controller
 
         $teacherPresences = $teachers->map(function ($teacher) use ($presences) {
             $teacherPresence = $presences->map(function ($p) {
-                $decoded = json_decode($p->presence, true); 
+                $decoded = json_decode($p->presence, true);
                 return array_filter($decoded, fn($item) => isset($item['teacher']));
             })->flatten(1)
             ->filter(fn($item) => (string) ($item['teacher'] ?? '') === (string) $teacher->id);

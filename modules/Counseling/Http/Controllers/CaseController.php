@@ -59,7 +59,7 @@ class CaseController extends Controller
         ->where('semester_id', $acsem->id)->get()->groupBy('classroom.name');
         $categories = AcademicCaseCategory::with('descriptions')->where('grade_id', userGrades())->get();
 
-        return view('counseling::cases.create', compact('acsem', 'classrooms', 'categories'));
+        return view('counseling::cases.form', compact('acsem', 'classrooms', 'categories'));
     }
 
     /**
@@ -96,7 +96,7 @@ class CaseController extends Controller
 
         $categories = AcademicCaseCategory::with('descriptions')->where('grade_id', userGrades())->get();
 
-        return view('counseling::cases.edit', compact('acsem', 'categories', 'case'));
+        return view('counseling::cases.form', compact('acsem', 'categories', 'case'));
     }
 
     /**

@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <form action="{{ route('counseling::presences.index') }}" method="GET">
                         <div class="mb-2 row">
-                            
+
                             <div class="col-5">
                                 <select class="form-control" name="classroom" type="text" required>
                                     <option value="">Pilih rombel</option>
@@ -21,14 +21,14 @@
                                     @endforeach
                                 </select>
                             </div>
-                            
+
                             <div class="col-5">
                                 <div class="input-group mv-2">
-                                <input 
-                                    type="date" 
-                                    name="dateSsearch" 
-                                    class="form-control" 
-                                    value="{{ request('dateSsearch') ?? '' }}" 
+                                <input
+                                    type="date"
+                                    name="dateSsearch"
+                                    class="form-control"
+                                    value="{{ request('dateSsearch') ?? '' }}"
                                 />
                                 </div>
                             </div>

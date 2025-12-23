@@ -49,7 +49,7 @@ class CounselingCategoryController extends Controller
         $category = new AcademicCounselingCategory(array_merge(
         $request->only('name'),
         [
-            'grade_id' => userGrades() 
+            'grade_id' => userGrades()
         ]));
 
         $category->save();
@@ -77,7 +77,7 @@ class CounselingCategoryController extends Controller
         $category->update(array_merge(
             $request->only('name'),
             [
-                'grade_id' => userGrades() 
+                'grade_id' => userGrades()
             ]));
 
         return redirect($request->get('next', url()->previous()))->with('success', 'Kategori konseling <strong>'.$category->name.'</strong> berhasil diperbarui');

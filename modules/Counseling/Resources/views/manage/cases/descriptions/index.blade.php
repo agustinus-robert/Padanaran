@@ -1,114 +1,127 @@
-@extends('counseling::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Kelola deskripsi kasus - ')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('counseling::layouts.includes.navbar-counseling')
+@endpush
+
+@php
+    $trashed = false;
+    $columns = [
+        [
+            'label' => 'Kategori',
+            'slot' => fn($item) => '<a href="'.route('counseling::manage.cases.categories.edit', [
+                                        'category' => $item->ctg_id,
+                                        'next' => url()->full()
+                                    ]).'">'.$item->category->name.'</a>',
+            'nowrap' => true,
+        ],
+        [
+            'label' => 'Deskripsi',
+            'slot' => fn($item) => $item->name,
+            'nowrap' => true,
+        ],
+        [
+            'label' => 'Poin',
+            'slot' => fn($item) => $item->point,
+            'class' => 'text-center',
+            'nowrap' => true,
+        ],
+        [
+            'label' => '',
+            'field' => 'actions',
+            'slot' => fn($item) => view('components.partial-actions', [
+                'item' => $item,
+                'routes' => [
+                    'edit' => ['counseling::manage.cases.descriptions.edit', ['description' => $item->id, 'next' => url()->full()]],
+                    'destroy' => ['counseling::manage.cases.descriptions.destroy', ['description' => $item->id]],
+                ],
+            ])->render(),
+            'nowrap' => true,
+            'class' => 'py-2 text-right align-middle',
+        ],
+    ];
+@endphp
+
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-md-7 col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-details float-left mr-2"></i>Item deskripsi
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('counseling::manage.cases.descriptions.index') }}" method="GET">
-                        <div class="input-group">
-                            <select name="ctg" class="form-control">
-                                <option value="">-- Pilih --</option>
-                                @foreach ($categories as $_category)
-                                    <option value="{{ $_category->id }}" @if (request('ctg') == $_category->id) selected @endif>{{ $_category->name }}</option>
-                                @endforeach
-                            </select>
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('counseling::manage.cases.descriptions.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>No</th>
-                                <th>Kategori</th>
-                                <th>Deskripsi</th>
-                                <th class="text-center">Poin</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($descriptions as $description)
-                                <tr>
-                                    <td>{{ $loop->iteration + ($descriptions->firstItem() - 1) }}</td>
-                                    <td nowrap><a href="{{ route('counseling::manage.cases.categories.edit', ['category' => $description->ctg_id, 'next' => url()->full()]) }}">{{ $description->category->name }}</a></td>
-                                    <td nowrap>{{ $description->name }}</td>
-                                    <td nowrap class="text-center">{{ $description->point }}</td>
-                                    <td nowrap class="py-2 text-right align-middle">
-                                        <a class="btn btn-warning btn-sm" href="{{ route('counseling::manage.cases.descriptions.edit', ['description' => $description->id, 'next' => url()->full()]) }}" data-toggle="tooltip" title="Ubah"><i class="mdi mdi-pencil-outline"></i></a>
-                                        <form class="d-inline form-block form-confirm" action="{{ route('counseling::manage.cases.descriptions.destroy', ['description' => $description->id]) }}" method="POST"> @csrf @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-delete-outline"></i></button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $descriptions->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$categories"
+                :columns="$columns"
+                title="Deskripsi Item"
+                {{-- searchRoute="{{ route('counseling::manage.cases.descriptions.index', ['search' => request('search')]) }}" --}}
+                :trash="$trashed"
+                :extra="[view('counseling::manage.cases.descriptions.extra-filter', compact('categories'))->render()]"
+            />
         </div>
         <div class="col-md-5 col-lg-4">
-            <div class="card">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Jumlah deskripsi kasus</h6>
+                </div>
+
                 <div class="card-body">
                     <div class="h1 text-muted mb-4 text-right">
                         <i class="mdi mdi-briefcase-outline float-right"></i>
                     </div>
                     <div class="text-value">{{ $descriptions_count }}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">Jumlah deskripsi kasus</small>
+                    <small class="text-muted text-uppercase font-weight-bold">Total</small>
                 </div>
             </div>
+
             <div class="card">
                 <div class="card-header">
-                    <i class="mdi mdi-account-plus float-left mr-2"></i>Tambah deskripsi
+                    <h6>Tambah deskripsi</h6>
                 </div>
                 <div class="card-body">
                     <form class="form-block" action="{{ route('counseling::manage.cases.descriptions.store') }}" method="POST"> @csrf
-                        <div class="form-group required mb-3">
-                            <label>Kategori</label>
-                            <select name="ctg_id" class="form-control @error('name') is-invalid @enderror" required>
-                                <option value="">-- Pilih --</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('name')
-                                <small class="text-danger"> {{ $message }} </small>
+                        <x-input-group label="Kategori" :isRow="false" required>
+                            <x-select
+                                name="ctg_id"
+                                :options="$categories->mapWithKeys(fn($c) => [$c->id => $c->name])"
+                                :selected="old('ctg_id')"
+                                :error="$errors->has('ctg_id')"
+                                placeholder="-- Pilih --"
+                            />
+                            @error('ctg_id')
+                                <small class="text-danger d-block">{{ $message }}</small>
                             @enderror
-                        </div>
-                        <div class="form-group required mb-3">
-                            <label>Deskripsi</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="off">
+                        </x-input-group>
+
+                        <x-input-group label="Deskripsi" :isRow="false" required>
+                            <x-input
+                                name="name"
+                                type="text"
+                                :value="old('name')"
+                                :error="$errors->has('name')"
+                                autocomplete="off"
+                            />
                             @error('name')
-                                <small class="text-danger"> {{ $message }} </small>
+                                <small class="text-danger d-block">{{ $message }}</small>
                             @enderror
-                        </div>
-                        <div class="form-group required mb-3">
-                            <label>Poin</label>
-                            <input type="number" class="form-control w-50 @error('point') is-invalid @enderror" name="point" value="{{ old('point') }}" required autocomplete="off">
+                        </x-input-group>
+
+                        <x-input-group label="Poin" :isRow="false" required>
+                            <x-input
+                                name="point"
+                                type="number"
+                                :value="old('point')"
+                                :error="$errors->has('point')"
+                                class="w-50"
+                                autocomplete="off"
+                            />
                             @error('point')
-                                <small class="text-danger"> {{ $message }} </small>
+                                <small class="text-danger d-block">{{ $message }}</small>
                             @enderror
-                        </div>
-                        <div class="form-group mb-0">
-                            <button class="btn btn-primary">Simpan</button>
-                        </div>
+                        </x-input-group>
+
+                        <x-btn type="submit" variant="dark">Simpan</x-btn>
                     </form>
                 </div>
             </div>

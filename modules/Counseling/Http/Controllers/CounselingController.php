@@ -51,7 +51,7 @@ class CounselingController extends Controller
         $acsem = $this->acsem;
 
         $grades = GradeLevel::where('grade_id', userGrades())->pluck('id');
-        
+
         $classrooms = StudentSemester::with('classroom')
         ->whereHas('classroom', function ($classroom) use ($request, $grades) {
             return $classroom->whereIn('level_id', $grades);
@@ -59,8 +59,9 @@ class CounselingController extends Controller
         ->where('semester_id', $acsem->id)->get()->groupBy('classroom.name');
 
         $categories = AcademicCounselingCategory::all();
+        $counseling = [];
 
-        return view('counseling::counselings.create', compact('acsem', 'classrooms', 'categories'));
+        return view('counseling::counselings.form', compact('acsem', 'classrooms', 'categories', 'counseling'));
     }
 
     /**
@@ -89,7 +90,7 @@ class CounselingController extends Controller
 
         $categories = AcademicCounselingCategory::where('grade_id', userGrades())->get();
 
-        return view('counseling::counselings.edit', compact('acsem', 'categories', 'counseling'));
+        return view('counseling::counselings.form', compact('acsem', 'categories', 'counseling'));
     }
 
     /**

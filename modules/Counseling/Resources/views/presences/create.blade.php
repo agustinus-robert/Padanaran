@@ -1,28 +1,46 @@
-@extends('counseling::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Input presensi baru - ')
 
-@section('content')
-    <div class="row">
+@push('nav')
+    @include('counseling::layouts.includes.navbar-counseling')
+@endpush
+
+@section('body-content')
+@include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-md-7 col-lg-8">
             <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-multiple-check-outline float-left mr-2"></i>Input presensi baru
-                </div>
+                 <x-card-header type="{{ config('theme.default') }}">
+                    Input presensi baru
+                </x-card-header>
+
                 <div class="card-body">
                     <form action="{{ route('counseling::presences.create') }}" method="GET">
-                        <div class="input-group mb-2">
-                            <select class="form-control" name="classroom" type="text" required>
-                                <option value="">Pilih rombel</option>
-                                @foreach ($acsem->classrooms as $classroom)
-                                    <option value="{{ $classroom->id }}" @if (request('classroom') == $classroom->id) selected @endif>{{ $classroom->full_name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('counseling::presences.create') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
+                       <x-input-group :isRow="true" :isInputGroup="true" label="">
+                                <div class="col-md-11">
+                                    <x-select
+                                        name="classroom"
+                                        placeholder="Pilih rombel"
+                                        :options="$acsem->classrooms->map(function($classroom) {
+                                            return [
+                                                'value' => $classroom->id,
+                                                'label' => $classroom->full_name,
+                                                'selected' => request('classroom') == $classroom->id
+                                            ];
+                                        })->toArray()"
+                                    />
+                                </div>
+
+                                <div class="col-md-1 p-1">
+                                    {{-- <a class="btn btn-outline-secondary" href="{{ route('counseling::presences.create') }}">
+                                        <i class="mdi mdi-refresh"></i>
+                                    </a> --}}
+                                    <x-btn type="submit" variant="dark">Cari</x-btn>
+                                </div>
+                        </x-input-group>
+
                         <small class="text-muted">Menampilkan data presensi Tahun Ajaran <strong>{{ $acsem->full_name }}</strong></small>
                     </form>
 
