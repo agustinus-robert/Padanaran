@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Cuti')
+
 @section('contents')
     <header id="page-topbar">
         <div class="navbar-header">

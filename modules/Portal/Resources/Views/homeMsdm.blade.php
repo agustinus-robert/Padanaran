@@ -1,5 +1,7 @@
 @extends('layouts.dashboarding')
 
+@section('navtitle', 'Dashboard')
+
 @push('style')
     <style>
         .scrollable-container {

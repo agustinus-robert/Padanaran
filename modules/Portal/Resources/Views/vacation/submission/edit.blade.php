@@ -2,6 +2,8 @@
 
 @section('title', 'Cuti | ')
 
+@section('navtitle', 'Cuti')
+
 @section('contents')
     @include('layouts.component.material-nav')
 

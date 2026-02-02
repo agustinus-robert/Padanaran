@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Cuti')
+
 @section('contents')
     <header id="page-topbar">
         <div class="navbar-header">
@@ -186,7 +188,7 @@
                             {{ Session::get('success') }}
                         </div>
                     </div>
-                @endif 
+                @endif
 
                 @if (Session::has('danger'))
                     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
@@ -196,7 +198,7 @@
                     </div>
                 @endif
                 </div>
-                
+
                 <div class="row">
                     <div class="col-xl-8">
                         <div class="card border-0">

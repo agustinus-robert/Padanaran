@@ -2,6 +2,8 @@
 
 @section('title', 'Jadwal kerja | ')
 
+@section('navtitle', 'Jadwal Kerja')
+
 @section('contents')
     <div class="d-flex align-items-center mb-4">
         <a class="text-decoration-none" href="javascript:void(0)"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>

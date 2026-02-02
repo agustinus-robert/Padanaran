@@ -2,6 +2,8 @@
 
 @section('title', 'Izin | ')
 
+@section('navtitle', 'Perizinan')
+
 @include('components.tourguide', [
     'steps' => array_filter([
         ['selector' => '.tg-steps-leave-category', 'title' => 'Jenis izin', 'content' => 'Pilih jenis izin yang sesuai dengan kebutuhan kamu.'],

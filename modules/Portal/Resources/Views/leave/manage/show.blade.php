@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Pengajuan Perizinan')
+
 @section('content')
     <div class="d-flex align-items-center mb-4">
         <a class="text-decoration-none" href="{{ request('next', route('portal::leave.manage.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
@@ -71,7 +73,7 @@
                     </div>
                     <div class="card-body border-top">
                         @foreach ($leave->approvables->sortBy('level') as $approvable)
-                    
+
                             <div class="row gy-2 @if (!$loop->last) mb-4 @endif">
                                 <div class="col-md-6">
                                     <div class="text-muted small mb-1">

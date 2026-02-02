@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Insentif')
+
 @section('contents')
     <header id="page-topbar">
         <div class="navbar-header">
@@ -36,11 +38,11 @@
             <div class="d-flex">
                 @php($user=auth()->user())
                 @include('portal::layouts.components.notifications')
-                
+
                 @include('layouts.shortcut_menu')
 
                 @include('layouts.nav_name')
-                
+
             </div>
     </header>
 

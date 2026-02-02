@@ -2,6 +2,8 @@
 
 @section('title', 'Cuti | ')
 
+@section('navtitle', 'Cuti')
+
 @include('components.tourguide', [
     'steps' => array_filter([
         ['selector' => '.tg-steps-vacation-category', 'title' => 'Jenis cuti/libur hari raya', 'content' => 'Pilih jenis cuti atau libur hari raya yang sesuai dengan kebutuhan kamu.'],

@@ -2,6 +2,8 @@
 
 @section('title', 'Izin | ')
 
+@section('navtitle', 'Perizinan')
+
 @include('components.tourguide', [
     'steps' => array_filter([
         ['selector' => '.tg-steps-leave-submission', 'title' => 'Pengajuan izin', 'content' => 'Tekan tombol ini untuk melakukan pengajuan izin.'],

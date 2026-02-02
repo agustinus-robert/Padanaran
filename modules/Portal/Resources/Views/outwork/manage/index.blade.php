@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Insentif')
+
 @section('contents')
     <header id="page-topbar">
         <div class="navbar-header">
@@ -36,11 +38,11 @@
             <div class="d-flex">
                 @php($user=auth()->user())
                 @include('portal::layouts.components.notifications')
-                
+
                 @include('layouts.shortcut_menu')
 
                 @include('layouts.nav_name')
-                
+
             </div>
     </header>
 
@@ -82,7 +84,7 @@
                             {{ Session::get('success') }}
                         </div>
                     </div>
-                @endif 
+                @endif
 
                 @if (Session::has('danger'))
                     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
@@ -92,7 +94,7 @@
                     </div>
                 @endif
                 </div>
-                
+
                 <div class="row">
                     <div class="col-xl-8">
                         <div class="card border-0">

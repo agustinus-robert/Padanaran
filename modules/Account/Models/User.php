@@ -35,7 +35,7 @@ use Modules\Academic\Models\StudentAchievement;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, Metable, Restorable, Userstamps, TwoFactorAuthenticatable, HasApiTokens, HasProfilePhoto, HasCompanyRole, UserTrait, UserRBACTrait, UserRepository, UserAdministrationTrait,
+    use HasApiTokens, HasFactory, Notifiable, Metable, Restorable, Userstamps, TwoFactorAuthenticatable, HasApiTokens, HasProfilePhoto, HasCompanyRole, UserTrait, UserRBACTrait, UserRepository, UserAdministrationTrait,
     UserAcademicTrait;
 
     /**

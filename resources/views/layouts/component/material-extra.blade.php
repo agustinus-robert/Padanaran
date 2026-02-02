@@ -106,7 +106,7 @@
             </div>
 
             <div class="col-12">
-                <a href="{{ route('logout') }}"
+                <a href="javascript:void(0)" onclick="signout();"
                     class="btn bg-gradient-primary d-flex align-items-center gap-2 bg-body-secondary rounded">
                         <span class="material-symbols-rounded fs-4">logout</span>
                         <span class="menu-label" style="font-size:15px;">Keluar</span>
@@ -123,6 +123,20 @@
 <script src="{{ asset('material/js/plugins/perfect-scrollbar.min.js')}}"></script>
 <script src="{{ asset('material/js/plugins/smooth-scrollbar.min.js')}}"></script>
 <script src="{{ asset('material/js/plugins/chartjs.min.js')}}"></script>
+
+@auth
+    @if (Route::has(config('modules.auth.signout.route')))
+        <script>
+            const signout = (e) => {
+                if (confirm('Apakah Anda yakin?')) {
+                    document.getElementById('signout-form').submit();
+                }
+            }
+        </script>
+        <form class="form-block form-confirm" id="signout-form" action="{{ route(config('modules.auth.signout.route')) }}" method="POST" style="display: none;"> @csrf
+        </form>
+    @endif
+@endauth
 
 <script>
     var ctx = document.getElementById("chart-bars").getContext("2d");

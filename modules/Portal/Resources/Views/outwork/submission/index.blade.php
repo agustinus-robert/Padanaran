@@ -2,6 +2,8 @@
 
 @section('title', 'Kegiatan Lainnya | ')
 
+@section('navtitle', 'Insentif')
+
 @include('components.tourguide', [
     'steps' => array_values(
         array_filter(

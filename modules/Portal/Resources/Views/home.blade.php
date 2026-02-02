@@ -1,5 +1,7 @@
 @extends('portal::layouts.index')
 
+@section('navtitle', 'Dashboard')
+
 @section('contents')
     <header id="page-topbar">
         <div class="navbar-header">

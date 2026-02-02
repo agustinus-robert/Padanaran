@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Jadwal Guru')
+
 @section('content')
     <div class="d-flex align-items-center mb-4">
         <a class="text-decoration-none" href="{{ request('next', route('portal::schedule-teacher.workshifts')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>

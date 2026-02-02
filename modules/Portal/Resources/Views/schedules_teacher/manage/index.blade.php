@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Jadwal Kerja')
+
 @section('body-content')
 
     @include('layouts.component.material-nav')

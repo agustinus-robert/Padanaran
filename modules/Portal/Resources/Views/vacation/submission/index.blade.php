@@ -2,6 +2,8 @@
 
 @section('title', 'Cuti | ')
 
+@section('navtitle', 'Cuti')
+
 @include('components.tourguide', [
     'steps' => array_filter([
         [

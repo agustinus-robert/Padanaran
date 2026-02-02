@@ -2,6 +2,8 @@
 
 @section('title', 'Lembur | ')
 
+@section('navtitle', 'Lembur')
+
 @include('components.tourguide', [
     'steps' => array_values(
         array_filter(

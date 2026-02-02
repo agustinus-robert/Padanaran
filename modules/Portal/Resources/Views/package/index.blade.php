@@ -2,6 +2,8 @@
 
 @section('title', 'Paket | ')
 
+@section('navtitle', 'Paket')
+
 @section('body-content')
     @include('layouts.component.material-nav')
 
