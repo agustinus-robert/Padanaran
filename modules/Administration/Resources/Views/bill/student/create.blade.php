@@ -2,6 +2,8 @@
 
 @section('title', 'Pertemuan - ')
 
+@section('navtitle', 'Pembayaran')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Tagihan</li>
     <li class="breadcrumb-item"><a href="{{ request('next', route('administration::bill.students.index')) }}">Pembayaran Siswa</a></li>
@@ -25,7 +27,7 @@
                 </div>
             @endif
 
-            <div class="card mb-4"> 
+            <div class="card mb-4">
                 <div class="card-body">
                     <form class="form-block" action="{{ route('administration::bill.students.store') }}" method="POST"> @csrf
                         <div class="card">

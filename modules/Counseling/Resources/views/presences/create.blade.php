@@ -2,6 +2,8 @@
 
 @section('title', 'Input presensi baru - ')
 
+@section('navtitle', 'Presensi')
+
 @push('nav')
     @include('counseling::layouts.includes.navbar-counseling')
 @endpush

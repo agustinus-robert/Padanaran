@@ -2,6 +2,8 @@
 
 @section('title', 'Pertemuan - ')
 
+@section('navtitle', 'Pertemuan')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Kurikulum</li>
     <li class="breadcrumb-item active">Pertemuan</li>

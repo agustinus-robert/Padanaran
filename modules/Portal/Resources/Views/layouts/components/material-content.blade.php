@@ -1,4 +1,11 @@
 <div class="container-fluid py-2">
+
+    @if (session('danger'))
+        <div class="alert alert-danger text-white">
+            {{ session('danger') }}
+        </div>
+    @endif
+
     <div class="row">
     <div class="ms-3">
         <h3 class="mb-0 h4 font-weight-bolder">Dashboard</h3>
@@ -296,14 +303,15 @@
             <div class="copyright text-center text-sm text-muted text-lg-start">
             © <script>
                 document.write(new Date().getFullYear())
-            </script>2025,
+            </script>,
             made with <i class="fa fa-heart"></i> by
-            <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+            <a href="javascript:void(0)" class="font-weight-bold" target="_blank">Digipemad</a>
             for a better web.
             </div>
         </div>
         <div class="col-lg-6">
-            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+            {{-- <p>Copyright By Digi <b>Pemad</b></p> --}}
+            {{-- <ul class="nav nav-footer justify-content-center justify-content-lg-end">
             <li class="nav-item">
                 <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
             </li>
@@ -316,7 +324,7 @@
             <li class="nav-item">
                 <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
             </li>
-            </ul>
+            </ul> --}}
         </div>
         </div>
     </div>

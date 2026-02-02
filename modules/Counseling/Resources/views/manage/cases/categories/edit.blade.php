@@ -2,6 +2,8 @@
 
 @section('title', 'Ubah kategori kasus - ')
 
+@section('navtitle', 'Kategori Khasus')
+
 @section('body-content')
 <div class="row d-flex justify-content-center">
     <div class="col-md-8 col-lg-6">

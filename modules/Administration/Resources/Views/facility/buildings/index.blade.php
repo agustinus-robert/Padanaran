@@ -4,6 +4,8 @@
 @section('titleTemplate', config('account.admin.name'))
 @section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
 
+@section('navtitle', 'Gedung')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Sarpras</li>
     <li class="breadcrumb-item active">Gedung</li>

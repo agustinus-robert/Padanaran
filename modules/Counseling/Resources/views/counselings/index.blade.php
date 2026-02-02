@@ -2,6 +2,8 @@
 
 @section('title', 'Data konseling - ')
 
+@section('navtitle', 'Konseling')
+
 @push('nav')
     @include('counseling::layouts.includes.navbar-counseling')
 @endpush

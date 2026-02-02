@@ -2,6 +2,8 @@
 
 @section('title', 'Izin | ')
 
+@section('navtitle', 'Perizinan')
+
 @include('components.tourguide', [
     'steps' => array_filter([
         [
@@ -62,7 +64,7 @@
                                     <div class="col-md-8">
                                         <div class="tg-steps-leave-description">
                                             <input class="form-control" type="text" disabled value="{{auth()->user()->name}}" />
-                                            <input type="hidden" name="student_id" value="{{auth()->user()->student->user_id}}" />                                      
+                                            <input type="hidden" name="student_id" value="{{auth()->user()->student->user_id}}" />
                                         </div>
                                     </div>
                                 </div>
@@ -107,7 +109,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-3">
                                     <label class="col-md-4 col-lg-3 col-form-label required">Pilih tanggal izin</label>
                                     <div class="col-md-8">

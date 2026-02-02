@@ -2,6 +2,8 @@
 
 @section('title', 'Izin | ')
 
+@section('navtitle', 'Perizinan')
+
 @include('components.tourguide', [
     'steps' => array_filter([
         [

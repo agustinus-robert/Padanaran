@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola deskripsi kasus - ')
 
+@section('navtitle', 'Deskripsi Khasus')
+
 @push('nav')
     @include('counseling::layouts.includes.navbar-counseling')
 @endpush

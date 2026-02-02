@@ -2,6 +2,8 @@
 
 @section('title', 'Rombel - ')
 
+@section('navtitle', 'Kelas')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Kesiswaan</li>
     <li class="breadcrumb-item"><a href="{{ request('next', route('administration::scholar.classrooms.index')) }}">Rombel</a></li>

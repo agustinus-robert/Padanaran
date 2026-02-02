@@ -2,6 +2,8 @@
 
 @section('title', 'Registrasi semester - ')
 
+@section('navtitle', 'Promosi')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Kesiswaan</li>
     <li class="breadcrumb-item"><a href="{{ request('next', route('administration::scholar.semesters.index')) }}">Registrasi semester</a></li>

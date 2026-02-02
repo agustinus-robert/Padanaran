@@ -19,9 +19,9 @@ class IsTeacherMiddleware
     public function handle(Request $request, Closure $next)
     {
         $classTeacher = FacadesAuth::user()->employee->classroom;
-    
+
         return Gate::authorize('teacher::access') && $classTeacher
             ? $next($request)
-            : redirect()->back()->with('danger', 'Anda tidak memiliki akses ke tautan tersebut');
+            : redirect()->route('portal::dashboard-msdm.index')->with('danger', 'Anda tidak memiliki akses ke tautan tersebut');
     }
 }

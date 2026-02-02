@@ -2,6 +2,8 @@
 
 @section('title', 'Kategori mapel - ')
 
+@section('navtitle', 'Kategori Mapel')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Kurikulum</li>
     <li class="breadcrumb-item active">Kategori mapel</li>

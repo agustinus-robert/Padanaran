@@ -1,8 +1,10 @@
 @extends('layouts.horizontal-layout')
 
-@section('title', 'Gedung - ')
+@section('title', 'Referensi - ')
 @section('titleTemplate', config('account.admin.name'))
 @section('bodyclass', 'app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show')
+
+@section('navtitle', 'Tagihan')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Tagihan</li>

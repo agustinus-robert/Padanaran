@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Pengajuan Izin')
+
 @section('content')
     @include('boarding::layouts.component.index_manage_submission_show', ['module' => 'counseling'])
 @endsection

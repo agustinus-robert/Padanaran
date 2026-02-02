@@ -1,6 +1,8 @@
 @extends('administration::layouts.default')
 
-@section('title', 'Pertemuan - ')
+@section('title', 'Pembayaran - ')
+
+@section('navtitle', 'Pembayaran')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Tagihan</li>
@@ -25,7 +27,7 @@
                 </div>
             @endif
 
-            <div class="card mb-4"> 
+            <div class="card mb-4">
                 <div class="card-body">
                     <form class="form-block" action="{{ route('administration::bill.students.store') }}" method="POST"> @csrf
                         <div class="card">

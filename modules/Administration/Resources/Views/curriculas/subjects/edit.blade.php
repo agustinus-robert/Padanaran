@@ -2,6 +2,8 @@
 
 @section('title', 'Mapel - ')
 
+@section('navtitle', 'Mapel')
+
 @section('breadcrumb')
 	<li class="breadcrumb-item">Kesiswaan</li>
 	<li class="breadcrumb-item"><a href="{{ request('next', route('administration::curriculas.subjects.index')) }}">Mapel</a></li>

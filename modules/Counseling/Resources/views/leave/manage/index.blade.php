@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola pengajuan | ')
 
+@section('navtitle', 'Pengajuan Izin')
+
 @push('nav')
     @include('counseling::layouts.includes.navbar-counseling')
 @endpush

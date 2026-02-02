@@ -2,6 +2,8 @@
 
 @section('title', 'Dasbor - ')
 
+@section('navtitle', 'Aset')
+
 @section('breadcrumb')
 <li class="breadcrumb-item active">Dasbor</li>
 @endsection

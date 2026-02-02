@@ -2,6 +2,8 @@
 
 @section('title', 'Ubah kasus - ')
 
+@section('navtitle', 'Konseling')
+
 @section('content')
     <div class="row">
         <div class="col-md-7 col-lg-8">

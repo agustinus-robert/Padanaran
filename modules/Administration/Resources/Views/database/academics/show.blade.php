@@ -2,6 +2,8 @@
 
 @section('title', 'Tahun ajaran - ')
 
+@section('navtitle', 'Akademik')
+
 @section('breadcrumb')
 	<li class="breadcrumb-item">Akademik</li>
 	<li class="breadcrumb-item"><a href="{{ route('administration::database.academics.index') }}">Tahun ajaran</a></li>

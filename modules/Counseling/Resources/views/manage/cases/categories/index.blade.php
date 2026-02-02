@@ -2,6 +2,8 @@
 
 @section('title', 'Kelola kategori kasus - ')
 
+@section('navtitle', 'Kategori Khasus')
+
 @push('nav')
     @include('counseling::layouts.includes.navbar-counseling')
 @endpush

@@ -2,6 +2,8 @@
 
 @section('title', 'Pertemuan - ')
 
+@section('navtitle', 'Pertemuan')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Kesiswaan</li>
     <li class="breadcrumb-item"><a href="{{ request('next', route('administration::curriculas.meets.index')) }}">Pertemuan</a></li>

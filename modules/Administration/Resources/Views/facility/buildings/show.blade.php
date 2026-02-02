@@ -2,6 +2,8 @@
 
 @section('title', 'Gedung - ')
 
+@section('navtitle', 'Gedung')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Sarpras</li>
     <li class="breadcrumb-item active">Gedung</li>

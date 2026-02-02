@@ -70,8 +70,8 @@
                 <!-- MSDM -->
                 <div class="col-4 border border-light">
                     <a href="{{ route('portal::dashboard-msdm.index') }}" class="d-flex flex-column align-items-center justify-content-center bg-body-secondary rounded p-5">
-                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">groups</span>
-                        <span class="menu-label" style="font-size:15px;">MSDM</span>
+                        <span class="material-symbols-rounded menu-icon fs-4 mb-2">captive_portal</span>
+                        <span class="menu-label" style="font-size:15px;">Portal</span>
                     </a>
                 </div>
 

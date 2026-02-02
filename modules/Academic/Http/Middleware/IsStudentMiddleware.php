@@ -19,11 +19,11 @@ class IsStudentMiddleware
     {
 
         if (!$request->user()->student) {
-            return redirect()->route('portal::dashboard-msdm.index'); 
+            return redirect()->route('portal::dashboard-msdm.index')->with('danger', 'Anda tidak memiliki akses ke tautan tersebut');
         }
 
         return $next($request);
-        
+
         // Gate::authorize('academic::access')
         //     ? $next($request)
         //     : abort(403);
