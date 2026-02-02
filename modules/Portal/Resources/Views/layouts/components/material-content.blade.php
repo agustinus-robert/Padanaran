@@ -215,60 +215,72 @@
         <!-- Menu 1 -->
         <div class="col-md-6 col-6">
             <div class="d-flex flex-column align-items-center text-center p-3 border rounded">
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
-                    <i class="material-symbols-rounded opacity-10">home</i>
-                </div>
-                <div>Jadwal Guru</div>
+                <a href="{{ route('portal::schedule-teacher.manages.index') }}">
+                    <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
+                        <i class="material-symbols-rounded opacity-10">home</i>
+                    </div>
+                    <div>Jadwal Guru</div>
+                </a>
             </div>
         </div>
 
         <!-- Menu 2 -->
         <div class="col-md-6 col-6">
             <div class="d-flex flex-column align-items-center text-center p-3 border rounded">
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
-                    <i class="material-symbols-rounded opacity-10">person</i>
-                </div>
-                <div>Izin</div>
+                <a href="{{ route('portal::leave.submission.index') }}">
+                    <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
+                        <i class="material-symbols-rounded opacity-10">person</i>
+                    </div>
+                    <div>Izin</div>
+                </a>
             </div>
         </div>
 
         <!-- Menu 3 -->
         <div class="col-md-6 col-6">
             <div class="d-flex flex-column align-items-center text-center p-3 border rounded">
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
-                    <i class="material-symbols-rounded opacity-10">settings</i>
-                </div>
-                <div>Kelola Paket</div>
+                <a href="{{ route('portal::package.manage.index') }}">
+                    <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
+                        <i class="material-symbols-rounded opacity-10">settings</i>
+                    </div>
+                    <div>Kelola Paket</div>
+                </a>
             </div>
         </div>
 
         <!-- Menu 4 -->
         <div class="col-md-6 col-6">
             <div class="d-flex flex-column align-items-center text-center p-3 border rounded">
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
-                    <i class="material-symbols-rounded opacity-10">inventory_2</i>
-                </div>
-                <div>Lembur</div>
+                <a href="{{ route('portal::overtime.submission.index') }}">
+                    <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
+                        <i class="material-symbols-rounded opacity-10">inventory_2</i>
+                    </div>
+                    <div>Lembur</div>
+                </a>
             </div>
         </div>
 
         <!-- Menu 5 -->
         <div class="col-md-6 col-6">
             <div class="d-flex flex-column align-items-center text-center p-3 border rounded">
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
-                    <i class="material-symbols-rounded opacity-10">trending_up</i>
-                </div>
-                <div>Cuti</div>
+                <a href="{{ route('portal::vacation.submission.index') }}">
+                    <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
+                        <i class="material-symbols-rounded opacity-10">trending_up</i>
+                    </div>
+                    <div>Cuti</div>
+                </a>
             </div>
         </div>
 
         <!-- Menu 6 -->
         <div class="col-md-6 col-6">
             <div class="d-flex flex-column align-items-center text-center p-3 border rounded">
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
-                    <i class="material-symbols-rounded opacity-10">folder</i>
-                </div>
-                <div>Kegiatan</div>
+                <a href="{{ route('portal::outwork.submission.index') }}">
+                    <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg mb-2">
+                        <i class="material-symbols-rounded opacity-10">folder</i>
+                    </div>
+                    <div>Kegiatan</div>
+                </a>
             </div>
         </div>
 

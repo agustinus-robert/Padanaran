@@ -2,10 +2,13 @@
 
 namespace App\Models\References;
 
+use App\Models\Traits\HasGradeFromSession;
 use Illuminate\Database\Eloquent\Model;
 
 class GradeLevel extends Model
 {
+    use HasGradeFromSession;
+
     protected $table = "ref_grade_levels";
 
     public $timestamps = false;

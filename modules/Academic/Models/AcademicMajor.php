@@ -2,12 +2,13 @@
 
 namespace Modules\Academic\Models;
 
+use App\Models\Traits\HasGradeFromSession;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcademicMajor extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasGradeFromSession;
 
     /**
      * The table associated with the model.

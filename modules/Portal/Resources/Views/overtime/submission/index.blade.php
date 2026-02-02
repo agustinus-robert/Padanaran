@@ -1,4 +1,4 @@
-@extends('portal::layouts.index')
+@extends('layouts.dashboarding')
 
 @section('title', 'Lembur | ')
 
@@ -31,310 +31,267 @@
             fn($step) => !($step['disabled'] ?? false))),
 ])
 
-@section('contents')
+@section('body-content')
+    @include('layouts.component.material-nav')
 
-    <header id="page-topbar">
-        <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
+    <style>
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .card-soft {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .bg-light-soft {
+            background-color: #f8f9fa;
+        }
+        .timeline-step {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1;
+        }
+        .badge-schedule {
+            background-color: #f1f3f5;
+            color: #495057;
+            font-weight: 500;
+            margin-bottom: 2px;
+            display: inline-block;
+            border-radius: 6px;
+            padding: 4px 8px;
+        }
+    </style>
 
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo-light.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-light.png') }}" alt="" height="39">
-                        </span>
-                    </a>
-                </div>
-
-                <button type="button" class="btn btn-sm font-size-16 d-lg-none header-item waves-effect waves-light px-3" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                    <i class="fa fa-fw fa-bars"></i>
-                </button>
-
+    <div class="container-fluid py-4">
+        {{-- Header Halaman --}}
+        <div class="d-flex align-items-center mb-4 ps-2">
+            <a href="{{ request('next', route('portal::dashboard-msdm.index')) }}" class="btn btn-link text-dark p-0 me-3">
+                <span class="material-symbols-rounded" style="font-size: 32px;">arrow_back_ios_new</span>
+            </a>
+            <div>
+                <h3 class="font-weight-bolder mb-0 text-dark">Lembur</h3>
+                <p class="text-sm mb-0 text-secondary">Kelola pengajuan lembur dan pantau riwayat kerja lemburmu.</p>
             </div>
-
-            <div class="d-flex">
-                @php($user=auth()->user())
-                @include('portal::layouts.components.notifications')
-                
-                @include('layouts.shortcut_menu')
-
-                @include('layouts.nav_name')
-                
-            </div>
-    </header>
-
-    <div class="topnav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-
-                <div class="navbar-collapse collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
-
-                        <li class="nav-item">
-                            <a class="nav-link arrow-none" href="{{ route('portal::dashboard.index') }}" id="topnav-dashboard" role="button">
-                                <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
         </div>
-    </div>
 
-    <div class="main-content">
+        {{-- Alerts --}}
+        <div class="row px-2">
+            @if (Session::has('success') || Session::has('danger'))
+                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="w-100">
+                    <div class="alert {{ Session::has('success') ? 'alert-success' : 'alert-danger' }} border-0 text-white shadow-sm" style="border-radius: 12px;">
+                        <div class="d-flex align-items-center">
+                            <span class="material-symbols-rounded me-2">{{ Session::has('success') ? 'check_circle' : 'error' }}</span>
+                            <span>{{ Session::get('success') ?? Session::get('danger') }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
 
-        <div class="page-content">
-            <div class="container-fluid">
-
-                <div class="d-flex align-items-center mb-4">
-                    <a class="text-decoration-none" href="{{ request('next', route('portal::dashboard-msdm.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-                    <div class="ms-4">
-                        <h2 class="mb-1">Lembur</h2>
-                        <div class="text-muted">Jangan lupa isi riwayat lemburmu kalo ada kerjaan di luar jam kerja!</div>
+        <div class="row">
+            {{-- Sisi Kiri: Aksi --}}
+            <div class="col-xl-4">
+                {{-- Card Pengajuan --}}
+                <div class="card card-soft tg-steps-overtime-submission mb-4 overflow-hidden">
+                    <div class="card-body py-5 text-center position-relative">
+                        <div class="mb-3">
+                            <a class="btn btn-icon-only btn-rounded btn-outline-primary btn-lg d-inline-flex align-items-center justify-content-center bg-white shadow-sm"
+                               href="{{ route('portal::overtime.submission.create', ['next' => url()->full()]) }}"
+                               style="width: 70px; height: 70px; border-width: 2px; position: relative; z-index: 2;">
+                                <span class="material-symbols-rounded" style="font-size: 36px;">add</span>
+                            </a>
+                        </div>
+                        <h5 class="font-weight-bolder">Buat Pengajuan Baru</h5>
+                        <p class="text-muted text-sm px-4">Ada lembur hari ini? Jangan lupa dicatat agar masuk hitungan.</p>
+                        <span class="material-symbols-rounded position-absolute text-primary" style="right: -15px; bottom: -15px; font-size: 120px; opacity: 0.05;">work_history</span>
                     </div>
                 </div>
 
-                <div class="row">
-                @if (Session::has('success'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                        <div class="alert alert-success">
-                            {{ Session::get('success') }}
-                        </div>
-                    </div>
-                @endif 
-
-                @if (Session::has('danger'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                        <div class="alert-danger alert">
-                            {{ Session::get('danger') }}
-                        </div>
-                    </div>
-                @endif
-                </div>
-                
-                <div class="row">
-                    <div class="col-xl-4">
-                        <div class="card tg-steps-overtime-submission border-0">
-                            <div class="card-body py-4 text-center">
-                                <div class="my-4">
-                                    <a class="btn btn-soft-primary rounded-circle d-flex justify-content-center align-items-center mx-auto" href="{{ route('portal::overtime.submission.create', ['next' => url()->full()]) }}" style="width: 100px; height: 100px;"><i class="mdi mdi-exit-to-app mdi-48px"></i></a>
+                {{-- Action List --}}
+                <div class="list-group mb-4">
+                    {{-- Manage Overtime (Jika berhak) --}}
+                    @if (isset($employee->position->position_id) && in_array($employee->position->position_id, [\Modules\Core\Enums\PositionTypeEnum::KEPALASEKOLAH->value, \Modules\Core\Enums\PositionTypeEnum::HUMAS->value], true))
+                        @if ($approvers->contains($employee->position->id))
+                            <a href="{{ route('portal::overtime.manage.index', ['next' => url()->current()]) }}" class="list-group-item list-group-item-action card-soft mb-3 border-0 py-3 d-flex align-items-center tg-steps-overtime-manage">
+                                <div class="icon icon-shape bg-soft-primary text-primary border-radius-md me-3 d-flex align-items-center justify-content-center">
+                                    <span class="material-symbols-rounded">verified_user</span>
                                 </div>
-                                <h4 class="mb-1">Pengajuan baru</h4>
-                                <p class="text-muted mb-0">Silakan tekan tombol di atas untuk mengisi riwayat lembur baru</p>
-                            </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 text-sm font-weight-bold">Kelola Lembur</h6>
+                                    <p class="text-xs text-secondary mb-0">Verifikasi pengajuan karyawan</p>
+                                </div>
+                                <span class="material-symbols-rounded text-secondary">chevron_right</span>
+                            </a>
+                        @endif
+                    @endif
+
+                    {{-- Export --}}
+                    <a href="javascript:;" onclick="exportExcel()" class="list-group-item list-group-item-action card-soft border-0 py-3 d-flex align-items-center">
+                        <div class="icon icon-shape bg-soft-success text-success border-radius-md me-3 d-flex align-items-center justify-content-center">
+                            <span class="material-symbols-rounded">description</span>
                         </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 text-sm font-weight-bold">Ekspor Data</h6>
+                            <p class="text-xs text-secondary mb-0">Unduh riwayat lembur ke Excel</p>
+                        </div>
+                        <span class="material-symbols-rounded text-secondary">download</span>
+                    </a>
+                </div>
+            </div>
 
-                        @if (
-                            isset($employee->position->position_id) &&
-                            in_array(
-                                $employee->position->position_id,
-                                [
-                                    \Modules\Core\Enums\PositionTypeEnum::KEPALASEKOLAH->value,
-                                    \Modules\Core\Enums\PositionTypeEnum::HUMAS->value
-                                ],
-                                true
-                            )
-                        ) 
+            {{-- Sisi Kanan: Tabel --}}
+            <div class="col-xl-8">
+                <div class="card card-soft">
+                    <div class="card-header pb-2 pt-3 bg-white border-bottom">
+                        <div class="d-flex align-items-center justify-content-between px-2">
+                            <div class="d-flex align-items-center">
+                                <div class="icon icon-sm shadow-sm border-radius-md bg-gradient-primary text-center me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <span class="material-symbols-rounded text-white" style="font-size: 18px;">history</span>
+                                </div>
+                                <h6 class="font-weight-bolder mb-0 text-dark">Riwayat Lembur</h6>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary mb-0 py-1 px-3 d-flex align-items-center border-radius-md" data-bs-toggle="collapse" data-bs-target="#collapse-filter">
+                                <span class="material-symbols-rounded text-xs me-1">tune</span> Filter
+                            </button>
+                        </div>
+                    </div>
 
-                            @if ($approvers->contains($employee->position->id))
-                                <div class="list-group mb-4">
-                                    <a class="list-group-item list-group-item-action p-4" href="{{ route('portal::overtime.manage.index', ['next' => url()->current()]) }}" style="border-style: dashed;">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="d-inline-block bg-soft-secondary text-primary me-2 rounded text-center" style="height: 36px; width: 36px;">
-                                                <i class="mdi mdi-calendar-check-outline mdi-24px"></i>
-                                            </div>
-                                            <div class="flex-grow-1">Kelola lembur</div>
-                                            <i class="mdi mdi-chevron-right-circle-outline"></i>
-                                        </div>
+                    {{-- Filter Section --}}
+                    <div class="card-body border-bottom pt-0 bg-light-soft tg-steps-overtime-filter">
+                        <div class="collapse @if (request('search') || request('start_at')) show @endif" id="collapse-filter">
+                            <form action="{{ route('portal::overtime.submission.index') }}" method="get" class="row g-2 mt-2 pb-3 px-2">
+                                <div class="col-md-5">
+                                    <label class="text-xxs font-weight-bold mb-1 text-secondary text-uppercase ps-1">Cari Kegiatan</label>
+                                    <input class="form-control form-control-sm border-radius-md" type="search" name="search" placeholder="Nama atau deskripsi..." value="{{ request('search') }}">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="text-xxs font-weight-bold mb-1 text-secondary text-uppercase ps-1">Periode</label>
+                                    <div class="input-group input-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary mb-0 py-1 d-none d-sm-block" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
+                                            <span class="material-symbols-rounded text-xs">calendar_month</span>
+                                        </button>
+                                        <input class="form-control" type="date" name="start_at" value="{{ request('start_at') }}">
+                                        <input class="form-control" type="date" name="end_at" value="{{ request('end_at') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end gap-1">
+                                    <button type="submit" class="btn btn-primary btn-sm flex-grow-1 mb-0 border-radius-md">
+                                        <span class="material-symbols-rounded text-sm">search</span>
+                                    </button>
+                                    <a class="btn btn-light btn-sm mb-0 border-radius-md" href="{{ route('portal::overtime.submission.index') }}">
+                                        <span class="material-symbols-rounded text-sm">restart_alt</span>
                                     </a>
                                 </div>
-                            @endif
-                        @endif
-                        <div class="list-group mb-4">
-                            <a class="list-group-item list-group-item-action p-4" href="javascript:;" onclick="exportExcel()" style="border-style: dashed;">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-inline-block bg-soft-secondary text-success me-2 rounded text-center" style="height: 36px; width: 36px;">
-                                        <i class="mdi mdi-file-excel-outline mdi-24px"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        Ekspor pengajuan lembur
-                                    </div>
-                                    <i class="mdi mdi-chevron-right-circle-outline"></i>
-                                </div>
-                            </a>
+                            </form>
                         </div>
                     </div>
-                    <div class="col-xl-8">
-                        <div class="card border-0">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="mdi mdi-calendar-multiselect"></i> Riwayat lembur
-                                </div>
-                                <input type="checkbox" class="btn-check" id="collapse-btn" autocomplete="off" @if (request('search')) checked @endif>
-                                <label class="btn btn-outline-secondary text-dark btn-sm rounded px-2 py-1" data-bs-toggle="collapse" data-bs-target="#collapse-filter" for="collapse-btn"><i class="mdi mdi-filter-outline"></i> <span class="d-none d-sm-inline">Filter</span></label>
-                            </div>
-                            <div class="card-body border-top border-bottom tg-steps-overtime-filter">
-                                <form class="form-block row gy-2 gx-2" action="{{ route('portal::overtime.submission.index') }}" method="get">
-                                    <div class="col-12 flex-grow-1 my-0">
-                                        <div class="@if (request('search')) show @endif collapse" id="collapse-filter">
-                                            <input class="form-control" type="search" name="search" placeholder="Cari nama/deskripsi di sini ..." value="{{ request('search') }}">
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 col-auto">
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span><span class="d-none d-sm-inline">Periode</span></div>
-                                            <button type="button" class="btn btn-light dropdown-toggle d-none d-sm-block" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">Rentang waktu</button>
-                                            <input class="form-control" type="date" name="start_at" value="{{ request('start_at') }}">
-                                            <input class="form-control" type="date" name="end_at" value="{{ request('end_at') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <a class="btn btn-light" href="{{ route('portal::overtime.submission.index') }}"><i class="mdi mdi-refresh"></i> <span class="d-sm-none">Reset</span></a>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn btn-dark"><i class="mdi mdi-magnify"></i> Cari</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="table-responsive table-responsive-xl tg-steps-overtime-table">
-                                <table class="mb-0 table align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Kegiatan</th>
-                                            <th nowrap>Tgl pengajuan</th>
-                                            <th nowrap>Jadwal lembur</th>
-                                            <th class="text-center">Lampiran</th>
-                                            <th>Status</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($overtimes as $overtime)
-                                            <tr @if ($overtime->trashed()) class="text-muted" @endif>
-                                                <td style="max-width: 480px;" class="py-3">
-                                                    <div>{{ $overtime->name }}</div>
-                                                    <small class="text-muted">{{ Str::words($overtime->description, 6) }}</small>
-                                                </td>
-                                                <td class="small">{{ $overtime->created_at->formatLocalized('%d %B %Y') }}</td>
-                                                <td style="min-width: 200px;">
-                                                    @if ($overtime->schedules)
-                                                        @foreach ($overtime->schedules->take(3) as $date)
-                                                            <span class="badge bg-soft-secondary text-dark fw-normal user-select-none {{ isset($date['c']) ? 'text-decoration-line-through' : '' }}" @isset($date['f']) data-bs-toggle="tooltip" title="Sebagai freelancer" @endisset>
-                                                                @isset($date['f'])
-                                                                    <i class="mdi mdi-account-network-outline text-danger"></i>
-                                                                @endisset
-                                                                {{ strftime('%d %B %Y', strtotime($date['d'])) }}
-                                                                @isset($date['t_s'])
-                                                                    pukul {{ $date['t_s'] }}
-                                                                @endisset
-                                                                @isset($date['t_e'])
-                                                                    s.d. {{ $date['t_e'] }}
-                                                                @endisset
-                                                            </span>
-                                                        @endforeach
-                                                        @php($remain = $overtime->schedules->count() - 3)
-                                                        @if ($remain > 0)
-                                                            <span class="badge text-dark fw-normal user-select-none">+{{ $remain }} lainnya</span>
-                                                        @endif
-                                                    @endif
-                                                    @if ($overtime->dates)
-                                                        @foreach ($overtime->dates->take(3) as $date)
-                                                            <span class="badge bg-soft-secondary text-dark fw-normal user-select-none {{ isset($date['c']) ? 'text-decoration-line-through' : '' }}" @isset($date['f']) data-bs-toggle="tooltip" title="Sebagai freelancer" @endisset>
-                                                                @isset($date['f'])
-                                                                    <i class="mdi mdi-account-network-outline text-danger"></i>
-                                                                @endisset
-                                                                {{ strftime('%d %B %Y', strtotime($date['d'])) }}
-                                                                @isset($date['t_s'])
-                                                                    pukul {{ $date['t_s'] }}
-                                                                @endisset
-                                                                @isset($date['t_e'])
-                                                                    s.d. {{ $date['t_e'] }}
-                                                                @endisset
-                                                            </span>
-                                                        @endforeach
-                                                        @php($remain = $overtime->dates->count() - 3)
-                                                        @if ($remain > 0)
-                                                            <span class="badge text-dark fw-normal user-select-none">+{{ $remain }} lainnya</span>
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
+
+                    {{-- Tabel Section --}}
+                    <div class="table-responsive tg-steps-overtime-table">
+                        <table class="table align-items-center mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-4">Kegiatan</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jadwal Lembur</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-secondary opacity-7 text-end pe-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($overtimes as $overtime)
+                                    <tr @class(['opacity-6' => $overtime->trashed()])>
+                                        <td>
+                                            <div class="d-flex px-3 py-2">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm font-weight-bold">{{ $overtime->name }}</h6>
+                                                    <p class="text-xs text-secondary mb-0 text-truncate" style="max-width: 200px;">{{ $overtime->description }}</p>
+                                                    <small class="text-xxs text-primary font-weight-bold">{{ $overtime->created_at->format('d M Y') }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="py-2">
+                                                @php($items = $overtime->schedules ?? $overtime->dates ?? [])
+                                                @foreach (collect($items)->take(2) as $date)
+                                                    <div class="badge-schedule text-xs">
+                                                        <span class="material-symbols-rounded text-xs me-1">event</span>
+                                                        {{ date('d M Y', strtotime($date['d'])) }}
+                                                        @isset($date['t_s']) <span class="text-secondary ps-1">({{ $date['t_s'] }} - {{ $date['t_e'] ?? '??' }})</span> @endisset
+                                                    </div>
+                                                @endforeach
+                                                @if (count($items) > 2)
+                                                    <span class="text-xxs text-secondary ms-1">+{{ count($items)-2 }} lainnya</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            @include('portal::overtime.components.status', ['overtime' => $overtime])
+                                        </td>
+                                        <td class="align-middle text-end pe-4">
+                                            <div class="dropstart">
+                                                <button class="btn btn-link text-secondary mb-0 p-0" data-bs-toggle="dropdown">
+                                                    <span class="material-symbols-rounded">more_vert</span>
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 py-2">
+                                                    <li><a class="dropdown-item d-flex align-items-center" href="{{ route('portal::overtime.submission.show', ['overtime' => $overtime->id, 'next' => request('next')]) }}">
+                                                        <span class="material-symbols-rounded text-sm me-2 text-primary">visibility</span> Detail</a>
+                                                    </li>
                                                     @if (isset($overtime->attachment) && Storage::exists($overtime->attachment))
-                                                        <a class="btn btn-soft-dark btn-sm rounded px-2 py-1" href="{{ Storage::url($overtime->attachment) }}" target="_blank"><i class="mdi mdi-file-link-outline"></i></a>
+                                                        <li><a class="dropdown-item d-flex align-items-center" href="{{ Storage::url($overtime->attachment) }}" target="_blank">
+                                                            <span class="material-symbols-rounded text-sm me-2 text-info">attachment</span> Lampiran</a>
+                                                        </li>
                                                     @endif
-                                                </td>
-                                                <td nowrap>@include('portal::overtime.components.status', ['overtime' => $overtime])</td>
-                                                <td nowrap class="py-1 text-end">
-                                                    @unless ($overtime->trashed())
-                                                        @if ($overtime->hasApprovables())
-                                                            <span data-bs-toggle="collapse" data-bs-target="#collapse-{{ $overtime->id }}">
-                                                                <button class="btn btn-soft-primary btn-sm rounded px-2 py-1" data-bs-toggle="tooltip" title="Status pengajuan"><i class="mdi mdi-progress-clock"></i></button>
+                                                    @if($overtime->hasApprovables() && !$overtime->trashed())
+                                                        <li><a class="dropdown-item d-flex align-items-center" href="javascript:;" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $overtime->id }}">
+                                                            <span class="material-symbols-rounded text-sm me-2 text-warning">step_order</span> Lacak</a>
+                                                        </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    {{-- Approval Tracking --}}
+                                    @if ($overtime->hasApprovables() && !$overtime->trashed())
+                                        <tr class="collapse @if ($overtime->hasAnyApprovableResultIn('PENDING')) show @endif" id="collapse-{{ $overtime->id }}">
+                                            <td colspan="4" class="bg-light-soft py-4 px-5">
+                                                <div class="timeline timeline-one-side" style="border-left: 2px dashed #dee2e6; margin-left: 14px;">
+                                                    @foreach ($overtime->approvables as $approvable)
+                                                        <div class="timeline-block mb-3 position-relative" style="padding-left: 30px;">
+                                                            <span class="timeline-step position-absolute" style="left: -15px; top: 0;">
+                                                                <span class="material-symbols-rounded text-{{ $approvable->result->color() }}" style="font-size: 18px;">
+                                                                    {{ $approvable->result->icon() == 'mdi mdi-check' ? 'check_circle' : ($approvable->result->icon() == 'mdi mdi-close' ? 'cancel' : 'hourglass_top') }}
+                                                                </span>
                                                             </span>
-                                                        @endif
-                                                        <div class="dropstart d-inline">
-                                                            <button class="btn btn-soft-secondary text-dark rounded px-2 py-1" type="button" data-bs-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></button>
-                                                            <ul class="dropdown-menu border-0 shadow">
-                                                                <li><a class="dropdown-item" href="{{ route('portal::overtime.submission.show', ['overtime' => $overtime->id, 'next' => request('next')]) }}"><i class="mdi mdi-eye-outline me-1"></i> Lihat detail</a></li>
-                                                                @if (isset($overtime->attachment) && Storage::exists($overtime->attachment))
-                                                                    <li><a class="dropdown-item" href="{{ Storage::url($overtime->attachment) }}" target="_blank"><i class="mdi mdi-file-link-outline me-1"></i> Lihat lampiran</a></li>
-                                                                @endif
-                                                            </ul>
+                                                            <div class="timeline-content">
+                                                                <h6 class="text-dark text-xs font-weight-bold mb-0">
+                                                                    {{ ucfirst($approvable->type) }} Level {{ $approvable->level }}
+                                                                </h6>
+                                                                <p class="text-secondary text-xxs mt-1 mb-0">{{ $approvable->userable->getApproverLabel() }}</p>
+                                                                @if($approvable->reason) <p class="text-xs italic mb-0 text-muted">"{{ $approvable->reason }}"</p> @endif
+                                                            </div>
                                                         </div>
-                                                    @endunless
-                                                </td>
-                                            </tr>
-                                            @if ($overtime->hasApprovables() && !$overtime->trashed())
-                                                <tr>
-                                                    <td class="p-0" colspan="6">
-                                                        <div class="@if ($overtime->hasAnyApprovableResultIn('PENDING')) show @endif collapse" id="collapse-{{ $overtime->id }}">
-                                                            <table class="table-borderless table-hover table-sm mb-0 table align-middle">
-                                                                <thead>
-                                                                    <tr class="text-muted small bg-light">
-                                                                        <th class="border-bottom fw-normal">Jenis</th>
-                                                                        <th class="border-bottom fw-normal" colspan="2">Persetujuan</th>
-                                                                        <th class="border-bottom fw-normal">Penanggungjawab</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($overtime->approvables as $approvable)
-                                                                        <tr>
-                                                                            <td class="small {{ $approvable->cancelable ? 'text-danger' : 'text-muted' }}">{{ ucfirst($approvable->type) }} #{{ $approvable->level }}</td>
-                                                                            <td @if ($loop->last) class="border-0" @endif>
-                                                                                <div class="badge bg-{{ $approvable->result->color() }} fw-normal text-white"><i class="{{ $approvable->result->icon() }}"></i> {{ $approvable->result->label() }}</div>
-                                                                            </td>
-                                                                            <td class="small ps-0">{{ $approvable->reason }}</td>
-                                                                            <td class="small">{{ $approvable->userable->getApproverLabel() }}</td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @empty
-                                            <tr>
-                                                <td colspan="5">@include('components.notfound')</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-body">
-                                {{ $overtimes->appends(request()->all())->links() }}
-                            </div>
-                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @empty
+                                    <tr><td colspan="4" class="text-center py-5">@include('components.notfound')</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-footer py-3 border-top">
+                        {{ $overtimes->appends(request()->all())->links() }}
                     </div>
                 </div>
             </div>
@@ -342,6 +299,7 @@
     </div>
 
 @endsection
+
 @push('scripts')
     <script src="{{ asset('js/vendor/moment.min.js') }}"></script>
     <script src="{{ asset('js/vendor/daterangepicker.js') }}"></script>

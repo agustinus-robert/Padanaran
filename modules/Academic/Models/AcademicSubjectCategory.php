@@ -3,9 +3,11 @@
 namespace Modules\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\HasGradeFromSession;
 
 class AcademicSubjectCategory extends Model
 {
+    use HasGradeFromSession;
     /**
      * The table associated with the model.
      */

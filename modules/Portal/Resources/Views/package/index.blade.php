@@ -1,131 +1,125 @@
-@extends('portal::layouts.index')
+@extends('layouts.dashboarding')
 
 @section('title', 'Paket | ')
 
-@section('contents')
-    <header id="page-topbar">
-        <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
+@section('body-content')
+    @include('layouts.component.material-nav')
 
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo-light.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-light.png') }}" alt="" height="39">
-                        </span>
-                    </a>
-                </div>
+    <style>
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .card-custom {
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .table thead th {
+            background-color: #f8f9fa;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05rem;
+            font-weight: 700;
+            border-top: none;
+        }
+        .status-badge {
+            padding: 0.5em 1em;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+    </style>
 
-                <button type="button" class="btn btn-sm font-size-16 d-lg-none header-item waves-effect waves-light px-3" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                    <i class="fa fa-fw fa-bars"></i>
-                </button>
-
-            </div>
-
-            <div class="d-flex">
-                @php($user=auth()->user())
-                @include('portal::layouts.components.notifications')
-                
-                @include('layouts.shortcut_menu')
-
-                @include('layouts.nav_name')
-                
-            </div>
-    </header>
-
-    <div class="topnav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-
-                <div class="navbar-collapse collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
-
-                        <li class="nav-item">
-                            <a class="nav-link arrow-none" href="{{ route('portal::dashboard.index') }}" id="topnav-dashboard" role="button">
-                                <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <div class="main-content">
+    <div class="container-fluid py-4">
         <div class="page-content">
             <div class="container-fluid">
-                @if (Session::has('success'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                        <div class="alert alert-success">
-                            {{ Session::get('success') }}
+                {{-- Alerts --}}
+                @if (Session::has('success') || Session::has('error'))
+                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="mb-4">
+                        <div class="alert {{ Session::has('success') ? 'alert-success' : 'alert-danger' }} border-0 text-white shadow-sm" style="border-radius: 12px;">
+                            <div class="d-flex align-items-center">
+                                <span class="material-symbols-rounded me-2">{{ Session::has('success') ? 'check_circle' : 'error' }}</span>
+                                <span>{{ Session::get('success') ?? Session::get('error') }}</span>
+                            </div>
                         </div>
                     </div>
                 @endif
 
-                @if (Session::has('error'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                        <div class="alert-danger alert">
-                            {{ Session::get('error') }}
-                        </div>
-                    </div>
-                @endif
-
+                {{-- Header --}}
                 <div class="d-flex align-items-center mb-4">
-                    <a class="text-decoration-none" href="{{ route('portal::dashboard-msdm.index') }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-                    <div class="ms-4">
-                        <h2 class="mb-1">Paket Murid</h2>
-                        <div class="text-muted">Yuk! Kelola paket murid</div>
+                    <a href="{{ route('portal::dashboard-msdm.index') }}" class="btn btn-link text-dark p-0 me-3">
+                        <span class="material-symbols-rounded" style="font-size: 36px;">arrow_back_ios_new</span>
+                    </a>
+                    <div>
+                        <h3 class="font-weight-bolder mb-0">Manajemen Paket</h3>
+                        <p class="text-sm mb-0 text-secondary">Kelola dan pantau pengiriman paket murid.</p>
                     </div>
                 </div>
+
                 <div class="row">
+                    {{-- Sisi Kiri: Tabel --}}
                     <div class="col-xl-8 col-sm-12">
-                        <div class="card border-0">
-                            {{-- <div class="card-body d-flex align-items-center justify-content-between py-2">
-                    <div><i class="mdi mdi-calendar-multiselect"></i> Paket </div>
-                    <form class="tg-steps-presence-history" action="{{ route('portal::package.manage.index') }}" method="GET">
-                        <div class="input-group input-group-sm">
-                            <input class="form-control" type="month" name="month" value="{{ $month->format('Y-m') }}">
-                            <button class="btn btn-dark"><i class="mdi mdi-eye-outline"></i> <span class="d-none d-sm-inline">Tampilkan</span></button>
-                        </div>
-                    </form>
-                </div> --}}
-                            <div class="table-responsive tg-steps-presence-calendar">
-                                @php($headings = ['No', 'Nama Paket', 'Siswa', 'Status Paket', ''])
-                                <table class="table-bordered calendar mb-0 table text-center">
+                        <div class="card card-custom border-0 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0">
                                     <thead>
                                         <tr>
-                                            @foreach ($headings as $heading)
-                                                <th class="text-center">{{ $heading }}</th>
-                                            @endforeach
+                                            <th class="ps-4">No</th>
+                                            <th>Nama Paket</th>
+                                            <th>Siswa</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-end pe-4">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @php($i = 1)
                                         @forelse ($packages as $package)
                                             <tr>
-                                                <td>{{ $i++ }}</td>
-                                                <td>{{ $package->name }}</td>
-                                                <td>{{ $package->student->user->profile->name }}</td>
-                                                <td>{{ $package->status == 1 ? 'Belum Diteima' : 'Sudah Diterima' }}</td>
-                                                <td><a href="javascript:void(0)" class="btn btn-soft-info btn-show-package rounded px-2 py-1" data-action="{{ route('portal::package.manage.update', ['manage' => $package->id]) }}" data-id="{{ $package->id }}" data-name="{{ $package->name }}" data-status="{{ $package->status }}" data-student="{{ $package->student_id }}" title="Edit Paket" data-bs-toggle="modal" data-bs-target="#modalEditPackage">
-                                                        <i class="mdi mdi-eye-outline"></i>
+                                                <td class="ps-4"><span class="text-xs font-weight-bold">{{ $i++ }}</span></td>
+                                                <td>
+                                                    <div class="d-flex flex-column">
+                                                        <h6 class="mb-0 text-sm">{{ $package->name }}</h6>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <p class="text-sm font-weight-bold mb-0 text-dark">{{ $package->student->user->profile->name }}</p>
+                                                </td>
+                                                <td class="align-middle text-center text-sm">
+                                                    @if($package->status == 1)
+                                                        <span class="badge bg-soft-info text-info status-badge">Belum Diterima</span>
+                                                    @else
+                                                        <span class="badge bg-soft-success text-success status-badge">Sudah Diterima</span>
+                                                    @endif
+                                                </td>
+                                                <td class="align-middle text-end pe-4">
+                                                    <a href="javascript:void(0)"
+                                                       class="btn-action bg-soft-primary text-primary btn-show-package"
+                                                       data-action="{{ route('portal::package.manage.update', ['manage' => $package->id]) }}"
+                                                       data-id="{{ $package->id }}"
+                                                       data-name="{{ $package->name }}"
+                                                       data-status="{{ $package->status }}"
+                                                       data-student="{{ $package->student_id }}"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#modalEditPackage">
+                                                        <span class="material-symbols-rounded" style="font-size: 18px;">edit_square</span>
                                                     </a>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6">
+                                                <td colspan="5" class="text-center py-5">
                                                     @include('components.notfound')
                                                 </td>
                                             </tr>
@@ -135,141 +129,131 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Sisi Kanan: Statistik & Aksi --}}
                     <div class="col-xl-4 col-sm-12">
                         @if ($packagesCount)
-                            <div class="card mb-3 border-0">
-                                <div class="card-body d-flex justify-content-between align-items-center flex-row py-4">
-                                    <div>
-                                        <div class="display-4">{{ $packagesCount }}</div>
-                                        <div class="small fw-bold text-secondary text-uppercase">Jumlah paket siswa</div>
+                            <div class="card card-custom border-0 mb-3 bg-gradient-dark">
+                                <div class="card-body p-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-8">
+                                            <p class="text-white text-xs text-uppercase font-weight-bold opacity-7 mb-0">Total Paket</p>
+                                            <h2 class="text-white font-weight-bolder mb-0">{{ $packagesCount }}</h2>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-white shadow text-center border-radius-md d-flex align-items-center justify-content-center ms-auto" style="width: 48px; height: 48px;">
+                                                <span class="material-symbols-rounded text-dark">package_2</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div><i class="mdi mdi-timer-outline mdi-48px text-danger"></i></div>
                                 </div>
                             </div>
                         @endif
-                        <a class="btn btn-outline-secondary w-100 d-flex text-dark mb-3 rounded bg-white py-3 text-start" style="border-style: dashed;" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#kelolaPaketModal">
-                            <i class="mdi mdi-calendar-multiple-check me-3"></i>
-                            <div>Kelola paket <br> <small class="text-muted">Buat Paket disini</small></div>
-                        </a>
+
+                        <button class="btn btn-white w-100 card-custom border-0 p-4 text-start mb-3 d-flex align-items-center"
+                                style="border: 2px dashed #dee2e6 !important;"
+                                data-bs-toggle="modal"
+                                data-bs-target="#kelolaPaketModal">
+                            <div class="icon icon-shape bg-soft-primary text-primary border-radius-md d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                <span class="material-symbols-rounded">add_box</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 font-weight-bold text-dark">Buat Paket Baru</h6>
+                                <p class="text-xs text-secondary mb-0">Klik untuk kelola paket murid</p>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="kelolaPaketModal" tabindex="-1" aria-labelledby="kelolaPaketModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="kelolaPaketModalLabel">Buat Paket Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+    {{-- Modal Create --}}
+    <div class="modal fade" id="kelolaPaketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="font-weight-bolder">Buat Paket Baru</h5>
+                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" id="formKelolaPaket" action="{{ route('portal::package.manage.store') }}">
                     @csrf
                     <div class="modal-body">
-
-                        <div class="mb-3">
-                            <label for="studentSelect" class="form-label">Pilih Siswa</label>
-                            <select class="form-select" id="studentSelect" name="student_id">
+                        <div class="form-group mb-3">
+                            <label class="form-control-label text-xs font-weight-bold">Pilih Siswa</label>
+                            <select class="form-select border-radius-md" name="student_id" required>
                                 <option selected disabled>-- Pilih Siswa --</option>
-                                @if (count($students))
-                                    @foreach ($students as $student)
-                                        <option value="{{ $student->id }}">{{ $student->user->profile->name }}</option>
-                                    @endforeach
-                                @endif
+                                @foreach ($students as $student)
+                                    <option value="{{ $student->id }}">{{ $student->user->profile->name }}</option>
+                                @endforeach
                             </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="packageName" class="form-label">Nama Paket</label>
-                            <input type="text" class="form-control" id="packageName" name="name" placeholder="Contoh: Paket A">
+                        <div class="form-group mb-3">
+                            <label class="form-control-label text-xs font-weight-bold">Nama Paket</label>
+                            <input type="text" class="form-control border-radius-md" name="name" placeholder="Misal: Paket Bulanan Januari" required>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="packageStatus" class="form-label">Status Paket</label>
-                            <select class="form-select" id="packageStatus" name="status">
+                        <div class="form-group mb-3">
+                            <label class="form-control-label text-xs font-weight-bold">Status Awal</label>
+                            <select class="form-select border-radius-md" name="status">
                                 <option value="1">Belum Diterima</option>
                                 <option value="2">Diterima</option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" form="formKelolaPaket">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button type="button" class="btn btn-link text-secondary mb-0" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn bg-gradient-primary border-radius-md px-4 mb-0">Simpan Paket</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="showPackageModal" tabindex="-1" aria-labelledby="showPackageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="showPackageModalLabel">Detail Paket</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="showPackageContent">
-                        <p>Memuat data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="modal fade" id="modalEditPackage" tabindex="-1" aria-labelledby="modalEditPackageLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Paket</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+    {{-- Modal Edit --}}
+    <div class="modal fade" id="modalEditPackage" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="font-weight-bolder">Edit Informasi Paket</h5>
+                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="formEditPackage" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="modal-body">
-                        @csrf
-                        @method('PUT')
-
                         <input type="hidden" id="modalPackageId" name="id">
-
-                        <div class="mb-3">
-                            <label for="modalPackageName" class="form-label">Nama Paket</label>
-                            <input type="text" class="form-control" id="modalPackageName" name="name">
+                        <div class="form-group mb-3">
+                            <label class="form-control-label text-xs font-weight-bold">Nama Paket</label>
+                            <input type="text" class="form-control border-radius-md" id="modalPackageName" name="name" required>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="modalPackageStudent" class="form-label">Siswa</label>
-                            <select class="form-select" id="modalPackageStudent" name="student_id">
-                                @if (count($students) > 0)
-                                    @foreach ($students as $student)
-                                        <option value="{{ $student->id }}">{{ $student->user->profile->name }}</option>
-                                    @endforeach
-                                @endif
+                        <div class="form-group mb-3">
+                            <label class="form-control-label text-xs font-weight-bold">Siswa</label>
+                            <select class="form-select border-radius-md" id="modalPackageStudent" name="student_id" required>
+                                @foreach ($students as $student)
+                                    <option value="{{ $student->id }}">{{ $student->user->profile->name }}</option>
+                                @endforeach
                             </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="modalPackageStatus" class="form-label">Status</label>
-                            <select class="form-select" id="modalPackageStatus" name="status">
+                        <div class="form-group mb-3">
+                            <label class="form-control-label text-xs font-weight-bold">Status Paket</label>
+                            <select class="form-select border-radius-md" id="modalPackageStatus" name="status">
                                 <option value="1">Belum Diterima</option>
                                 <option value="2">Diterima</option>
                             </select>
                         </div>
-
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button type="button" class="btn btn-link text-secondary mb-0" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn bg-gradient-primary border-radius-md px-4 mb-0">Update Data</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 @endsection
 
 @push('scripts')
+    {{-- JS Asli tetap dipertahankan logikanya --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.btn-show-package').forEach(function(btn) {
@@ -297,51 +281,4 @@
             });
         });
     </script>
-@endpush
-
-@push('styles')
-    <style>
-        table.calendar>tbody>tr>td:hover {
-            background: #fafafa;
-        }
-
-        .pulse-soft-danger {
-            animation: pulse-soft-danger 1s infinite;
-        }
-
-        .pulse-soft-danger:hover {
-            animation: none;
-        }
-
-        @-webkit-keyframes pulse-soft-danger {
-            0% {
-                -webkit-box-shadow: 0 0 0 0 rgba(255, 217, 215, .6);
-            }
-
-            80% {
-                -webkit-box-shadow: 0 0 0 10px rgba(255, 217, 215, 0);
-            }
-
-            100% {
-                -webkit-box-shadow: 0 0 0 0 rgba(255, 217, 215, 0);
-            }
-        }
-
-        @keyframes pulse-soft-danger {
-            0% {
-                -moz-box-shadow: 0 0 0 0 rgba(255, 217, 215, .6);
-                box-shadow: 0 0 0 0 rgba(255, 217, 215, .6);
-            }
-
-            80% {
-                -moz-box-shadow: 0 0 0 10px rgba(255, 217, 215, 0);
-                box-shadow: 0 0 0 10px rgba(255, 217, 215, 0);
-            }
-
-            100% {
-                -moz-box-shadow: 0 0 0 0 rgba(255, 217, 215, 0);
-                box-shadow: 0 0 0 0 rgba(255, 217, 215, 0);
-            }
-        }
-    </style>
 @endpush

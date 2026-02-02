@@ -6,11 +6,12 @@ use App\Models\Traits\Searchable\Searchable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use App\Models\Traits\HasGradeFromSession;
 use Modules\HRMS\Enums\WorkShiftEnum;
 
 class EmployeeScheduleCategory extends Model
 {
-    use Searchable;
+    use HasGradeFromSession, Searchable;
 
     /**
      * The table associated with the model.

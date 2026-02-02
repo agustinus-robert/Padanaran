@@ -14,6 +14,13 @@
         <li class="mt-1">
             <span></span>
         </li>
+
+        <li class="nav-item d-flex align-items-center">
+            <a class="btn btn-outline-primary btn-sm mb-0 me-3 keychainify-checked" href="{{ route('portal::dashboard-msdm.index') }}">
+            <i class="material-symbols-rounded fixed-plugin-button-nav fs-6 p-1">captive_portal</i> Portal
+            </a>
+        </li>
+
         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a href="javascript:;" class="nav-link p-0 text-body" id="iconNavbarSidenav">
             <div class="sidenav-toggler-inner">

@@ -5,7 +5,7 @@ use App\Http\Middleware\PortalMiddleware;
 
 Route::middleware(['auth', \Modules\Portal\Http\Middleware\ShopMiddleware::class])->group(function () {
     Route::resource('dashboard', 'HomeController');
-    
+
     Route::prefix('outlet')->namespace('Outlet')->name('outlet.')->group(function () {
         Route::resource('manage-outlet', 'ManageController')->parameters(['manages' => 'manage']);
         Route::get('datatable_outlet', 'ManageController@outletTable')->name('outlet.datatables');
@@ -18,7 +18,7 @@ Route::middleware(['auth', \Modules\Portal\Http\Middleware\AccessMiddleware::cla
     // Route::prefix('portal')->namespace('Portal')->name('portal.')->group(function () {
     //hijau
     Route::resource('dashboard-msdm', 'HomeMsdmController');
-  
+
     Route::prefix('schedule-teacher')->namespace('ScheduleTeacher')->name('schedule-teacher.')->group(function () {
         Route::get('workshifts', 'ScheduleController@index')->name('workshifts');
         Route::get('manages/collective', 'CollectiveController@create')->name('manages.collective');
@@ -40,7 +40,7 @@ Route::middleware(['auth', \Modules\Portal\Http\Middleware\AccessMiddleware::cla
         Route::get('/presence', 'PresenceController@index')->name('presence.index');
         Route::post('/presence', 'PresenceController@store')->name('presence.store');
     });
-    
+
     Route::prefix('vacation')->namespace('Vacation')->name('vacation.')->group(function () {
         // Submission
         Route::get('/', 'SubmissionController@index')->name('submission.index');

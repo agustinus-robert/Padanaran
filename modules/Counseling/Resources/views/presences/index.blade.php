@@ -1,201 +1,248 @@
-@extends('counseling::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Data presensi - ')
 
-@section('content')
-    <div class="row">
-        <div class="col-md-7 col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-account-multiple-outline float-left mr-2"></i>Data baru
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('counseling::presences.index') }}" method="GET">
-                        <div class="mb-2 row">
+@push('nav')
+    @include('counseling::layouts.includes.navbar-counseling')
+@endpush
 
-                            <div class="col-5">
-                                <select class="form-control" name="classroom" type="text" required>
-                                    <option value="">Pilih rombel</option>
-                                    @foreach ($acsem->classrooms as $classroom)
-                                        <option value="{{ $classroom->id }}" @if (request('classroom') == $classroom->id) selected @endif>{{ $classroom->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+@push('style')
+    <style>
+        .form-control {
+            border: 1px solid black;
+        }
 
-                            <div class="col-5">
-                                <div class="input-group mv-2">
-                                <input
-                                    type="date"
-                                    name="dateSsearch"
-                                    class="form-control"
-                                    value="{{ request('dateSsearch') ?? '' }}"
-                                />
-                                </div>
-                            </div>
+        #sidenav-main {
+            transition: z-index 0.3s ease, opacity 0.3s ease;
+        }
 
-                            <div class="col-2">
-                                <div class="input-group-append">
-                                    <a class="btn btn-outline-secondary" href="{{ route('counseling::presences.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                    <button class="btn btn-primary">Cari</button>
-                                </div>
-                            </div>
-                        </div>
+        .sidenav-low {
+            z-index: 1040 !important;
+            opacity: 0.5; /* Tambah efek redup sedikit biar fokus ke modal */
+        }
+    </style>
+@endpush
 
-                        <small class="text-muted">Menampilkan data presensi Tahun Ajaran <strong>{{ $acsem->full_name }}</strong></small>
-                    </form>
-                </div>
-                <div class="table-responsive">
-                    <div class="row">
-                        <div class="col-md-12">
-                            @if(session('success'))
-                                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                    {{ session('success') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            @endif
+@section('body-content')
+    @include('components.navbar-admin')
 
-                            @if(session('danger'))
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    {{ session('danger') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            @endif
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-md-7 col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                        <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
+                            <h6 class="text-white text-capitalize ps-3 m-0">Presensi Mapel</h6>
                         </div>
                     </div>
 
-                    <table class="table-bordered table-striped table-hover mb-0 table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th class="text-center">No</th>
-                                <th>Kelas</th>
-                                <th>Guru</th>
-                                <th>Tanggal</th>
-                                @foreach ($presenceList as $v)
-                                    <th class="text-center">{{ strtoupper(substr($v, 0, 1)) }}</th>
-                                @endforeach
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php $no = 1; @endphp
-                        @forelse ($teacherPresences as $tp)
-                            @php
-                                $teacher = $tp['teacher'];
-                                $teacherPresenceModel = $tp['originalPresence'] ?? null;
+                    <div class="card-body">
+                        <form action="{{ route('counseling::presences.index') }}" method="GET">
+                            <div class="mb-2 row g-2 align-items-center">
 
-                                // Ambil collection dari JSON
-                                $presence = $teacherPresenceModel
-                                    ? collect(json_decode($teacherPresenceModel->presence, true))
-                                    : collect();
+                                <div class="col-md-4">
+                                    <select class="form-select p-2" name="classroom" required style="appearance:none;
+                                        width:100%;
+                                        background:#fff;
+                                        color:#000;
+                                        padding:0rem;
+                                        border:1px solid #ced4da;
+                                        border-radius:0.375rem;">
+                                        <option value="">Pilih rombel</option>
+                                        @foreach ($acsem->classrooms as $classroom)
+                                            <option value="{{ $classroom->id }}" {{ request('classroom') == $classroom->id ? 'selected' : '' }}>
+                                                {{ $classroom->full_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                // Fix dobel: group by session + student_id, ambil first
-                                $uniquePresence = $presence->groupBy('session')
-                                    ->map(fn($group) => $group->unique('student_id'))
-                                    ->collapse();
+                                <div class="col-md-4">
+                                    <input
+                                        style="appearance:none;
+                                        width:100%;
+                                        background:#fff;
+                                        color:#000;
+                                        padding:0.5rem;
+                                        border:1px solid #ced4da;
+                                        border-radius:0.375rem;"
+                                        type="date"
+                                        name="dateSearch"
+                                        class="form-control"
+                                        value="{{ request('dateSearch') }}"
+                                    />
+                                </div>
 
-                                // Hitung counts berdasarkan name setelah unique
-                                $counts = $uniquePresence->countBy('name');
-
-                                $mergedSessions = collect();
-
-                                foreach ($teacher->schedulesTeachers as $teaching) {
-                                    $dates = json_decode($teaching->dates, true) ?? [];
-                                    foreach ($dates as $date => $sessions) {
-                                        $temp = [];
-                                        $lastKey = null;
-
-                                        foreach ($sessions as $keySession => $session) {
-                                            if (empty($session['rombel'][0]) || $session['rombel'][0] != request('classroom')) continue;
-
-                                            $rombel = $session['rombel'][0];
-                                            if (!empty($temp)
-                                                && end($temp)['rombel'] === $rombel
-                                                && $keySession === $lastKey + 1
-                                            ) {
-                                                $temp[count($temp)-1]['end'] = $session[1];
-                                                $temp[count($temp)-1]['sessions'][] = $keySession + 1;
-                                                $temp[count($temp)-1]['hour'][] = "{$session[0]} - {$session[1]}";
-                                            } else {
-                                                $temp[] = [
-                                                    'date' => $date,
-                                                    'start' => $session[0],
-                                                    'end' => $session[1],
-                                                    'sessions' => [$keySession + 1],
-                                                    'hour' => ["{$session[0]} - {$session[1]}"],
-                                                    'rombel' => $rombel,
-                                                    'id_mapel' => $session['lesson'][0] ?? null,
-                                                ];
-                                            }
-                                            $lastKey = $keySession;
-                                        }
-
-                                        $mergedSessions = $mergedSessions->merge($temp);
-                                    }
-                                }
-                            @endphp
-
-                            @foreach ($mergedSessions as $merged)
-                                <tr>
-                                    <td class="text-center">{{ $no++ }}</td>
-                                    <td>{{ $teacher->schedulesTeachers->first()->classroom->name ?? '-' }}</td>
-                                    <td>{{ $teacher->user->name }}</td>
-                                    <td>
-                                        <div><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($merged['date'])->isoFormat('LL') }}</div>
-                                        <div><strong>Sesi {{ implode(' & ', $merged['sessions']) }}:</strong> {{ $merged['start'] }} - {{ $merged['end'] }}</div>
-                                    </td>
-
-                                    @foreach ($presenceList as $v)
-                                        <td class="text-center">{{ $counts[$v] ?? '-' }}</td>
-                                    @endforeach
-
-                                    <td class="py-2 text-center" width="140" nowrap>
-                                        <button
-                                            class="btn btn-primary btn-sm btn-open-presence"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal"
-                                            data-dated="{{ request('dateSsearch') ?? '' }}"
-                                            data-hour="{{ implode(',', $merged['hour']) }}"
-                                            data-sessions='@json($merged["hour"])'
-                                            data-classroom="{{ $merged['rombel'] }}"
-                                            data-teacher="{{ $teacher->id }}"
-                                            data-mapel="{{ $merged['id_mapel'] ?? '' }}"
-                                            data-presence-id="{{ $teacherPresenceModel->id ?? '' }}"
-                                            data-classroom-id="{{ request('classroom') ?? '' }}"
-                                            data-action="{{ $teacherPresenceModel ? route('counseling::presences.update', ['presence' => $teacherPresenceModel->id]) : route('counseling::presence-batch') }}"
-                                            data-presence='@json($uniquePresence->pluck("presence", "semester_id"))'
-                                        >
-                                            <i class="mdi mdi-eye"></i>
+                                <div class="col-md-4">
+                                    <div class="btn-group w-100 mt-3">
+                                        <button type="submit" class="btn bg-gradient-dark px-3">
+                                            <i class="mdi mdi-magnify"></i> Cari
                                         </button>
+                                        <a class="btn btn-outline-secondary" href="{{ route('counseling::presences.index') }}">
+                                            <i class="material-symbols-rounded fixed-plugin-button-nav">refresh</i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
 
-                                        @if ($teacherPresenceModel)
-                                            <form
-                                                class="form-block form-confirm d-inline"
-                                                action="{{ route('counseling::presences.destroy', ['presence' => $teacherPresenceModel->id]) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-danger btn-sm text-nowrap">
-                                                    <i class="mdi mdi-delete"></i> Hapus
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </td>
+                            <small class="text-muted">
+                                Menampilkan data presensi Tahun Ajaran <strong>{{ $acsem->full_name }}</strong>
+                            </small>
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <div class="row">
+                            <div class="col-md-12">
+                                @if(session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+
+                                @if(session('danger'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ session('danger') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <table class="table-bordered table-striped table-hover mb-0 table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th class="text-center">No</th>
+                                    <th>Kelas</th>
+                                    <th>Guru</th>
+                                    <th>Tanggal</th>
+                                    @foreach ($presenceList as $v)
+                                        <th class="text-center">{{ strtoupper(substr($v, 0, 1)) }}</th>
+                                    @endforeach
+                                    <th></th>
                                 </tr>
-                            @endforeach
-                        @empty
-                        <tr>
-                            <td class="text-center" colspan="{{ count($presenceList) + 3 }}">Tidak ada data guru</td>
-                        </tr>
-                        @endforelse
+                            </thead>
+                            <tbody>
+                            @php $no = 1; @endphp
+                            @forelse ($teacherPresences as $tp)
+                                @php
+                                    $teacher = $tp['teacher'];
+                                    $teacherPresenceModel = $tp['originalPresence'] ?? null;
 
-                        </tbody>
-                    </table>
+                                    // Ambil collection dari JSON
+                                    $presence = $teacherPresenceModel
+                                        ? collect(json_decode($teacherPresenceModel->presence, true))
+                                        : collect();
+
+                                    // Fix dobel: group by session + student_id, ambil first
+                                    $uniquePresence = $presence->groupBy('session')
+                                        ->map(fn($group) => $group->unique('student_id'))
+                                        ->collapse();
+
+                                    // Hitung counts berdasarkan name setelah unique
+                                    $counts = $uniquePresence->countBy('name');
+
+                                    $mergedSessions = collect();
+
+                                    foreach ($teacher->schedulesTeachers as $teaching) {
+                                        $dates = json_decode($teaching->dates, true) ?? [];
+                                        foreach ($dates as $date => $sessions) {
+                                            $temp = [];
+                                            $lastKey = null;
+
+                                            foreach ($sessions as $keySession => $session) {
+                                                if (empty($session['rombel'][0]) || $session['rombel'][0] != request('classroom')) continue;
+
+                                                $rombel = $session['rombel'][0];
+                                                if (!empty($temp)
+                                                    && end($temp)['rombel'] === $rombel
+                                                    && $keySession === $lastKey + 1
+                                                ) {
+                                                    $temp[count($temp)-1]['end'] = $session[1];
+                                                    $temp[count($temp)-1]['sessions'][] = $keySession + 1;
+                                                    $temp[count($temp)-1]['hour'][] = "{$session[0]} - {$session[1]}";
+                                                } else {
+                                                    $temp[] = [
+                                                        'date' => $date,
+                                                        'start' => $session[0],
+                                                        'end' => $session[1],
+                                                        'sessions' => [$keySession + 1],
+                                                        'hour' => ["{$session[0]} - {$session[1]}"],
+                                                        'rombel' => $rombel,
+                                                        'id_mapel' => $session['lesson'][0] ?? null,
+                                                    ];
+                                                }
+                                                $lastKey = $keySession;
+                                            }
+
+                                            $mergedSessions = $mergedSessions->merge($temp);
+                                        }
+                                    }
+                                @endphp
+
+                                @foreach ($mergedSessions as $merged)
+                                    <tr>
+                                        <td class="text-center">{{ $no++ }}</td>
+                                        <td>{{ $teacher->schedulesTeachers->first()->classroom->name ?? '-' }}</td>
+                                        <td>{{ $teacher->user->name }}</td>
+                                        <td>
+                                            <div><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($merged['date'])->isoFormat('LL') }}</div>
+                                            <div><strong>Sesi {{ implode(' & ', $merged['sessions']) }}:</strong> {{ $merged['start'] }} - {{ $merged['end'] }}</div>
+                                        </td>
+
+                                        @foreach ($presenceList as $v)
+                                            <td class="text-center">{{ $counts[$v] ?? '-' }}</td>
+                                        @endforeach
+
+                                        <td class="py-2 text-center" width="140" nowrap>
+                                            <button
+                                                class="btn btn-primary btn-sm btn-open-presence"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#exampleModal"
+                                                data-dated="{{ request('dateSsearch') ?? '' }}"
+                                                data-hour="{{ implode(',', $merged['hour']) }}"
+                                                data-sessions='@json($merged["hour"])'
+                                                data-classroom="{{ $merged['rombel'] }}"
+                                                data-teacher="{{ $teacher->id }}"
+                                                data-mapel="{{ $merged['id_mapel'] ?? '' }}"
+                                                data-presence-id="{{ $teacherPresenceModel->id ?? '' }}"
+                                                data-classroom-id="{{ request('classroom') ?? '' }}"
+                                                data-action="{{ $teacherPresenceModel ? route('counseling::presences.update', ['presence' => $teacherPresenceModel->id]) : route('counseling::presence-batch') }}"
+                                                data-presence='@json($uniquePresence->pluck("presence", "semester_id"))'
+                                            >
+                                                <i class="material-symbols-rounded text-white fs-5">visibility</i>
+                                            </button>
+
+                                            @if ($teacherPresenceModel)
+                                                <form
+                                                    class="form-block form-confirm d-inline"
+                                                    action="{{ route('counseling::presences.destroy', ['presence' => $teacherPresenceModel->id]) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-danger btn-sm text-nowrap">
+                                                        <i class="mdi mdi-delete"></i> Hapus
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @empty
+                            <tr>
+                                <td class="text-center" colspan="{{ count($presenceList) + 5 }}">Tidak ada data guru</td>
+                            </tr>
+                            @endforelse
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-5 col-lg-4">
-            @include('counseling::includes.employee-info', ['employee' => $user->employee])
-            @include('account::includes.account-info')
+            <div class="col-md-5 col-lg-4">
+                @include('counseling::includes.employee-info', ['employee' => $user->employee])
+                @include('account::includes.account-info')
+            </div>
         </div>
     </div>
 @endsection
@@ -206,7 +253,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Detail presensi</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="ms-auto close" data-bs-dismiss="modal" aria-label="Close"
+                    style="background: none; border: none; font-size: 1.5rem; line-height: 1;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -252,7 +300,9 @@ $(() => {
     let stsemStudentIds = @json($currentClassroom->stsems->pluck('student_id', 'id'));
     let presencesBefore7 = @json($firstPresenceBefore7->presence ?? []);
 
-    console.log(presencesBefore7);
+    $(document).on('hidden.bs.modal', function () {
+        $('#sidenav-main').removeClass('sidenav-low');
+    });
 
     $('#exampleModal').on('show.bs.modal', (e) => {
         let button = $(e.relatedTarget);
@@ -265,6 +315,7 @@ $(() => {
         let sessions = button.data('sessions') ? button.data('sessions').toString().split(',') : [];
         let teacher = button.data('teacher') || '';
 
+        $('#sidenav-main').addClass('sidenav-low');
         let $form = $('#presenceForm');
         $form.attr('action', action);
 

@@ -93,20 +93,23 @@
                                                         <input type="hidden" name="dates[{{ $date }}][{{ $i }}][]" value="{{ \Carbon\Carbon::parse($lesson->out)->format('H:i') }}">
 
                                                         {{-- Mata Pelajaran --}}
-                                                        <x-select
+                                                          <x-select
                                                             class="time-{{ $date }}-{{ $i }}"
                                                             name="dates[{{ $date }}][{{ $i }}][lesson][]"
                                                             :options="$gradeLevel->map(fn($grade) => [
-                                                                'label' => 'Kelas '.$grade->name,
-                                                                'children' => $defaultCategoryAcademic->map(fn($cat) => [
-                                                                    'label' => $cat->name,
-                                                                    'children' => $academicSubject
-                                                                        ->filter(fn($sub) => $sub->level_id==$grade->id && $sub->category_id==$cat->id)
-                                                                        ->map(fn($sub) => ['value'=>$sub->id,'label'=>$sub->name])
-                                                                ])
-                                                            ])"
+                                                                'label' => 'Kelas ' . $grade->name,
+                                                                // Langsung ambil subject berdasarkan level_id tanpa lewat Category
+                                                                'children' => $academicSubject
+                                                                    ->filter(fn($sub) => (int)$sub->level_id === (int)$grade->id)
+                                                                    ->map(fn($sub) => [
+                                                                        'value' => $sub->id,
+                                                                        'label' => $sub->name
+                                                                    ])
+                                                                    ->values()
+                                                                    ->all()
+                                                            ])->values()->all()"
                                                             placeholder="Pilih Mata Pelajaran"
-                                                            :disabled="$class==='disabled'"
+                                                            :disabled="$class === 'disabled'"
                                                         />
 
                                                         {{-- Rombel --}}

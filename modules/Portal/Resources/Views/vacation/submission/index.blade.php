@@ -28,325 +28,327 @@
 ])
 
 @section('contents')
-   <header id="page-topbar">
-        <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
+    @include('layouts.component.material-nav')
 
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo-light.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-light.png') }}" alt="" height="39">
-                        </span>
-                    </a>
-                </div>
+    <style>
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .card-soft {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .bg-light-soft {
+            background-color: #f8f9fa;
+        }
+        .badge-date {
+            background-color: #f1f3f5;
+            color: #495057;
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 4px 8px;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        .timeline-step {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1;
+        }
+    </style>
 
-                <button type="button" class="btn btn-sm font-size-16 d-lg-none header-item waves-effect waves-light px-3" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                    <i class="fa fa-fw fa-bars"></i>
-                </button>
-
+    <div class="container-fluid py-4">
+        {{-- Header --}}
+        <div class="d-flex align-items-center mb-4 ps-2">
+            <a href="{{ request('next', route('portal::dashboard-msdm.index')) }}" class="btn btn-link text-dark p-0 me-3">
+                <span class="material-symbols-rounded" style="font-size: 32px;">arrow_back_ios_new</span>
+            </a>
+            <div>
+                <h3 class="font-weight-bolder mb-0 text-dark">Cuti & Libur Hari Raya</h3>
+                <p class="text-sm mb-0 text-secondary">Kelola jatah cutimu dan pantau riwayat pengajuan di sini.</p>
             </div>
-
-            <div class="d-flex">
-                @php($user=auth()->user())
-                @include('portal::layouts.components.notifications')
-                
-                @include('layouts.shortcut_menu')
-
-                @include('layouts.nav_name')
-                
-            </div>
-    </header>
-
-    <div class="topnav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-
-                <div class="navbar-collapse collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
-
-                        <li class="nav-item">
-                            <a class="nav-link arrow-none" href="{{ route('portal::dashboard-msdm.index') }}" id="topnav-dashboard" role="button">
-                                <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
         </div>
-    </div>
 
-    <div class="main-content">
-
-        <div class="page-content">
-            <div class="container-fluid">
-
-                <div class="d-flex align-items-center mb-4">
-                    <a class="text-decoration-none" href="{{ request('next', route('portal::dashboard-msdm.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-                    <div class="ms-4">
-                        <h2 class="mb-1">Cuti</h2>
-                        <div class="text-muted">Ambil cutimu atau liburmu buat ke pantai atau muncak!</div>
+        {{-- Alerts --}}
+        <div class="row px-2">
+            @if (Session::has('success') || Session::has('danger'))
+                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="w-100">
+                    <div class="alert {{ Session::has('success') ? 'alert-success' : 'alert-danger' }} border-0 text-white shadow-sm" style="border-radius: 12px;">
+                        <div class="d-flex align-items-center">
+                            <span class="material-symbols-rounded me-2">{{ Session::has('success') ? 'check_circle' : 'error' }}</span>
+                            <span>{{ Session::get('success') ?? Session::get('danger') }}</span>
+                        </div>
                     </div>
                 </div>
+            @endif
+        </div>
 
-                <div class="row">
-                @if (Session::has('success'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                        <div class="alert alert-success">
-                            {{ Session::get('success') }}
-                        </div>
-                    </div>
-                @endif 
-
-                @if (Session::has('danger'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                        <div class="alert-danger alert">
-                            {{ Session::get('danger') }}
-                        </div>
-                    </div>
-                @endif
-                </div>
-
-                <div class="row">
-                    <div class="col-xl-4">
-                        <div class="card tg-steps-vacation-submission border-0">
-                            <div class="card-body py-4 text-center">
-                                <div class="my-4">
-                                    @if (count($quotas))
-                                        <a class="btn btn-soft-danger rounded-circle d-flex justify-content-center align-items-center mx-auto" href="{{ route('portal::vacation.submission.create', ['next' => url()->full()]) }}" style="width: 100px; height: 100px;"><i class="mdi mdi-exit-to-app mdi-48px"></i></a>
-                                    @else
-                                        <button class="btn btn-soft-secondary disabled rounded-circle d-flex justify-content-center align-items-center mx-auto" style="width: 100px; height: 100px;"><i class="mdi mdi-exit-to-app mdi-48px"></i></button>
-                                    @endif
-                                </div>
-                                <h4 class="mb-1">Pengajuan baru</h4>
-                                <p class="text-muted mb-0">Silakan tekan tombol di atas untuk mengajukan cuti/libur hari raya baru</p>
-                            </div>
-                        </div>
-                        <div class="card tg-steps-vacation-quota border-0">
-                            <div class="card-body">
-                                <i class="mdi mdi-calendar-minus"></i> Sisa kuota cuti dan libur hari raya kamu
-                            </div>
-                            @forelse($quotas as $quota)
-                                <div class="card-body border-top py-4">
-                                    <div class="row align-items-center">
-                                        <div class="col-8">
-                                            <div class="small text-uppercase">{{ $quota->category->name }}</div>
-                                            <div class="small text-muted">Berlaku s.d. {{ $quota->end_at->formatLocalized('%d %B %Y') }}</div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="h1 mb-0 text-end">{{ $quota->remain }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="card-body border-top text-center">
-                                    <img src="{{ asset('img/manypixels/Sad_face_Flatline.svg') }}" style="max-width: 200px;" alt="">
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">Yang sabar ya ...</h5>
-                                        <p class="text-muted">Kayaknya belum ada kuota cuti tahun ini nih, semangat kerjanya ya!</p>
-                                    </div>
-                                </div>
-                            @endforelse
-                        </div>
-                        
-                        @if (
-                            isset($employee->position->position_id) &&
-                            in_array(
-                                $employee->position->position_id,
-                                [
-                                    \Modules\Core\Enums\PositionTypeEnum::KEPALASEKOLAH->value,
-                                    \Modules\Core\Enums\PositionTypeEnum::HUMAS->value
-                                ],
-                                true
-                            )
-                        ) 
-                            @if (in_array($employee->position?->position->level->value ?: 0, array_column(config('modules.core.features.services.vacations.approvable_steps', []), 'value')))
-                                <div class="list-group mb-4">
-                                    <a class="list-group-item list-group-item-action p-4" href="{{ route('portal::vacation.manage.index', ['next' => url()->current()]) }}" style="border-style: dashed;">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="d-inline-block bg-soft-secondary text-danger me-2 rounded text-center" style="height: 36px; width: 36px;">
-                                                <i class="mdi mdi-calendar-check-outline mdi-24px"></i>
-                                            </div>
-                                            <div class="flex-grow-1">Kelola pengajuan cuti</div>
-                                            <i class="mdi mdi-chevron-right-circle-outline"></i>
-                                        </div>
-                                    </a>
-                                    @if (in_array($employee->position?->position->level->value ?: 0, config('modules.core.features.services.vacations.view_quotas', [])))
-                                        <a class="list-group-item list-group-item-action p-4" href="{{ route('portal::vacation.quotas.index', ['next' => url()->current()]) }}" style="border-style: dashed;">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <div class="d-inline-block bg-soft-secondary text-danger me-2 rounded text-center" style="height: 36px; width: 36px;">
-                                                    <i class="mdi mdi-calendar-minus mdi-24px"></i>
-                                                </div>
-                                                <div class="flex-grow-1">Lihat sisa kuota cuti/libur hari raya departemen</div>
-                                                <i class="mdi mdi-chevron-right-circle-outline"></i>
-                                            </div>
-                                        </a>
-                                    @endif
-                                </div>
+        <div class="row">
+            {{-- Sisi Kiri: Aksi & Kuota --}}
+            <div class="col-xl-4">
+                {{-- Card Pengajuan --}}
+                <div class="card card-soft tg-steps-vacation-submission mb-4 overflow-hidden">
+                    <div class="card-body py-4 text-center position-relative">
+                        <div class="my-3">
+                            @if (count($quotas))
+                                <a class="btn btn-icon-only btn-rounded btn-outline-danger btn-lg d-inline-flex align-items-center justify-content-center bg-white shadow-sm"
+                                   href="{{ route('portal::vacation.submission.create', ['next' => url()->full()]) }}"
+                                   style="width: 70px; height: 70px; border-width: 2px;">
+                                    <span class="material-symbols-rounded text-danger" style="font-size: 36px;">flight_takeoff</span>
+                                </a>
+                            @else
+                                <button class="btn btn-icon-only btn-rounded btn-soft-secondary btn-lg disabled" style="width: 70px; height: 70px;">
+                                    <span class="material-symbols-rounded" style="font-size: 36px;">block</span>
+                                </button>
                             @endif
+                        </div>
+                        <h5 class="font-weight-bolder">Ajukan Cuti Baru</h5>
+                        <p class="text-muted text-sm px-3">Butuh waktu istirahat? Klik tombol di atas untuk mulai mengajukan.</p>
+                        <span class="material-symbols-rounded position-absolute text-danger" style="right: -15px; bottom: -15px; font-size: 100px; opacity: 0.05;">beach_access</span>
+                    </div>
+                </div>
+
+                {{-- Card Kuota --}}
+                <div class="card card-soft tg-steps-vacation-quota mb-4">
+                    <div class="card-header bg-transparent pb-0">
+                        <h6 class="font-weight-bold mb-0 text-dark d-flex align-items-center">
+                            <span class="material-symbols-rounded me-2 text-danger">event_available</span> Sisa Jatah Cuti
+                        </h6>
+                    </div>
+                    <div class="card-body px-0 pb-0">
+                        @forelse($quotas as $quota)
+                            <div class="p-3 border-bottom mx-3">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <p class="text-xs text-uppercase font-weight-bold mb-0 text-secondary">{{ $quota->category->name }}</p>
+                                        <p class="text-xxs text-muted mb-0">Hingga {{ $quota->end_at->format('d M Y') }}</p>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <h3 class="font-weight-bolder mb-0 text-dark">{{ $quota->remain }}</h3>
+                                        <p class="text-xxs text-uppercase mb-0 text-secondary">Hari</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="card-body text-center py-4">
+                                <img src="{{ asset('img/manypixels/Sad_face_Flatline.svg') }}" style="max-width: 120px;" alt="">
+                                <p class="text-sm text-muted mt-3">Belum ada jatah cuti tersedia.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- Admin Actions --}}
+                @if (isset($employee->position->position_id) && in_array($employee->position->position_id, [\Modules\Core\Enums\PositionTypeEnum::KEPALASEKOLAH->value, \Modules\Core\Enums\PositionTypeEnum::HUMAS->value], true))
+                    <div class="list-group mb-4">
+                        @if (in_array($employee->position?->position->level->value ?: 0, array_column(config('modules.core.features.services.vacations.approvable_steps', []), 'value')))
+                            <a href="{{ route('portal::vacation.manage.index', ['next' => url()->current()]) }}" class="list-group-item list-group-item-action card-soft border-0 mb-3 py-3 d-flex align-items-center">
+                                <div class="icon icon-shape bg-soft-danger text-danger border-radius-md me-3 d-flex align-items-center justify-content-center">
+                                    <span class="material-symbols-rounded">verified_user</span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 text-sm font-weight-bold">Kelola Pengajuan</h6>
+                                    <p class="text-xs text-secondary mb-0">Verifikasi cuti karyawan</p>
+                                </div>
+                                <span class="material-symbols-rounded text-secondary">chevron_right</span>
+                            </a>
+                        @endif
+
+                        @if (in_array($employee->position?->position->level->value ?: 0, config('modules.core.features.services.vacations.view_quotas', [])))
+                            <a href="{{ route('portal::vacation.quotas.index', ['next' => url()->current()]) }}" class="list-group-item list-group-item-action card-soft border-0 mb-3 py-3 d-flex align-items-center">
+                                <div class="icon icon-shape bg-soft-info text-info border-radius-md me-3 d-flex align-items-center justify-content-center">
+                                    <span class="material-symbols-rounded">group</span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 text-sm font-weight-bold">Kuota Departemen</h6>
+                                    <p class="text-xs text-secondary mb-0">Pantau sisa cuti tim</p>
+                                </div>
+                                <span class="material-symbols-rounded text-secondary">chevron_right</span>
+                            </a>
                         @endif
                     </div>
-                    <div class="col-xl-8">
-                        <div class="card border-0">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="mdi mdi-calendar-multiselect"></i> Riwayat cuti dan libur hari raya
+                @endif
+            </div>
+
+            {{-- Sisi Kanan: Tabel Riwayat --}}
+            <div class="col-xl-8">
+                <div class="card card-soft">
+                    <div class="card-header pb-2 pt-3 bg-white border-bottom">
+                        <div class="d-flex align-items-center justify-content-between px-2">
+                            <div class="d-flex align-items-center">
+                                <div class="icon icon-sm shadow-sm border-radius-md bg-gradient-danger text-center me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <span class="material-symbols-rounded text-white" style="font-size: 18px;">history</span>
                                 </div>
-                                <input type="checkbox" class="btn-check" id="collapse-btn" autocomplete="off" @if (request('search')) checked @endif>
-                                <label class="btn btn-outline-secondary text-dark btn-sm rounded px-2 py-1" data-bs-toggle="collapse" data-bs-target="#collapse-filter" for="collapse-btn"><i class="mdi mdi-filter-outline"></i> <span class="d-none d-sm-inline">Filter</span></label>
+                                <h6 class="font-weight-bolder mb-0 text-dark">Riwayat Pengajuan</h6>
                             </div>
-                            <div class="card-body border-top border-bottom tg-steps-vacation-filter">
-                                <form class="form-block row gy-2 gx-2" action="{{ route('portal::vacation.submission.index') }}" method="get">
-                                    <div class="col-12 flex-grow-1 my-0">
-                                        <div class="@if (request('search')) show @endif collapse" id="collapse-filter">
-                                            <input class="form-control" type="search" name="search" placeholder="Cari kategori/deskripsi di sini ..." value="{{ request('search') }}">
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 col-auto">
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span><span class="d-none d-sm-inline">Periode</span></div>
-                                            <button type="button" class="btn btn-light dropdown-toggle d-none d-sm-block" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">Rentang waktu</button>
-                                            <input class="form-control" type="date" name="start_at" value="{{ request('start_at') }}">
-                                            <input class="form-control" type="date" name="end_at" value="{{ request('end_at') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <a class="btn btn-light" href="{{ route('portal::vacation.submission.index') }}"><i class="mdi mdi-refresh"></i> <span class="d-sm-none">Reset</span></a>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn btn-dark"><i class="mdi mdi-magnify"></i> Cari</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="table-responsive table-responsive-xl tg-steps-vacation-table">
-                                <table class="mb-0 table align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Kategori</th>
-                                            <th nowrap>Tgl pengajuan</th>
-                                            <th nowrap>Tgl cuti/libur hari raya</th>
-                                            <th>Status</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($vacations as $vacation)
-                                            <tr @if ($vacation->trashed()) class="text-muted" @endif>
-                                                <td style="min-width: 200px;" class="py-3">
-                                                    <div>{{ $vacation->quota->category->name }}</div>
-                                                    <small class="text-muted">{{ $vacation->description }}</small>
-                                                </td>
-                                                <td class="small">{{ $vacation->created_at->formatLocalized('%d %B %Y') }}</td>
-                                                <td style="min-width: 200px;">
-                                                    @isset(collect($vacation->dates)->first()['cashable'])
-                                                        <span class="badge bg-dark fw-normal user-select-none text-white">{{ collect($vacation->dates)->count() }} dikompensasikan</span>
-                                                    @else
-                                                        @foreach (collect($vacation->dates)->take(3) as $date)
-                                                            <span class="badge bg-soft-secondary text-dark fw-normal user-select-none {{ isset($date['c']) ? 'text-decoration-line-through' : '' }}" @isset($date['f']) data-bs-toggle="tooltip" title="Sebagai freelancer" @endisset>
-                                                                @isset($date['f'])
-                                                                    <i class="mdi mdi-account-network-outline text-danger"></i>
-                                                                @endisset {{ strftime('%d %B %Y', strtotime($date['d'])) }}
-                                                            </span>
-                                                        @endforeach
-                                                        @php($remain = collect($vacation->dates)->count() - 3)
-                                                        @if ($remain > 0)
-                                                            <span class="badge text-dark fw-normal user-select-none">+{{ $remain }} lainnya</span>
-                                                        @endif
-                                                    @endisset
-                                                </td>
-                                                <td nowrap> @include('portal::vacation.components.status', ['vacation' => $vacation]) </td>
-                                                <td nowrap class="py-1 text-end">
-                                                    @unless ($vacation->trashed())
-                                                        @if ($vacation->hasApprovables())
-                                                            <span data-bs-toggle="collapse" data-bs-target="#collapse-{{ $vacation->id }}">
-                                                                <button class="btn btn-soft-primary btn-sm rounded px-2 py-1" data-bs-toggle="tooltip" title="Status pengajuan"><i class="mdi mdi-progress-clock"></i></button>
-                                                            </span>
-                                                        @endif
-                                                        @if ($vacation->can('revised'))
-                                                            <a class="btn btn-soft-warning btn-sm rounded px-2 py-1" data-bs-toggle="tooltip" title="Ubah pengajuan" href="{{ route('portal::vacation.submission.edit', ['vacation' => $vacation->id, 'next' => request('next')]) }}"><i class="mdi mdi-pencil-outline"></i></a>
-                                                        @endif
-                                                        <div class="dropstart d-inline">
-                                                            <button class="btn btn-soft-secondary text-dark rounded px-2 py-1" type="button" data-bs-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></button>
-                                                            <ul class="dropdown-menu border-0 shadow">
-                                                                <li><a class="dropdown-item" style="cursor: pointer;" href="{{ route('portal::vacation.submission.show', ['vacation' => $vacation->id, 'next' => request('next')]) }}"><i class="mdi mdi-eye-outline me-1"></i> Lihat detail</a></li>
-                                                                <li><a class="dropdown-item" style="cursor: pointer;" href="{{ route('portal::vacation.print', ['vacation' => $vacation->id]) }}" target="_blank"><i class="mdi mdi-printer-outline me-1"></i> Cetak dokumen (.pdf)</a></li>
-                                                                @if ($vacation->can('deleted'))
-                                                                    <li class="dropdown-divider"></li>
-                                                                    <li>
-                                                                        <form class="dropdown-item form-block form-confirm" action="{{ route('portal::vacation.submission.destroy', ['vacation' => $vacation->id]) }}" method="post"> @csrf @method('delete')
-                                                                            <button class="btn btn-link text-danger d-flex align-items-center p-0 text-start">
-                                                                                <i class="mdi mdi-trash-can-outline me-2"></i>
-                                                                                <div>Batalkan pengajuan <br> <small class="text-muted">Hapus data pengajuan {{ $vacation->hasApprovables() ? 'sebelum disetujui oleh atasan' : '' }}</small></div>
-                                                                            </button>
-                                                                        </form>
-                                                                    </li>
-                                                                @endif
-                                                                @if ($vacation->can('canceled'))
-                                                                    <li class="dropdown-divider"></li>
-                                                                    <li>
-                                                                        <a class="dropdown-item text-danger d-flex align-items-center" style="cursor: pointer;" href="{{ route('portal::vacation.cancelation.show', ['vacation' => $vacation->id, 'next' => url()->full()]) }}">
-                                                                            <i class="mdi mdi-progress-upload me-2"></i>
-                                                                            <div>Ajukan pembatalan <br> <small class="text-muted">Ajukan jika Anda membatalkan pengajuan yang telah disetujui</small></div>
-                                                                        </a>
-                                                                    </li>
-                                                                @endif
-                                                            </ul>
-                                                        </div>
-                                                    @endunless
-                                                </td>
-                                            </tr>
-                                            @if ($vacation->hasApprovables() && !$vacation->trashed())
-                                                <tr>
-                                                    <td class="p-0" colspan="5">
-                                                        <div class="@if ($vacation->hasAnyApprovableResultIn('PENDING')) show @endif collapse" id="collapse-{{ $vacation->id }}">
-                                                            <table class="table-borderless table-hover table-sm mb-0 table align-middle">
-                                                                <thead>
-                                                                    <tr class="text-muted small bg-light">
-                                                                        <th class="border-bottom fw-normal">Jenis</th>
-                                                                        <th class="border-bottom fw-normal" colspan="2">Persetujuan</th>
-                                                                        <th class="border-bottom fw-normal">Penanggungjawab</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($vacation->approvables as $approvable)
-                                                                        <tr>
-                                                                            <td class="small {{ $approvable->cancelable ? 'text-danger' : 'text-muted' }}">{{ ucfirst($approvable->type) }} #{{ $approvable->level }}</td>
-                                                                            <td @if ($loop->last) class="border-0" @endif>
-                                                                                <div class="badge bg-{{ $approvable->result->color() }} fw-normal text-white"><i class="{{ $approvable->result->icon() }}"></i> {{ $approvable->result->label() }}</div>
-                                                                            </td>
-                                                                            <td class="small ps-0">{{ $approvable->reason }}</td>
-                                                                            <td class="small">{{ $approvable->userable->getApproverLabel() }}</td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @empty
-                                            <tr>
-                                                <td colspan="5">@include('components.notfound')</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-body">
-                                {{ $vacations->appends(request()->all())->links() }}
-                            </div>
+                            <button class="btn btn-sm btn-outline-danger mb-0 py-1 px-3 d-flex align-items-center border-radius-md" data-bs-toggle="collapse" data-bs-target="#collapse-filter">
+                                <span class="material-symbols-rounded text-xs me-1">tune</span> Filter
+                            </button>
                         </div>
+                    </div>
+
+                    {{-- Filter --}}
+                    <div class="card-body border-bottom pt-0 bg-light-soft tg-steps-vacation-filter">
+                        <div class="collapse @if (request('search')) show @endif" id="collapse-filter">
+                            <form action="{{ route('portal::vacation.submission.index') }}" method="get" class="row g-2 mt-2 pb-3 px-2">
+                                <div class="col-md-5">
+                                    <label class="text-xxs font-weight-bold mb-1 text-secondary text-uppercase ps-1">Cari Kategori/Alasan</label>
+                                    <input class="form-control form-control-sm border-radius-md" type="search" name="search" placeholder="Cari..." value="{{ request('search') }}">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="text-xxs font-weight-bold mb-1 text-secondary text-uppercase ps-1">Periode</label>
+                                    <div class="input-group input-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary mb-0 py-1 d-none d-sm-block shadow-none" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
+                                            <span class="material-symbols-rounded text-xs">calendar_month</span>
+                                        </button>
+                                        <input class="form-control" type="date" name="start_at" value="{{ request('start_at') }}">
+                                        <input class="form-control" type="date" name="end_at" value="{{ request('end_at') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end gap-1">
+                                    <button type="submit" class="btn btn-dark btn-sm flex-grow-1 mb-0 border-radius-md">
+                                        <span class="material-symbols-rounded text-sm">search</span>
+                                    </button>
+                                    <a class="btn btn-light btn-sm mb-0 border-radius-md" href="{{ route('portal::vacation.submission.index') }}">
+                                        <span class="material-symbols-rounded text-sm">restart_alt</span>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Tabel --}}
+                    <div class="table-responsive tg-steps-vacation-table">
+                        <table class="table align-items-center mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-4">Kategori & Keterangan</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tgl Libur</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-secondary opacity-7 text-end pe-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($vacations as $vacation)
+                                    <tr @class(['opacity-6' => $vacation->trashed()])>
+                                        <td>
+                                            <div class="d-flex px-3 py-2">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm font-weight-bold text-dark">{{ $vacation->quota->category->name }}</h6>
+                                                    <p class="text-xs text-secondary mb-0 text-truncate" style="max-width: 200px;">{{ $vacation->description }}</p>
+                                                    <small class="text-xxs text-primary font-weight-bold">Diajukan: {{ $vacation->created_at->format('d/m/Y') }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="py-2">
+                                                @isset(collect($vacation->dates)->first()['cashable'])
+                                                    <span class="badge bg-dark text-xxs border-radius-md">{{ collect($vacation->dates)->count() }} Hari Dikompensasikan</span>
+                                                @else
+                                                    @foreach (collect($vacation->dates)->take(2) as $date)
+                                                        <div class="badge-date text-xs">
+                                                            <span class="material-symbols-rounded text-xs me-1">calendar_today</span>
+                                                            {{ date('d M Y', strtotime($date['d'])) }}
+                                                        </div>
+                                                    @endforeach
+                                                    @php($remain = collect($vacation->dates)->count() - 2)
+                                                    @if ($remain > 0)
+                                                        <span class="text-xxs text-secondary ms-1">+{{ $remain }} hari lagi</span>
+                                                    @endif
+                                                @endisset
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            @include('portal::vacation.components.status', ['vacation' => $vacation])
+                                        </td>
+                                        <td class="align-middle text-end pe-4">
+                                            <div class="dropstart">
+                                                <button class="btn btn-link text-secondary mb-0 p-0" data-bs-toggle="dropdown">
+                                                    <span class="material-symbols-rounded">more_vert</span>
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 py-2">
+                                                    <li><a class="dropdown-item d-flex align-items-center" href="{{ route('portal::vacation.submission.show', ['vacation' => $vacation->id, 'next' => request('next')]) }}">
+                                                        <span class="material-symbols-rounded text-sm me-2 text-primary">visibility</span> Detail</a>
+                                                    </li>
+                                                    <li><a class="dropdown-item d-flex align-items-center" href="{{ route('portal::vacation.print', ['vacation' => $vacation->id]) }}" target="_blank">
+                                                        <span class="material-symbols-rounded text-sm me-2 text-dark">print</span> Cetak PDF</a>
+                                                    </li>
+                                                    @if($vacation->hasApprovables() && !$vacation->trashed())
+                                                        <li><a class="dropdown-item d-flex align-items-center" href="javascript:;" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $vacation->id }}">
+                                                            <span class="material-symbols-rounded text-sm me-2 text-warning">track_changes</span> Lacak Status</a>
+                                                        </li>
+                                                    @endif
+                                                    @if ($vacation->can('revised'))
+                                                        <li><a class="dropdown-item d-flex align-items-center" href="{{ route('portal::vacation.submission.edit', ['vacation' => $vacation->id, 'next' => request('next')]) }}">
+                                                            <span class="material-symbols-rounded text-sm me-2 text-info">edit_square</span> Ubah</a>
+                                                        </li>
+                                                    @endif
+
+                                                    @if ($vacation->can('deleted'))
+                                                        <li class="dropdown-divider"></li>
+                                                        <li>
+                                                            <form class="form-confirm" action="{{ route('portal::vacation.submission.destroy', ['vacation' => $vacation->id]) }}" method="post">
+                                                                @csrf @method('delete')
+                                                                <button type="submit" class="dropdown-item text-danger d-flex align-items-center">
+                                                                    <span class="material-symbols-rounded text-sm me-2">delete</span> Batalkan Pengajuan
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @endif
+
+                                                    @if ($vacation->can('canceled'))
+                                                        <li class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item text-danger d-flex align-items-center" href="{{ route('portal::vacation.cancelation.show', ['vacation' => $vacation->id, 'next' => url()->full()]) }}">
+                                                            <span class="material-symbols-rounded text-sm me-2">cancel</span> Ajukan Pembatalan</a>
+                                                        </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    {{-- Approval Timeline --}}
+                                    @if ($vacation->hasApprovables() && !$vacation->trashed())
+                                        <tr class="collapse @if ($vacation->hasAnyApprovableResultIn('PENDING')) show @endif" id="collapse-{{ $vacation->id }}">
+                                            <td colspan="4" class="bg-light-soft py-4 px-5">
+                                                <div class="timeline timeline-one-side" style="border-left: 2px dashed #dee2e6; margin-left: 14px;">
+                                                    @foreach ($vacation->approvables as $approvable)
+                                                        <div class="timeline-block mb-3 position-relative" style="padding-left: 30px;">
+                                                            <span class="timeline-step position-absolute" style="left: -15px; top: 0;">
+                                                                <span class="material-symbols-rounded text-{{ $approvable->result->color() }}" style="font-size: 18px;">
+                                                                    {{ $approvable->result->icon() == 'mdi mdi-check' ? 'check_circle' : ($approvable->result->icon() == 'mdi mdi-close' ? 'cancel' : 'hourglass_top') }}
+                                                                </span>
+                                                            </span>
+                                                            <div class="timeline-content">
+                                                                <h6 class="text-dark text-xs font-weight-bold mb-0">
+                                                                    {{ ucfirst($approvable->type) }} Level {{ $approvable->level }}
+                                                                </h6>
+                                                                <p class="text-secondary text-xxs mt-1 mb-0">{{ $approvable->userable->getApproverLabel() }}</p>
+                                                                @if($approvable->reason) <p class="text-xs italic mb-0 text-muted mt-1">"{{ $approvable->reason }}"</p> @endif
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @empty
+                                    <tr><td colspan="4" class="text-center py-5">@include('components.notfound')</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-footer py-3 border-top bg-white">
+                        {{ $vacations->appends(request()->all())->links() }}
                     </div>
                 </div>
             </div>

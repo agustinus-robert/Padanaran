@@ -3,11 +3,12 @@
 namespace Modules\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\HasGradeFromSession;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcademicCounselingCategory extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasGradeFromSession;
 
     /**
      * The table associated with the model.

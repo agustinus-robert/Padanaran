@@ -25,7 +25,8 @@ class PresenceController extends Controller
     {
         $this->authorize('access', AcademicClassroomPresence::class);
 
-        $grades = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grades = GradeLevel::pluck('id');
+
         $acsem = $this->acsem->load([
             'classrooms' => function ($query) use ($grades) {
                 $query->whereIn('level_id', $grades);
@@ -54,7 +55,6 @@ class PresenceController extends Controller
             'contract.position.position',
             'schedulesTeachers',
         ])
-        ->where('grade_id', userGrades())
         ->whenTrashed($request->get('trash'))
         ->whereHas('contract.position', function ($position) {
             $position->whereHas('position', function ($type) {
@@ -64,7 +64,7 @@ class PresenceController extends Controller
         ->get()
         ->filter(function ($teacher) use ($request) {
             $classroomId = $request->get('classroom');
-            $filterDate = $request->get('dateSsearch');
+            $filterDate = $request->get('dateSearch');
 
             foreach ($teacher->schedulesTeachers as $schedule) {
                 $data = json_decode($schedule->dates, true);
@@ -226,7 +226,7 @@ class PresenceController extends Controller
     {
         $this->authorize('store', AcademicClassroomPresence::class);
 
-        $grades = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grades = GradeLevel::pluck('id');
 
         $acsem = $this->acsem->load([
             'classrooms' => function ($query) use ($grades) {
@@ -234,7 +234,7 @@ class PresenceController extends Controller
             }
         ]);
 
-        $grades = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grades = GradeLevel::pluck('id');
         $user = auth()->user();
 
         $presenceList = AcademicSubjectMeetPlan::$presenceList;

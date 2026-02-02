@@ -136,7 +136,7 @@ class CreateAcademicsTable extends Migration
         Schema::create('acdmc_classroom_presences', function(Blueprint $table){
             $table->bigIncrements('id');
             $table->unsignedBigInteger('classroom_id');
-            $table->dateTime('presenced_at');
+            $table->timestamp('presenced_at');
             $table->text('presence');
             $table->unsignedSmallInteger('presenced_by');
 
@@ -189,8 +189,8 @@ class CreateAcademicsTable extends Migration
             $table->timestamps();
 
             $table->foreign('subject_id')->references('id')->on('acdmc_subjects')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('teacher_id')->references('id')->on('empl_teachers')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('assist_id')->references('id')->on('empl_teachers')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('assist_id')->references('id')->on('empls')->onUpdate('cascade')->onDelete('cascade');
 
             $table->index(['start_at', 'end_at']);
         });

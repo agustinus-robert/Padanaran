@@ -61,24 +61,24 @@ class Student extends Model
         'user'
     ];
 
-    protected static function booted()
-    {
-        static::created(function ($student) {
-            Cache::tags(['students'])->flush();
-        });
+    // protected static function booted()
+    // {
+    //     static::created(function ($student) {
+    //         Cache::tags(['students'])->flush();
+    //     });
 
-        static::updated(function ($student) {
-            Cache::tags(['students'])->flush();
-        });
+    //     static::updated(function ($student) {
+    //         Cache::tags(['students'])->flush();
+    //     });
 
-        static::deleted(function ($student) {
-            Cache::tags(['students'])->flush();
-        });
+    //     static::deleted(function ($student) {
+    //         Cache::tags(['students'])->flush();
+    //     });
 
-        static::restored(function ($student) {
-            Cache::tags(['students'])->flush();
-        });
-    }
+    //     static::restored(function ($student) {
+    //         Cache::tags(['students'])->flush();
+    //     });
+    // }
 
     /**
      * Retrieve the model for a bound value.

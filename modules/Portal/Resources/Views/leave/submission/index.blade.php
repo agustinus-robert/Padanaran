@@ -1,233 +1,252 @@
-@extends('portal::layouts.default')
+@extends('layouts.dashboarding')
 
 @section('title', 'Izin | ')
 
 @include('components.tourguide', [
     'steps' => array_filter([
-        [
-            'selector' => '.tg-steps-leave-submission',
-            'title' => 'Pengajuan izin',
-            'content' => 'Tekan tombol ini untuk melakukan pengajuan izin.',
-        ],
-        [
-            'selector' => '.tg-steps-leave-count',
-            'title' => 'Statistik izin',
-            'content' => 'Kolom ini menampilkan statistik izin yang telah kamu gunakan di tahun ini.',
-        ],
-        [
-            'selector' => '.tg-steps-leave-filter',
-            'title' => 'Filter riwayat izin',
-            'content' => 'Gunakan filter ini untuk melihat riwayat izin pada bulan-bulan sebelumnya.',
-        ],
-        [
-            'selector' => '.tg-steps-leave-table',
-            'title' => 'Tabel riwayat izin',
-            'content' => 'Menampilkan riwayat izin berdasarkan filter yang diterapkan.',
-        ],
+        ['selector' => '.tg-steps-leave-submission', 'title' => 'Pengajuan izin', 'content' => 'Tekan tombol ini untuk melakukan pengajuan izin.'],
+        ['selector' => '.tg-steps-leave-count', 'title' => 'Statistik izin', 'content' => 'Kolom ini menampilkan statistik izin yang telah kamu gunakan di tahun ini.'],
+        ['selector' => '.tg-steps-leave-filter', 'title' => 'Filter riwayat izin', 'content' => 'Gunakan filter ini untuk melihat riwayat izin pada bulan-bulan sebelumnya.'],
+        ['selector' => '.tg-steps-leave-table', 'title' => 'Tabel riwayat izin', 'content' => 'Menampilkan riwayat izin berdasarkan filter yang diterapkan.'],
     ]),
 ])
 
-@section('content')
-    <div class="d-flex align-items-center mb-4">
-        <a class="text-decoration-none" href="{{ request('next', route('portal::dashboard.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-        <div class="ms-4">
-            <h2 class="mb-1">Izin</h2>
-            <div class="text-muted">Nggak perlu khawatir kalo ada keperluan mendadak!</div>
+@section('body-content')
+    @include('layouts.component.material-nav')
+
+    <style>
+        /* CSS Halus untuk Sidebar */
+        #sidenav-main {
+            transition: z-index 0.3s ease, opacity 0.3s ease;
+        }
+        .sidenav-low {
+            z-index: 1040 !important;
+            opacity: 0.6;
+        }
+        .bg-light-soft {
+            background-color: #f8f9fa;
+        }
+
+        /* Material Symbols Styling */
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Timeline Styling */
+        .timeline-step {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1;
+        }
+    </style>
+
+    <div class="container-fluid py-4">
+        {{-- Header Halaman --}}
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ request('next', route('portal::dashboard.index')) }}" class="btn btn-link text-dark p-0 me-3">
+                <span class="material-symbols-rounded" style="font-size: 32px;">arrow_back_ios_new</span>
+            </a>
+            <div>
+                <h3 class="font-weight-bolder mb-0 text-dark">Manajemen Izin</h3>
+                <p class="text-sm mb-0 text-secondary">Pantau dan ajukan izin kerja Anda di sini.</p>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xl-4">
-            <div class="card tg-steps-leave-submission border-0">
-                <div class="card-body py-4 text-center">
-                    <div class="my-4">
-                        <a class="btn btn-soft-primary rounded-circle d-flex justify-content-center align-items-center mx-auto" href="{{ route('portal::leave.submission.create', ['next' => url()->full()]) }}" style="width: 100px; height: 100px;"><i class="mdi mdi-exit-to-app mdi-48px"></i></a>
-                    </div>
-                    <h4 class="mb-1">Pengajuan baru</h4>
-                    <p class="text-muted mb-0">Silakan tekan tombol di atas untuk mengajukan izin baru</p>
-                </div>
-            </div>
-            <div class="card tg-steps-leave-count border-0">
-                <div class="card-body border-top py-4">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <div class="small text-uppercase">Jumlah izin yang diambil</div>
-                            <div class="small text-muted">Tahun {{ date('Y') }}</div>
+
+        <div class="row">
+            {{-- Sisi Kiri: Aksi & Statistik --}}
+            <div class="col-xl-4">
+                {{-- Card Pengajuan Baru --}}
+                <div class="card tg-steps-leave-submission border-0 shadow-sm mb-4 overflow-hidden" style="border-radius: 1rem;">
+                    <div class="card-body py-5 text-center position-relative">
+                        <div class="mb-3">
+                            <a class="btn btn-icon-only btn-rounded btn-outline-primary btn-lg d-inline-flex align-items-center justify-content-center bg-white shadow-sm"
+                               href="{{ route('portal::leave.submission.create', ['next' => url()->full()]) }}"
+                               style="width: 70px; height: 70px; border-width: 2px; position: relative; z-index: 2;">
+                                <span class="material-symbols-rounded" style="font-size: 36px;">add</span>
+                            </a>
                         </div>
-                        <div class="col-4">
-                            <div class="h1 mb-0 text-end">{{ $leaves_this_year_count }}</div>
-                        </div>
+                        <h5 class="font-weight-bolder">Buat Pengajuan Baru</h5>
+                        <p class="text-muted text-sm px-4">Ada keperluan mendadak? Ajukan izinmu dengan mudah.</p>
+                        <span class="material-symbols-rounded position-absolute text-primary" style="right: -15px; bottom: -15px; font-size: 120px; opacity: 0.05;">edit_document</span>
                     </div>
                 </div>
-            </div>
 
-                @php
-                    use Modules\Core\Enums\PositionTypeEnum;
-                @endphp
-
-                @if (
-                    isset($employee->position->position_id) &&
-                    in_array(
-                        $employee->position->position_id,
-                        [
-                            PositionTypeEnum::KEPALASEKOLAH->value,
-                            PositionTypeEnum::HUMAS->value
-                        ],
-                        true
-                    )
-                )                
-                
-                @if (in_array($employee->position?->position->level->value ?: 0, array_column(config('modules.core.features.services.leaves.approvable_steps', []), 'value')))
-                    <div class="list-group mb-4">
-                        <a class="list-group-item list-group-item-action p-4" href="{{ route('portal::leave.manage.index', ['next' => url()->current()]) }}" style="border-style: dashed;">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-inline-block bg-soft-secondary text-primary me-2 rounded text-center" style="height: 36px; width: 36px;">
-                                    <i class="mdi mdi-calendar-check-outline mdi-24px"></i>
-                                </div>
-                                <div class="flex-grow-1">Kelola pengajuan izin</div>
-                                <i class="mdi mdi-chevron-right-circle-outline"></i>
+                {{-- Card Statistik --}}
+                <div class="card tg-steps-leave-count border-0 shadow-sm mb-4" style="border-radius: 1rem;">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <p class="text-xs mb-0 text-uppercase font-weight-bold text-secondary ps-1">Total Izin {{ date('Y') }}</p>
+                                <h4 class="font-weight-bolder mb-0 text-dark ps-1">{{ $leaves_this_year_count }} <span class="text-sm font-weight-normal text-secondary">Kali</span></h4>
                             </div>
-                        </a>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow-primary text-center border-radius-md d-flex align-items-center justify-content-center ms-auto">
+                                    <span class="material-symbols-rounded text-white">calendar_month</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Panel Approval (Khusus Jabatan Tertentu) --}}
+                @php use Modules\Core\Enums\PositionTypeEnum; @endphp
+                @if (isset($employee->position->position_id) && in_array($employee->position->position_id, [PositionTypeEnum::KEPALASEKOLAH->value, PositionTypeEnum::HUMAS->value], true))
+                    <div class="card bg-gradient-dark border-0 shadow-sm mb-4" style="border-radius: 1rem;">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="icon icon-shape bg-white shadow text-center border-radius-md me-3 d-flex align-items-center justify-content-center">
+                                    <span class="material-symbols-rounded text-dark">verified_user</span>
+                                </div>
+                                <div>
+                                    <h6 class="text-white mb-0 text-sm">Pusat Persetujuan</h6>
+                                    <a href="{{ route('portal::leave.manage.index', ['next' => url()->current()]) }}" class="text-white text-xs opacity-8 text-decoration-none">
+                                        Periksa pengajuan staf &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @endif
-            @endif
-        </div>
-        <div class="col-xl-8">
-            <div class="card border-0">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="mdi mdi-calendar-multiselect"></i> Riwayat izin
+            </div>
+
+            {{-- Sisi Kanan: Tabel Riwayat --}}
+            <div class="col-xl-8">
+                <div class="card border-0 shadow-sm" style="border-radius: 1rem;">
+                    {{-- HEADER CARD --}}
+                    <div class="card-header pb-2 pt-3 bg-white border-bottom" style="border-radius: 1rem 1rem 0 0;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center ps-2">
+                                <div class="icon icon-sm shadow-sm border-radius-md bg-gradient-primary text-center me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <span class="material-symbols-rounded text-white" style="font-size: 18px;">history</span>
+                                </div>
+                                <h6 class="font-weight-bolder mb-0 text-dark">Riwayat Izin</h6>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary mb-0 py-1 px-3 d-flex align-items-center border-radius-md" data-bs-toggle="collapse" data-bs-target="#collapse-filter">
+                                <span class="material-symbols-rounded text-xs me-1">tune</span> Filter
+                            </button>
+                        </div>
                     </div>
-                    <input type="checkbox" class="btn-check" id="collapse-btn" autocomplete="off" @if (request('search')) checked @endif>
-                    <label class="btn btn-outline-secondary text-dark btn-sm rounded px-2 py-1" data-bs-toggle="collapse" data-bs-target="#collapse-filter" for="collapse-btn"><i class="mdi mdi-filter-outline"></i> <span class="d-none d-sm-inline">Filter</span></label>
-                </div>
-                <div class="card-body border-top border-bottom tg-steps-leave-filter">
-                    <form class="form-block row gy-2 gx-2" action="{{ route('portal::leave.submission.index') }}" method="get">
-                        <div class="col-12 flex-grow-1 my-0">
-                            <div class="@if (request('search')) show @endif collapse" id="collapse-filter">
-                                <input class="form-control" type="search" name="search" placeholder="Cari kategori/deskripsi di sini ..." value="{{ request('search') }}">
-                            </div>
+
+                    {{-- FILTER --}}
+                    <div class="card-body border-bottom pt-0 bg-light-soft tg-steps-leave-filter">
+                        <div class="collapse @if (request('search') || request('start_at')) show @endif" id="collapse-filter">
+                            <form action="{{ route('portal::leave.submission.index') }}" method="get" class="row g-2 mt-2 pb-3 px-2">
+                                <div class="col-md-5">
+                                    <label class="text-xxs font-weight-bold mb-1 text-secondary text-uppercase">Kata Kunci</label>
+                                    <input class="form-control form-control-sm border-radius-md" type="search" name="search" placeholder="Cari..." value="{{ request('search') }}">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="text-xxs font-weight-bold mb-1 text-secondary text-uppercase">Periode</label>
+                                    <div class="input-group input-group-sm">
+                                        <input class="form-control border-radius-md" type="date" name="start_at" value="{{ request('start_at') }}">
+                                        <input class="form-control border-radius-md" type="date" name="end_at" value="{{ request('end_at') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end gap-1">
+                                    <button type="submit" class="btn btn-primary btn-sm flex-grow-1 mb-0 border-radius-md">
+                                        <span class="material-symbols-rounded text-sm">search</span>
+                                    </button>
+                                    <a class="btn btn-light btn-sm mb-0 border-radius-md" href="{{ route('portal::leave.submission.index') }}">
+                                        <span class="material-symbols-rounded text-sm">restart_alt</span>
+                                    </a>
+                                </div>
+                            </form>
                         </div>
-                        <div class="flex-grow-1 col-auto">
-                            <div class="input-group">
-                                <div class="input-group-text"><span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span><span class="d-none d-sm-inline">Periode</span></div>
-                                <button type="button" class="btn btn-light dropdown-toggle d-none d-sm-block" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">Rentang waktu</button>
-                                <input class="form-control" type="date" name="start_at" value="{{ request('start_at') }}">
-                                <input class="form-control" type="date" name="end_at" value="{{ request('end_at') }}">
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <a class="btn btn-light" href="{{ route('portal::leave.submission.index') }}"><i class="mdi mdi-refresh"></i> <span class="d-sm-none">Reset</span></a>
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-dark"><i class="mdi mdi-magnify"></i> Cari</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="table-responsive table-responsive-xl tg-steps-leave-table">
-                    <table class="mb-0 table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Kategori</th>
-                                <th nowrap>Tgl pengajuan</th>
-                                <th nowrap>Waktu izin</th>
-                                <th class="text-center">Lampiran</th>
-                                <th>Status</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($leaves as $leave)
-                                <tr @if ($leave->trashed()) class="text-muted" @endif>
-                                    <td style="min-width: 200px;" class="py-3">
-                                        <div>{{ $leave->category->name }}</div>
-                                        <small class="text-muted">{{ $leave->description }}</small>
-                                    </td>
-                                    <td class="small">{{ $leave->created_at->formatLocalized('%d %B %Y') }}</td>
-                                    <td style="min-width: 200px;">
-                                        @foreach (collect($leave->dates)->take(3) as $date)
-                                            <span class="badge bg-soft-secondary text-dark fw-normal user-select-none {{ isset($date['c']) ? 'text-decoration-line-through' : '' }}" @isset($date['f']) data-bs-toggle="tooltip" title="Sebagai freelancer" @endisset>
-                                                @isset($date['f'])
-                                                    <i class="mdi mdi-account-network-outline text-danger"></i>
-                                                @endisset
-                                                {{ strftime('%d %B %Y', strtotime($date['d'])) }}
-                                                @isset($date['t_s'])
-                                                    pukul {{ $date['t_s'] }}
-                                                @endisset
-                                                @isset($date['t_e'])
-                                                    s.d. {{ $date['t_e'] }}
-                                                @endisset
-                                            </span>
-                                        @endforeach
-                                        @php($remain = collect($leave->dates)->count() - 3)
-                                        @if ($remain > 0)
-                                            <span class="badge text-dark fw-normal user-select-none">+{{ $remain }} lainnya</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if (isset($leave->attachment) && Storage::exists($leave->attachment))
-                                            <a class="btn btn-soft-dark btn-sm rounded px-2 py-1" href="{{ Storage::url($leave->attachment) }}" target="_blank"><i class="mdi mdi-file-link-outline"></i></a>
-                                        @endif
-                                    </td>
-                                    <td nowrap>@include('portal::leave.components.status', ['leave' => $leave])</td>
-                                    <td nowrap class="py-1 text-end">
-                                        @unless ($leave->trashed())
-                                            @if ($leave->hasApprovables())
-                                                <span data-bs-toggle="collapse" data-bs-target="#collapse-{{ $leave->id }}">
-                                                    <button class="btn btn-soft-primary btn-sm rounded px-2 py-1" data-bs-toggle="tooltip" title="Status pengajuan"><i class="mdi mdi-progress-clock"></i></button>
-                                                </span>
-                                            @endif
-                                            <div class="dropstart d-inline">
-                                                <button class="btn btn-soft-secondary text-dark rounded px-2 py-1" type="button" data-bs-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></button>
-                                                <ul class="dropdown-menu border-0 shadow">
-                                                    <li><a class="dropdown-item" href="{{ route('portal::leave.submission.show', ['leave' => $leave->id, 'next' => request('next')]) }}"><i class="mdi mdi-eye-outline me-1"></i> Lihat detail</a></li>
-                                                    @if (isset($leave->attachment) && Storage::exists($leave->attachment))
-                                                        <li><a class="dropdown-item" href="{{ Storage::url($leave->attachment) }}" target="_blank"><i class="mdi mdi-file-link-outline me-1"></i> Lihat lampiran</a></li>
-                                                    @endif
-                                                    <li><a class="dropdown-item" href="{{ route('portal::leave.print', ['leave' => $leave->id]) }}" target="_blank"><i class="mdi mdi-printer-outline me-1"></i> Cetak dokumen (.pdf)</a></li>
-                                                </ul>
-                                            </div>
-                                        @endunless
-                                    </td>
+                    </div>
+
+                    {{-- TABEL --}}
+                    <div class="table-responsive tg-steps-leave-table">
+                        <table class="table align-items-center mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-4">Informasi Izin</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tgl Pengajuan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-secondary opacity-7 text-end pe-4">Aksi</th>
                                 </tr>
-                                @if ($leave->hasApprovables() && !$leave->trashed())
-                                    <tr>
-                                        <td class="p-0" colspan="6">
-                                            <div class="@if ($leave->hasAnyApprovableResultIn('PENDING')) show @endif collapse" id="collapse-{{ $leave->id }}">
-                                                <table class="table-borderless table-hover table-sm mb-0 table align-middle">
-                                                    <thead>
-                                                        <tr class="text-muted small bg-light">
-                                                            <th class="border-bottom fw-normal">Jenis</th>
-                                                            <th class="border-bottom fw-normal" colspan="2">Persetujuan</th>
-                                                            <th class="border-bottom fw-normal">Penanggungjawab</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($leave->approvables as $approvable)
-                                                            <tr>
-                                                                <td class="small {{ $approvable->cancelable ? 'text-danger' : 'text-muted' }}">{{ ucfirst($approvable->type) }} #{{ $approvable->level }}</td>
-                                                                <td @if ($loop->last) class="border-0" @endif>
-                                                                    <div class="badge bg-{{ $approvable->result->color() }} fw-normal text-white"><i class="{{ $approvable->result->icon() }}"></i> {{ $approvable->result->label() }}</div>
-                                                                </td>
-                                                                <td class="small ps-0">{{ $approvable->reason }}</td>
-                                                                <td class="small">{{ $approvable->userable->getApproverLabel() }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
+                            </thead>
+                            <tbody>
+                                @forelse($leaves as $leave)
+                                    <tr @class(['opacity-6' => $leave->trashed()])>
+                                        <td>
+                                            <div class="d-flex px-3 py-2">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm font-weight-bold">{{ $leave->category->name }}</h6>
+                                                    <p class="text-xs text-secondary mb-0 text-truncate" style="max-width: 250px;">{{ $leave->description }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="text-xs font-weight-bold mb-0 text-dark">{{ $leave->created_at->format('d M Y') }}</p>
+                                            <p class="text-xxs text-secondary mb-0">{{ count($leave->dates) }} Hari Izin</p>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            @include('portal::leave.components.status', ['leave' => $leave])
+                                        </td>
+                                        <td class="align-middle text-end pe-4">
+                                            <div class="dropstart">
+                                                <button class="btn btn-link text-secondary mb-0 p-0" data-bs-toggle="dropdown">
+                                                    <span class="material-symbols-rounded">more_vert</span>
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 py-2">
+                                                    <li><a class="dropdown-item d-flex align-items-center" href="{{ route('portal::leave.submission.show', ['leave' => $leave->id]) }}">
+                                                        <span class="material-symbols-rounded text-sm me-2 text-primary">visibility</span> Detail</a>
+                                                    </li>
+                                                    @if($leave->hasApprovables())
+                                                        <li><a class="dropdown-item d-flex align-items-center" href="javascript:;" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $leave->id }}">
+                                                            <span class="material-symbols-rounded text-sm me-2 text-info">step_order</span> Lacak</a>
+                                                        </li>
+                                                    @endif
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item d-flex align-items-center text-danger" href="#">
+                                                        <span class="material-symbols-rounded text-sm me-2">delete</span> Batalkan</a>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </td>
                                     </tr>
-                                @endif
-                            @empty
-                                <tr>
-                                    <td colspan="5">@include('components.notfound')</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $leaves->appends(request()->all())->links() }}
+
+                                    {{-- Approval Tracking --}}
+                                    @if ($leave->hasApprovables())
+                                        <tr class="collapse @if ($leave->hasAnyApprovableResultIn('PENDING')) show @endif" id="collapse-{{ $leave->id }}">
+                                            <td colspan="4" class="bg-light-soft py-4 px-5">
+                                                <div class="timeline timeline-one-side" style="border-left: 2px dashed #dee2e6; margin-left: 14px;">
+                                                    @foreach ($leave->approvables as $approvable)
+                                                        <div class="timeline-block mb-3 position-relative" style="padding-left: 30px;">
+                                                            <span class="timeline-step position-absolute" style="left: -15px; top: 0;">
+                                                                <span class="material-symbols-rounded text-{{ $approvable->result->color() }}" style="font-size: 18px;">
+                                                                    {{ $approvable->result->icon() == 'mdi mdi-check' ? 'check_circle' : 'hourglass_top' }}
+                                                                </span>
+                                                            </span>
+                                                            <div class="timeline-content">
+                                                                <h6 class="text-dark text-xs font-weight-bold mb-0">
+                                                                    {{ ucfirst($approvable->type) }} Level {{ $approvable->level }}
+                                                                </h6>
+                                                                <p class="text-secondary text-xxs mt-1 mb-0">{{ $approvable->userable->getApproverLabel() }}</p>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @empty
+                                    <tr><td colspan="4" class="text-center py-5">@include('components.notfound')</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-footer py-3 border-top">
+                        {{ $leaves->appends(request()->all())->links() }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -235,6 +254,12 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/vendor/moment.min.js') }}"></script>
-    <script src="{{ asset('js/vendor/daterangepicker.js') }}"></script>
+    <script>
+        $(document).on('show.bs.modal', '.modal', function () {
+            $('#sidenav-main').addClass('sidenav-low');
+        });
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            $('#sidenav-main').removeClass('sidenav-low');
+        });
+    </script>
 @endpush

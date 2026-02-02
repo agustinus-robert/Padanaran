@@ -4,227 +4,246 @@
 
 @include('components.tourguide', [
     'steps' => array_filter([
-        [
-            'selector' => '.tg-steps-leave-category',
-            'title' => 'Jenis izin',
-            'content' => 'Pilih jenis izin yang sesuai dengan kebutuhan kamu.',
-        ],
-        [
-            'selector' => '.tg-steps-leave-date',
-            'title' => 'Tanggal izin',
-            'content' => 'Kolom ini diisi tanggal izin yang udah kamu rencanain.',
-        ],
-        [
-            'selector' => '.tg-steps-leave-description',
-            'title' => 'Keperluan izin',
-            'content' => 'Bisa diisi keperluan, catatan, alasan, atau deskripsi penting lainnya.',
-        ],
-        [
-            'selector' => '.tg-steps-leave-attachment',
-            'title' => 'Lampiran berkas',
-            'content' => 'Kalau ada lampiran bisa diunggah di sini, misalnya surat keterangan dokter atau lainnya.',
-        ],
+        ['selector' => '.tg-steps-leave-category', 'title' => 'Jenis izin', 'content' => 'Pilih jenis izin yang sesuai dengan kebutuhan kamu.'],
+        ['selector' => '.tg-steps-leave-date', 'title' => 'Tanggal izin', 'content' => 'Kolom ini diisi tanggal izin yang udah kamu rencanain.'],
+        ['selector' => '.tg-steps-leave-description', 'title' => 'Keperluan izin', 'content' => 'Bisa diisi keperluan, catatan, alasan, atau deskripsi penting lainnya.'],
+        ['selector' => '.tg-steps-leave-attachment', 'title' => 'Lampiran berkas', 'content' => 'Kalau ada lampiran bisa diunggah di sini, misalnya surat keterangan dokter atau lainnya.'],
     ]),
 ])
 
 @section('contents')
-    <header id="page-topbar">
-        <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
+    @include('layouts.component.material-nav')
 
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo-light.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-light.png') }}" alt="" height="39">
-                        </span>
-                    </a>
-                </div>
+    <style>
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .category-scroll {
+            max-height: 350px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            padding-right: 5px;
+        }
+        .category-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 8px;
+            border-radius: 12px !important;
+            background-color: #fff;
+        }
+        .category-item:hover {
+            background-color: #f8f9fa;
+            border-color: #d1d1d1;
+        }
+        .form-check-input:checked + div .fw-bold {
+            color: var(--bs-primary);
+        }
+        .card-form {
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        /* Border Tengah (Vertical Divider) */
+        @media (min-width: 992px) {
+            .divider-vertical {
+                border-right: 1px solid #ebedef;
+                padding-right: 2rem;
+            }
+            .content-right {
+                padding-left: 2rem;
+            }
+        }
+        .form-label-custom {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025rem;
+            color: #344767;
+        }
+    </style>
 
-                <button type="button" class="btn btn-sm font-size-16 d-lg-none header-item waves-effect waves-light px-3" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                    <i class="fa fa-fw fa-bars"></i>
-                </button>
-
-            </div>
-
-            <div class="d-flex">
-                @php($user=auth()->user())
-                @include('portal::layouts.components.notifications')
-                
-                @include('layouts.shortcut_menu')
-
-                @include('layouts.nav_name')
-                
-            </div>
-    </header>
-
-    <div class="topnav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-
-                <div class="navbar-collapse collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
-
-                        <li class="nav-item">
-                            <a class="nav-link arrow-none" href="{{ route('portal::dashboard.index') }}" id="topnav-dashboard" role="button">
-                                <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <div class="main-content">
-
+    <div class="main-content container-fluid py-4">
         <div class="page-content">
             <div class="container-fluid">
-            <div class="d-flex align-items-center mb-4">
-                <a class="text-decoration-none" href="{{ request('next', route('portal::leave.submission.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-                <div class="ms-4">
-                    <h2 class="mb-1">Pengajuan izin baru</h2>
-                    <div class="text-muted">Nggak perlu khawatir kalo ada keperluan mendadak!</div>
+                {{-- Header --}}
+                <div class="d-flex align-items-center mb-4">
+                    <a href="{{ request('next', route('portal::leave.submission.index')) }}" class="btn btn-link text-dark p-0 me-3">
+                        <span class="material-symbols-rounded" style="font-size: 36px;">arrow_back_ios_new</span>
+                    </a>
+                    <div>
+                        <h3 class="font-weight-bolder mb-0 text-dark">Formulir Izin</h3>
+                        <p class="text-sm mb-0 text-secondary">Silakan lengkapi data pengajuan izin Anda.</p>
+                    </div>
                 </div>
-            </div>
-            @error('dates.*')
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ $message }} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @enderror
-            @if (count($errors))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <div>Maaf, terjadi kegagalan, silakan periksa kembali isian Kamu</div>
-                    <ul class="ps-3 mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-                <div class="card card-body border-0">
-                    <div class="row justify-content-center">
-                        <div class="col-xl-11 col-xxl-9">
-                            <form class="form-confirm form-block" action="{{ route('portal::leave.submission.store') }}" method="post" enctype="multipart/form-data"> @csrf
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label required">Kategori izin</label>
-                                    <div class="col-md-8">
-                                        <div class="tg-steps-leave-category">
-                                            <div class="card @error('ctg_id') border-danger mb-1 @enderror">
-                                                <div class="overflow-auto rounded" style="max-height: 300px;">
-                                                    @forelse($categories as $category)
-                                                        @if ($category->children->count())
-                                                            <div class="card-header border-bottom-0 text-muted small text-uppercase" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $category->id }}" style="cursor: pointer;">{{ $category->name }} <i class="mdi mdi-chevron-down float-end"></i></div>
-                                                            <div class="list-group list-group-flush show collapse" id="collapse-{{ $category->id }}">
-                                                                @foreach ($category->children as $child)
-                                                                    <label class="list-group-item d-flex align-items-center">
-                                                                        <input class="form-check-input me-3" type="radio" name="ctg_id" data-meta="{{ json_encode($child->meta) }}" value="{{ $child->id }}" data-quota="{{ $child->meta?->quota ?: -1 }}">
-                                                                        <div>
-                                                                            <div class="fw-bold mb-0">{{ $child->name }}</div>
-                                                                            <div class="small text-muted">Kuota {{ $child->meta?->quota ?: '∞' }} hari</div>
-                                                                        </div>
-                                                                    </label>
-                                                                @endforeach
-                                                            </div>
-                                                        @else
-                                                            <label class="card-body border-secondary d-flex align-items-center @if (!$loop->last) border-bottom @endif py-2">
-                                                                <input class="form-check-input me-3" type="radio" name="ctg_id" data-meta="{{ json_encode($category->meta) }}" value="{{ $category->id }}" data-quota="{{ $category->meta?->quota ?: -1 }}" required>
-                                                                <div>
-                                                                    <div class="fw-bold mb-0">{{ $category->name }}</div>
-                                                                    <div class="small text-muted">Kuota {{ $category->meta?->quota ?: '∞' }} hari</div>
+
+                {{-- Alert Errors --}}
+                @if (count($errors))
+                    <div class="alert alert-danger border-0 shadow-sm alert-dismissible fade show text-white mb-4" role="alert" style="background: #ea0606; border-radius: 12px;">
+                        <div class="d-flex align-items-center">
+                            <span class="material-symbols-rounded me-2">error</span>
+                            <strong class="text-sm">Terjadi kesalahan input:</strong>
+                        </div>
+                        <ul class="ps-4 mb-0 mt-2 text-xs">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                <div class="card card-form border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <form class="form-confirm form-block" action="{{ route('portal::leave.submission.store') }}" method="post" enctype="multipart/form-data">
+                            @csrf
+
+                            {{-- Kategori Izin --}}
+                            <div class="row align-items-start mb-4">
+                                <div class="col-lg-3 divider-vertical">
+                                    <label class="form-label-custom font-weight-bold">
+                                        <span class="material-symbols-rounded me-1 text-primary" style="font-size: 20px;">category</span>
+                                        Kategori
+                                    </label>
+                                    <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Pilih salah satu alasan atau kategori izin yang tersedia.</p>
+                                </div>
+                                <div class="col-lg-9 content-right">
+                                    <div class="tg-steps-leave-category">
+                                        <div class="category-scroll">
+                                            @forelse($categories as $category)
+                                                @if ($category->children->count())
+                                                    <div class="text-uppercase text-xxs font-weight-bolder text-primary mb-2 mt-2 d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $category->id }}" style="cursor: pointer; letter-spacing: 1px;">
+                                                        {{ $category->name }}
+                                                        <span class="material-symbols-rounded ms-auto" style="font-size: 16px;">expand_more</span>
+                                                    </div>
+                                                    <div class="collapse show" id="collapse-{{ $category->id }}">
+                                                        @foreach ($category->children as $child)
+                                                            <label class="list-group-item category-item d-flex align-items-center p-3">
+                                                                <input class="form-check-input me-3" type="radio" name="ctg_id" data-meta="{{ json_encode($child->meta) }}" value="{{ $child->id }}" data-quota="{{ $child->meta?->quota ?: -1 }}">
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-bold text-sm mb-0">{{ $child->name }}</div>
+                                                                    <div class="text-xxs text-secondary">Sisa Kuota: <span class="badge bg-light text-dark">{{ $child->meta?->quota ?: '∞' }} hari</span></div>
                                                                 </div>
                                                             </label>
-                                                        @endif
-                                                    @empty
-                                                        <div class="card-body text-muted">Tidak ada kategori izin</div>
-                                                    @endforelse
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <label class="category-item d-flex align-items-center p-3">
+                                                        <input class="form-check-input me-3" type="radio" name="ctg_id" data-meta="{{ json_encode($category->meta) }}" value="{{ $category->id }}" data-quota="{{ $category->meta?->quota ?: -1 }}" required>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-bold text-sm mb-0">{{ $category->name }}</div>
+                                                            <div class="text-xxs text-secondary">Sisa Kuota: <span class="badge bg-light text-dark">{{ $category->meta?->quota ?: '∞' }} hari</span></div>
+                                                        </div>
+                                                    </label>
+                                                @endif
+                                            @empty
+                                                <div class="p-4 text-center border-radius-md bg-light">
+                                                    <p class="text-sm text-secondary mb-0">Tidak ada kategori izin</p>
+                                                </div>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="horizontal dark my-4">
+
+                            {{-- Tanggal Izin --}}
+                            <div class="row align-items-start mb-4">
+                                <div class="col-lg-3 divider-vertical">
+                                    <label class="form-label-custom font-weight-bold">
+                                        <span class="material-symbols-rounded me-1 text-primary" style="font-size: 20px;">calendar_today</span>
+                                        Tanggal
+                                    </label>
+                                    <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Tentukan satu atau lebih tanggal rencana izin Anda.</p>
+                                </div>
+                                <div class="col-lg-9 content-right">
+                                    <div class="tg-steps-leave-date">
+                                        <div class="inputs-meta-fields" id="inputs-options">
+                                            <div id="fields-options-tbody">
+                                                {{-- Template Row --}}
+                                                <div class="d-flex gap-2 mb-2 align-items-start" id="fields-options-template">
+                                                    <div class="flex-grow-1">
+                                                        <input type="date" class="form-control border-radius-md" name="dates[]" min="{{ date('Y-m-d') }}" required>
+                                                    </div>
+                                                    <button class="btn btn-link text-danger btn-delete d-none p-2 mb-0" type="button" onclick="removeRow(event)">
+                                                        <span class="material-symbols-rounded">delete</span>
+                                                    </button>
                                                 </div>
                                             </div>
-                                            @error('ctg_id')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
+                                            <button id="fields-options-add" type="button" class="btn btn-outline-primary btn-sm mt-2 d-flex align-items-center gap-1 border-radius-md disabled">
+                                                <span class="material-symbols-rounded text-sm">add_circle</span> Tambah Tanggal
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label required">Pilih tanggal izin</label>
-                                    <div class="col-md-8">
-                                        <div class="tg-steps-leave-date">
-                                            <div class="inputs-meta-fields" id="inputs-options">
-                                                <table class="table-borderless mb-0 table">
-                                                    <tbody id="fields-options-tbody">
-                                                        <tr id="fields-options-template">
-                                                            <td class="ps-0 pt-0">
-                                                                <input type="date" class="form-control @error('dates') is-invalid @enderror" name="dates[]" min="{{ date('Y-m-d') }}" required>
-                                                            </td>
-                                                            <td class="pe-0 pt-0 text-end" width="50"><button class="btn btn-light btn-delete text-danger d-none" type="button" onclick="removeRow(event)"><i class="mdi mdi-trash-can-outline"></i></button></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                @error('dates')
-                                                    <div class="small text-danger mb-1">{{ $message }}</div>
-                                                @enderror
-                                                <button id="fields-options-add" type="button" class="btn btn-light text-danger disabled"><i class="mdi mdi-plus-circle-outline"></i> Tambah tanggal</button>
-                                            </div>
-                                        </div>
+                            </div>
+
+                            {{-- Waktu Detail --}}
+                            <div class="row d-none mb-4" id="hide_if_date_only">
+                                <div class="col-lg-3 divider-vertical">
+                                    <label class="form-label-custom font-weight-bold">
+                                        <span class="material-symbols-rounded me-1 text-primary" style="font-size: 20px;">schedule</span>
+                                        Pukul
+                                    </label>
+                                </div>
+                                <div class="col-lg-6 content-right">
+                                    <div class="input-group shadow-none">
+                                        <input type="time" class="form-control border-radius-md" name="time_start">
+                                        <span class="input-group-text bg-light hide_if_start_only">s.d.</span>
+                                        <input type="time" class="form-control border-radius-md hide_if_start_only" name="time_end">
                                     </div>
                                 </div>
-                                <div class="row d-none mb-3" id="hide_if_date_only">
-                                    <label class="col-md-4 col-lg-3 col-form-label required">Pukul</label>
-                                    <div class="col-xl-5 col-md-6">
-                                        <div class="input-group">
-                                            <input type="time" class="form-control @error('time_start') is-invalid @enderror" name="time_start">
-                                            <div class="input-group-text hide_if_start_only">s.d.</div>
-                                            <input type="time" class="form-control @error('time_end') is-invalid @enderror hide_if_start_only" name="time_end">
-                                        </div>
-                                        @error('time_end')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                            </div>
+
+                            <hr class="horizontal dark my-4">
+
+                            {{-- Deskripsi --}}
+                            <div class="row align-items-start mb-4">
+                                <div class="col-lg-3 divider-vertical">
+                                    <label class="form-label-custom font-weight-bold">
+                                        <span class="material-symbols-rounded me-1 text-primary" style="font-size: 20px;">notes</span>
+                                        Keterangan
+                                    </label>
+                                    <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Tuliskan alasan detail untuk mempercepat proses approval.</p>
+                                </div>
+                                <div class="col-lg-9 content-right">
+                                    <div class="tg-steps-leave-description">
+                                        <textarea class="form-control border-radius-md" name="description" rows="3" placeholder="Contoh: Mengantar anak imunisasi atau urusan keluarga mendadak..."></textarea>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Deskripsi</label>
-                                    <div class="col-md-8">
-                                        <div class="tg-steps-leave-description">
-                                            <textarea class="form-control @error('description') is-invalid @enderror" name="description" rows="2" placeholder="Silakan tulis keterangan/alasan/catatan terkait keperluan izin kamu ...">{{ old('description') }}</textarea>
-                                            @error('description')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                            </div>
+
+                            {{-- Lampiran --}}
+                            <div class="row align-items-start mb-4">
+                                <div class="col-lg-3 divider-vertical">
+                                    <label class="form-label-custom font-weight-bold">
+                                        <span class="material-symbols-rounded me-1 text-primary" style="font-size: 20px;">upload_file</span>
+                                        Lampiran
+                                    </label>
+                                    <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Unggah berkas pendukung jika diperlukan (opsional).</p>
+                                </div>
+                                <div class="col-lg-9 content-right">
+                                    <div class="tg-steps-leave-attachment p-3 border-radius-md" style="border: 2px dashed #e9ecef; background: #fafafa;">
+                                        <input class="form-control border-0 bg-transparent" name="attachment" type="file" id="upload-input" accept="image/*,application/pdf">
+                                        <div class="mt-1"><span class="text-xxs text-secondary">Format: .JPG, .PNG, .PDF (Maks. 2MB)</span></div>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Lampiran</label>
-                                    <div class="col-md-8">
-                                        <div class="tg-steps-leave-attachment">
-                                            <input class="form-control @error('attachment') is-invalid @enderror" name="attachment" type="file" id="upload-input" accept="image/*,application/pdf">
-                                            <small class="text-muted">Berkas berupa .jpg, .png atau .pdf maksimal berukuran 2mb</small>
-                                            @error('attachment')
-                                                <div class="text-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
+                            </div>
+
+                            {{-- Actions --}}
+                            <div class="row mt-5">
+                                <div class="col-lg-9 offset-lg-3 content-right d-flex gap-2">
+                                    <button type="submit" class="btn bg-gradient-primary border-radius-md px-4 d-flex align-items-center gap-2 mb-0">
+                                        <span class="material-symbols-rounded">check_circle</span> Kirim Pengajuan
+                                    </button>
+                                    <a href="{{ request('next', route('portal::leave.submission.index')) }}" class="btn btn-light border-radius-md px-4 mb-0">
+                                        Batalkan
+                                    </a>
                                 </div>
-                                <div class="row mb-3 pt-3">
-                                    <div class="col-lg-8 offset-lg-4 offset-xl-3">
-                                        <button class="btn btn-soft-danger"><i class="mdi mdi-exit-to-app"></i> Ajukan</button>
-                                        <a class="btn btn-ghost-light text-dark" href="{{ request('next', route('portal::leave.submission.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -277,25 +296,27 @@
         }
 
         const toggleAddButtonBasedQuota = () => {
-            document.getElementById('fields-options-add').classList.toggle('disabled', !(tbody.children.length < quota))
-            document.getElementById('fields-options-add').classList.toggle('text-muted', !(tbody.children.length < quota))
+            const addBtn = document.getElementById('fields-options-add');
+            const isAtQuota = tbody.children.length >= quota;
+            addBtn.classList.toggle('disabled', isAtQuota);
+            addBtn.style.opacity = isAtQuota ? '0.5' : '1';
         }
 
         const addRow = () => {
-            let tr = document.querySelector('#fields-options-template').innerHTML;
+            let trTemplate = document.querySelector('#fields-options-template');
             if (tbody.children.length < quota) {
-                tbody.insertAdjacentHTML('beforeend', tr);
-                Array.from(tbody.children).forEach((el, i) => {
-                    if (i > 0) {
-                        el.querySelector('.btn-delete').classList.remove('d-none');
-                    }
-                });
+                let newRow = trTemplate.cloneNode(true);
+                newRow.removeAttribute('id');
+                newRow.querySelector('input').value = '';
+                newRow.querySelector('.btn-delete').classList.remove('d-none');
+                tbody.appendChild(newRow);
             }
             toggleAddButtonBasedQuota();
         }
 
         const removeRow = (e) => {
-            e.target.parentNode.closest('tr').remove();
+            const row = e.target.closest('.d-flex');
+            if(row) row.remove();
             toggleAddButtonBasedQuota();
         }
     </script>

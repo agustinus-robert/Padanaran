@@ -203,7 +203,7 @@ class EmployeeScheduleTeacher extends Model
                     ->toArray()[$i] ?? null;
 
                 if (!$workshift) {
-                    continue; 
+                    continue;
                 }
 
                 if ($withNull ? $shift : array_filter($shift)) {

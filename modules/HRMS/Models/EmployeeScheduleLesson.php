@@ -5,6 +5,7 @@ namespace Modules\HRMS\Models;
 use App\Models\Traits\Searchable\Searchable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\HasGradeFromSession;
 use Illuminate\Support\Collection;
 use Modules\HRMS\Enums\WorkShiftEnum;
 

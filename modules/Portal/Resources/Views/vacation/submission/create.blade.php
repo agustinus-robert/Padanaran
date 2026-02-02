@@ -4,188 +4,202 @@
 
 @include('components.tourguide', [
     'steps' => array_filter([
-        [
-            'selector' => '.tg-steps-vacation-category',
-            'title' => 'Jenis cuti/libur hari raya',
-            'content' => 'Pilih jenis cuti atau libur hari raya yang sesuai dengan kebutuhan kamu.',
-        ],
-        [
-            'selector' => '.tg-steps-vacation-date',
-            'title' => 'Tanggal cuti',
-            'content' => 'Kolom ini diisi tanggal cuti yang udah kamu rencanain.',
-        ],
-        [
-            'selector' => '.tg-steps-vacation-description',
-            'title' => 'Keperluan cuti',
-            'content' => 'Bisa diisi keperluan, catatan, alasan, atau deskripsi penting lainnya kalau ada.',
-        ],
+        ['selector' => '.tg-steps-vacation-category', 'title' => 'Jenis cuti/libur hari raya', 'content' => 'Pilih jenis cuti atau libur hari raya yang sesuai dengan kebutuhan kamu.'],
+        ['selector' => '.tg-steps-vacation-date', 'title' => 'Tanggal cuti', 'content' => 'Kolom ini diisi tanggal cuti yang udah kamu rencanain.'],
+        ['selector' => '.tg-steps-vacation-description', 'title' => 'Keperluan cuti', 'content' => 'Bisa diisi keperluan, catatan, alasan, atau deskripsi penting lainnya kalau ada.'],
     ]),
 ])
 
 @section('contents')
-   <header id="page-topbar">
-        <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
+    @include('layouts.component.material-nav')
 
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo-light.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-light.png') }}" alt="" height="39">
-                        </span>
-                    </a>
-                </div>
+    <style>
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .card-form {
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .form-label-custom {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025rem;
+            color: #344767;
+        }
+        .category-item {
+            border: 1px solid #ebedef;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .category-item:hover {
+            background-color: #f8f9fa;
+        }
+        @media (min-width: 992px) {
+            .divider-vertical {
+                border-right: 1px solid #ebedef;
+                padding-right: 2rem;
+            }
+            .content-right {
+                padding-left: 2rem;
+            }
+        }
+    </style>
 
-                <button type="button" class="btn btn-sm font-size-16 d-lg-none header-item waves-effect waves-light px-3" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                    <i class="fa fa-fw fa-bars"></i>
-                </button>
-
-            </div>
-
-            <div class="d-flex">
-                @php($user=auth()->user())
-                @include('portal::layouts.components.notifications')
-                
-                @include('layouts.shortcut_menu')
-
-                @include('layouts.nav_name')
-                
-            </div>
-    </header>
-
-    <div class="topnav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-
-                <div class="navbar-collapse collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
-
-                        <li class="nav-item">
-                            <a class="nav-link arrow-none" href="{{ route('portal::dashboard-msdm.index') }}" id="topnav-dashboard" role="button">
-                                <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <div class="main-content">
-
+    <div class="main-content container-fluid py-4">
         <div class="page-content">
             <div class="container-fluid">
-                <div class="d-flex align-items-center mb-4">
-                    <a class="text-decoration-none" href="{{ request('next', route('portal::vacation.submission.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-                    <div class="ms-4">
-                        <h2 class="mb-1">Pengajuan cuti/libur hari raya baru</h2>
-                        <div class="text-muted">Ambil cutimu atau liburmu buat ke pantai atau muncak!</div>
+                {{-- Header --}}
+                <div class="d-flex align-items-center mb-4 ps-2">
+                    <a href="{{ request('next', route('portal::vacation.submission.index')) }}" class="btn btn-link text-dark p-0 me-3">
+                        <span class="material-symbols-rounded" style="font-size: 32px;">arrow_back_ios_new</span>
+                    </a>
+                    <div>
+                        <h3 class="font-weight-bolder mb-0">Pengajuan Cuti Baru</h3>
+                        <p class="text-sm mb-0 text-secondary">Rencanakan liburan atau istirahat Anda dengan mudah.</p>
                     </div>
                 </div>
-                @error('dates.*')
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ $message }} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @enderror
+
+                {{-- Errors --}}
                 @if (count($errors))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div>Maaf, terjadi kegagalan, silakan periksa kembali isian Kamu</div>
-                        <ul class="mb-0 ps-3">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
+                    <div class="alert alert-danger border-0 shadow-sm text-white mb-4 border-radius-md" role="alert">
+                        <div class="d-flex align-items-center mb-1">
+                            <span class="material-symbols-rounded me-2">error</span>
+                            <span class="font-weight-bold">Terjadi Kesalahan</span>
+                        </div>
+                        <ul class="mb-0 text-sm opacity-9 ps-4">
+                            @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
                         </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                <div class="card border-0">
-                    <div class="card-body border-bottom d-flex justify-content-between align-items-center">
-                        <div class="text-muted">
-                            <i class="mdi mdi-plus"></i> Pengajuan cuti/libur hari raya
-                        </div>
-                    </div>
-                    <div class="card-body">
+
+                <div class="card card-form border-0">
+                    <div class="card-body p-4 p-md-5">
                         <div class="row justify-content-center">
-                            <div class="col-xl-11 col-xxl-9">
-                                <form class="form-confirm form-block" action="{{ route('portal::vacation.submission.store') }}" method="post"> @csrf
-                                    <div class="row mb-3">
-                                        <label class="col-md-4 col-lg-3 col-form-label required">Jenis cuti/libur hari raya</label>
-                                        <div class="col-md-8">
-                                            <div class="card tg-steps-vacation-category">
+                            <div class="col-xl-11">
+                                <form class="form-confirm form-block" action="{{ route('portal::vacation.submission.store') }}" method="post">
+                                    @csrf
+
+                                    {{-- Jenis Cuti --}}
+                                    <div class="row align-items-start mb-4">
+                                        <div class="col-lg-3 divider-vertical">
+                                            <label class="form-label-custom font-weight-bold">
+                                                <span class="material-symbols-rounded me-1 text-danger" style="font-size: 20px;">category</span>
+                                                Jenis Cuti
+                                            </label>
+                                            <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Pilih kategori cuti atau libur hari raya yang tersedia.</p>
+                                        </div>
+                                        <div class="col-lg-9 content-right">
+                                            <div class="tg-steps-vacation-category">
                                                 @foreach ($quotas->groupBy(fn($quota) => $quota->category->type->label()) as $type => $_quotas)
-                                                    <div class="card-header border-bottom-0 text-muted small text-uppercase" data-bs-toggle="collapse" data-bs-target="#collapse-{{ Str::slug($type) }}" style="cursor: pointer;">{{ $type }} <i class="mdi mdi-chevron-down float-end"></i></div>
-                                                    <div class="list-group list-group-flush {{ $_quotas->first()->category->type->quotaVisibility() == true ? 'show' : '' }} collapse" id="collapse-{{ Str::slug($type) }}">
-                                                        @foreach ($_quotas as $quota)
-                                                            @php($is_remain = !is_null($quota->quota) && $quota->remain <= 0)
-                                                            <label class="list-group-item d-flex align-items-center {{ $is_remain ? 'text-muted bg-soft-secondary' : '' }}">
-                                                                <input class="form-check-input me-3" type="radio" name="quota_id" data-meta="{{ json_encode($quota->category->meta) }}" value="{{ $quota->id }}" data-quota="{{ !is_null($quota->quota ?? null) ? $quota->remain : -1 }}" data-start="{{ $quota->start_at <= now() ? now()->format('Y-m-d') : $quota->start_at->format('Y-m-d') }}" @if ($is_remain) disabled @endif required>
-                                                                <div>
-                                                                    <div class="fw-bold mb-0">{{ $quota->category->name }}</div>
-                                                                    <div class="small text-muted">Sisa kuota {{ is_null($quota->quota) ? '∞' : ($quota->remain <= 0 ? 0 : $quota->remain) }} hari, berlaku s.d. {{ $quota->end_at->formatLocalized('%d %B %Y') }}</div>
-                                                                </div>
-                                                            </label>
-                                                        @endforeach
+                                                    <div class="mb-3">
+                                                        <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-2 ps-1 d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapse-{{ Str::slug($type) }}" style="cursor: pointer;">
+                                                            {{ $type }} <span class="material-symbols-rounded ms-auto">expand_more</span>
+                                                        </h6>
+                                                        <div class="collapse {{ $_quotas->first()->category->type->quotaVisibility() == true ? 'show' : '' }}" id="collapse-{{ Str::slug($type) }}">
+                                                            @foreach ($_quotas as $quota)
+                                                                @php($is_remain = !is_null($quota->quota) && $quota->remain <= 0)
+                                                                <label class="category-item d-flex align-items-center p-3 mb-2 {{ $is_remain ? 'opacity-5 bg-light cursor-not-allowed' : '' }}">
+                                                                    <div class="form-check mb-0">
+                                                                        <input class="form-check-input" type="radio" name="quota_id" data-meta="{{ json_encode($quota->category->meta) }}" value="{{ $quota->id }}" data-quota="{{ !is_null($quota->quota ?? null) ? $quota->remain : -1 }}" data-start="{{ $quota->start_at <= now() ? now()->format('Y-m-d') : $quota->start_at->format('Y-m-d') }}" @if ($is_remain) disabled @endif required>
+                                                                    </div>
+                                                                    <div class="ms-2 flex-grow-1">
+                                                                        <div class="text-sm font-weight-bold text-dark mb-0">{{ $quota->category->name }}</div>
+                                                                        <div class="text-xxs text-secondary">
+                                                                            Sisa: <span class="font-weight-bold text-primary">{{ is_null($quota->quota) ? '∞' : ($quota->remain <= 0 ? 0 : $quota->remain) }} Hari</span>
+                                                                            &bull; Berlaku s.d. {{ $quota->end_at->format('d M Y') }}
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            @endforeach
+                                                        </div>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3" id="fields-options">
-                                        <label class="col-md-4 col-lg-3 col-form-label required">Pilih tanggal cuti/libur hari raya</label>
-                                        <div class="col-md-8">
+
+                                    <hr class="horizontal dark my-4">
+
+                                    {{-- Tanggal Cuti --}}
+                                    <div class="row align-items-start mb-4" id="fields-options">
+                                        <div class="col-lg-3 divider-vertical">
+                                            <label class="form-label-custom font-weight-bold">
+                                                <span class="material-symbols-rounded me-1 text-danger" style="font-size: 20px;">calendar_month</span>
+                                                Tanggal
+                                            </label>
+                                            <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Pilih tanggal spesifik atau rentang waktu cuti Anda.</p>
+                                        </div>
+                                        <div class="col-lg-9 content-right">
+                                            {{-- Field Mode: Options (Tambah Satu-satu) --}}
                                             <div class="inputs-meta-fields tg-steps-vacation-date" id="inputs-options">
-                                                <table class="table-borderless mb-0 table">
-                                                    <tbody id="fields-options-tbody">
-                                                        <tr id="fields-options-template">
-                                                            <td class="ps-0 pt-0">
-                                                                <div class="input-group">
-                                                                    <input type="date" class="form-control" name="dates[]" min="{{ date('Y-m-d') }}">
-                                                                    <div class="input-group-text inputs-meta-as_freelances d-none">
-                                                                        <label class="d-flex align-items-center">
-                                                                            <input class="form-check-input mt-0" name="as_freelances[]" type="checkbox" value="1" onchange="toggleCheckbox(event)"> <span class="ps-1">Freelance</span>
-                                                                        </label>
-                                                                        <input class="form-check-input d-none unchecked mt-0" name="as_freelances[]" type="checkbox" value="0" checked="checked"> <span class="ps-1"></span>
+                                                <div id="fields-options-tbody">
+                                                    <div class="d-flex align-items-center mb-3" id="fields-options-template">
+                                                        <div class="flex-grow-1">
+                                                            <div class="input-group">
+                                                                <input type="date" class="form-control border-radius-md" name="dates[]" min="{{ date('Y-m-d') }}">
+                                                                <div class="input-group-text bg-light inputs-meta-as_freelances d-none">
+                                                                    <div class="form-check mb-0 d-flex align-items-center">
+                                                                        <input class="form-check-input mt-0" name="as_freelances[]" type="checkbox" value="1" onchange="toggleCheckbox(event)">
+                                                                        <span class="ms-1 text-xxs font-weight-bold text-uppercase">Freelance</span>
                                                                     </div>
+                                                                    <input class="form-check-input d-none unchecked mt-0" name="as_freelances[]" type="checkbox" value="0" checked="checked">
                                                                 </div>
-                                                            </td>
-                                                            <td class="pe-0 pt-0 text-end" width="50"><button class="btn btn-light btn-delete text-danger d-none" type="button" onclick="removeRow(event)"><i class="mdi mdi-trash-can-outline"></i></button></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                <div id="inputs-meta-as_freelances-text" class="text-muted small d-none mb-3 mt-2">Centang kolom kanan untuk menandai tanggal yang dipilih sebagai freelance</div>
-                                                <button id="fields-options-add" type="button" class="btn btn-light text-danger disabled"><i class="mdi mdi-plus-circle-outline"></i> Tambah tanggal</button>
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn btn-link text-danger btn-delete d-none mb-0 px-2 py-1" type="button" onclick="removeRow(event)">
+                                                            <span class="material-symbols-rounded">delete</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div id="inputs-meta-as_freelances-text" class="text-xxs text-muted mb-3 d-none ps-1">
+                                                    * Centang kolom <b>Freelance</b> jika Anda tetap bekerja secara remote pada tanggal tersebut.
+                                                </div>
+                                                <button id="fields-options-add" type="button" class="btn btn-outline-danger btn-sm border-radius-md mb-0 disabled">
+                                                    <span class="material-symbols-rounded text-sm">add_circle</span> Tambah Tanggal
+                                                </button>
                                             </div>
+
+                                            {{-- Field Mode: Range (Dari s.d.) --}}
                                             <div class="inputs-meta-fields d-none" id="inputs-range">
-                                                <div class="input-group">
-                                                    <input id="inputs-range-from" type="date" class="form-control" onchange="changeMinDateOfRangeEndAt(event)">
-                                                    <div class="input-group-text">s.d.</div>
-                                                    <input id="inputs-range-to" type="date" class="form-control" onchange="createDateRange()">
+                                                <div class="input-group shadow-none border-radius-md overflow-hidden" style="border: 1px solid #d2d6da;">
+                                                    <input id="inputs-range-from" type="date" class="form-control border-0" onchange="changeMinDateOfRangeEndAt(event)">
+                                                    <span class="input-group-text bg-light border-0">s.d.</span>
+                                                    <input id="inputs-range-to" type="date" class="form-control border-0" onchange="createDateRange()">
                                                 </div>
                                                 <div id="inputs-range-dates-group"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <label class="col-md-4 col-lg-3 col-form-label">Untuk keperluan</label>
-                                        <div class="col-md-8">
-                                            <textarea class="form-control tg-steps-vacation-description" name="description" rows="5" placeholder="Silakan tulis keterangan/alasan/catatan terkait cuti kamu ..."></textarea>
+
+                                    <hr class="horizontal dark my-4">
+
+                                    {{-- Keperluan --}}
+                                    <div class="row align-items-start mb-4">
+                                        <div class="col-lg-3 divider-vertical">
+                                            <label class="form-label-custom font-weight-bold">
+                                                <span class="material-symbols-rounded me-1 text-danger" style="font-size: 20px;">description</span>
+                                                Keperluan
+                                            </label>
+                                            <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Alasan atau keterangan pendukung untuk pengajuan ini.</p>
+                                        </div>
+                                        <div class="col-lg-9 content-right">
+                                            <textarea class="form-control border-radius-md tg-steps-vacation-description" name="description" rows="4" placeholder="Tulis alasan pengambilan cuti secara singkat dan jelas..."></textarea>
                                         </div>
                                     </div>
-                                    <div class="row mb-3 pt-3">
-                                        <div class="col-lg-8 offset-lg-4 offset-xl-3">
-                                            <button class="btn btn-soft-danger"><i class="mdi mdi-exit-to-app"></i> Ajukan</button>
-                                            <a class="btn btn-ghost-light text-dark" href="{{ request('next', route('portal::vacation.submission.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
+
+                                    {{-- Actions --}}
+                                    <div class="row mt-5">
+                                        <div class="col-lg-9 offset-lg-3 content-right d-flex gap-2">
+                                            <button type="submit" class="btn bg-gradient-danger border-radius-md px-4 d-flex align-items-center gap-2 mb-0">
+                                                <span class="material-symbols-rounded">send</span> Ajukan Sekarang
+                                            </button>
+                                            <a href="{{ request('next', route('portal::vacation.submission.index')) }}" class="btn btn-outline-secondary border-radius-md px-4 mb-0">
+                                                Batal
+                                            </a>
                                         </div>
                                     </div>
                                 </form>
@@ -200,6 +214,7 @@
 
 @push('scripts')
     <script>
+        // DOM tetap sama, hanya menyesuaikan ID container jika berubah
         const tbody = document.querySelector('#fields-options-tbody');
         let quota = 0;
         let meta = {}
@@ -218,25 +233,29 @@
                 start = e.target.dataset.start;
                 quota = quota < 0 ? 365 : quota;
 
+                // Reset Options
                 Array.from(tbody.children).map((el, i) => {
                     if (i > 0) el.remove();
                 })
 
+                // Reset Range
                 Array.from(document.querySelectorAll('.inputs-range-dates')).map((el) => el.remove());
-
                 document.querySelector('#inputs-range-from').value = '';
                 document.querySelector('#inputs-range-to').value = '';
 
+                // Required logic
                 document.querySelector('#inputs-range-from').required = meta.fields == 'range';
                 document.querySelector('#inputs-range-to').required = meta.fields == 'range';
                 document.querySelector('#inputs-options input').required = meta.fields == 'options';
 
+                // Visibility logic
                 Array.from(document.querySelectorAll('.inputs-meta-fields')).map((el) => el.classList.add('d-none'));
                 document.querySelector(`#inputs-${meta.fields}`).classList.remove('d-none');
 
                 Array.from(document.querySelectorAll('.inputs-meta-as_freelances')).map((el) => el.classList.toggle('d-none', !meta.as_freelance));
                 document.querySelector('#inputs-meta-as_freelances-text').classList.toggle('d-none', !meta.as_freelance);
 
+                // Reset values
                 Array.from(document.querySelectorAll('[name="dates[]"]')).map((el) => el.value = '');
                 Array.from(document.querySelectorAll('[name="as_freelances[]"]')).map((el) => el.checked = false);
                 Array.from(document.querySelectorAll('[name="as_freelances[]"].unchecked')).map((el) => el.checked = true);
@@ -249,31 +268,39 @@
         }
 
         const toggleAddButtonBasedQuota = () => {
-            document.getElementById('fields-options-add').classList.toggle('disabled', !(tbody.children.length < quota))
-            document.getElementById('fields-options-add').classList.toggle('text-muted', !(tbody.children.length < quota))
+            const btn = document.getElementById('fields-options-add');
+            const canAdd = tbody.children.length < quota;
+            btn.classList.toggle('disabled', !canAdd);
+            btn.classList.toggle('opacity-5', !canAdd);
         }
 
         const addRow = () => {
-            let tr = document.querySelector('#fields-options-template').innerHTML;
             if (tbody.children.length < quota) {
-                tbody.insertAdjacentHTML('beforeend', tr);
-                Array.from(tbody.children).forEach((el, i) => {
-                    if (i > 0) {
-                        el.querySelector('.btn-delete').classList.remove('d-none');
-                    }
-                });
+                let firstRow = document.querySelector('#fields-options-template');
+                let newRow = firstRow.cloneNode(true);
+
+                // Reset values in new row
+                newRow.removeAttribute('id');
+                newRow.querySelector('input[type="date"]').value = '';
+                newRow.querySelector('.btn-delete').classList.remove('d-none');
+
+                // Ensure correct state for as_freelance in new row
+                newRow.querySelector('.inputs-meta-as_freelances').classList.toggle('d-none', !meta.as_freelance);
+
+                tbody.appendChild(newRow);
             }
             toggleAddButtonBasedQuota();
         }
 
         const removeRow = (e) => {
-            e.target.parentNode.closest('tr').remove();
+            e.target.closest('.d-flex').remove();
             toggleAddButtonBasedQuota();
         }
 
         const toggleCheckbox = (el) => {
-            let checkbox = el.target.parentNode.closest('.input-group-text').querySelectorAll('[name="as_freelances[]"]');
-            checkbox[1].checked = !checkbox[0].checked
+            let container = el.target.closest('.input-group-text');
+            let checkboxes = container.querySelectorAll('[name="as_freelances[]"]');
+            checkboxes[1].checked = !checkboxes[0].checked;
         }
 
         const changeMinDateOfRangeEndAt = (e) => {
@@ -298,7 +325,7 @@
 
             if (from && to) {
                 for (dt = new Date(from); dt <= new Date(to); dt.setDate(dt.getDate() + 1)) {
-                    input = document.createElement('input');
+                    let input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'dates[]';
                     input.classList.add('inputs-range-dates');

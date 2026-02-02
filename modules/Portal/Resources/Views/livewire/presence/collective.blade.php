@@ -1,6 +1,6 @@
 <div>
     <div class="row">
-        <div class="card">
+        <div class="card mb-4">
 
             <div class="card-body">
                 <div class="card-title">
@@ -20,7 +20,7 @@
                     <tbody>
                         @php($i = 1)
                         @php($today = date('Y-m-d'))
-                        
+
                         @foreach ($employees as $empl)
                             <tr>
                                 <td>{{ $i++ }}</td>
@@ -30,12 +30,12 @@
                                     <td>
                                         @php($lessonDisplayed = false)
                                         @php($hoursCount = 0)
-                                            
+
                                         @foreach ($empl->schedulesTeachers as $schedule)
                                             @if (isset($schedule->dates[$today][$valles->value]))
                                                 @foreach ($schedule->dates[$today] ?? [] as $keyPresence => $todayPresence)
                                                     @if (isset($todayPresence[$valles->value]) && !empty($todayPresence['lesson'][0]))
-                                                        
+
                                                         @php($hoursCount += 2)
 
                                                         @if (!$lessonDisplayed)

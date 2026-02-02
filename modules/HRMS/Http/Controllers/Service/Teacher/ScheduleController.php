@@ -256,8 +256,8 @@ class ScheduleController extends Controller
         $end_at = $request->get('end_at', now()->endOfWeek());
 
 
-        $defaultCategoryAcademic = AcademicSubjectCategory::where('grade_id', userGrades())->get();
-        $gradeLevel = GradeLevel::where('grade_id', userGrades())->get();
+        $defaultCategoryAcademic = AcademicSubjectCategory::get();
+        $gradeLevel = GradeLevel::get();
         //set pertamat kali di pengajaran umum
         $defaultLessons = EmployeeScheduleLesson::where('category_schedule_id', 1)->get();
         $defaultCategoryLessons = EmployeeScheduleCategory::get();
@@ -356,17 +356,17 @@ class ScheduleController extends Controller
     {
         $this->authorize('update', $schedule);
 
-        $gradeLevel = GradeLevel::where('grade_id', userGrades())->get();
+        $gradeLevel = GradeLevel::get();
         $workshifts = TeacherShiftEnum::cases();
         $dates = [];
 
         ///whereIn('grade_id', $gradeLevel->pluck('id'))
         $academicSubject = AcademicSubject::get();
 
-        $defaultCategoryAcademic = AcademicSubjectCategory::where('grade_id', userGrades())->get();
+        $defaultCategoryAcademic = AcademicSubjectCategory::get();
         //set pertamat kali di pengajaran umum
         $defaultLessons = EmployeeScheduleLesson::where('category_schedule_id', 1)->get();
-        $defaultCategoryLessons = EmployeeScheduleCategory::where('grade_id', userGrades())->get();
+        $defaultCategoryLessons = EmployeeScheduleCategory::get();
 
         $start_at = $request->start_at
             ? Carbon::parse($request->start_at)->format('Y-m-d')

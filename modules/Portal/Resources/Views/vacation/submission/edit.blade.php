@@ -3,162 +3,180 @@
 @section('title', 'Cuti | ')
 
 @section('contents')
-    <header id="page-topbar">
-        <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
+    @include('layouts.component.material-nav')
 
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ asset('skote/images/logo-light.svg') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ asset('skote/images/logo-light.png') }}" alt="" height="39">
-                        </span>
-                    </a>
-                </div>
+    <style>
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .card-form {
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .form-label-custom {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025rem;
+            color: #344767;
+        }
+        .category-item-static {
+            border: 1px solid #ebedef;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+        @media (min-width: 992px) {
+            .divider-vertical {
+                border-right: 1px solid #ebedef;
+                padding-right: 2rem;
+            }
+            .content-right {
+                padding-left: 2rem;
+            }
+        }
+    </style>
 
-                <button type="button" class="btn btn-sm font-size-16 d-lg-none header-item waves-effect waves-light px-3" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                    <i class="fa fa-fw fa-bars"></i>
-                </button>
-
-            </div>
-
-            <div class="d-flex">
-                @php($user=auth()->user())
-                @include('portal::layouts.components.notifications')
-                
-                @include('layouts.shortcut_menu')
-
-                @include('layouts.nav_name')
-                
-            </div>
-    </header>
-
-    <div class="topnav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-
-                <div class="navbar-collapse collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
-
-                        <li class="nav-item">
-                            <a class="nav-link arrow-none" href="{{ route('portal::dashboard-msdm.index') }}" id="topnav-dashboard" role="button">
-                                <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <div class="main-content">
-
+    <div class="main-content container-fluid py-4">
         <div class="page-content">
             <div class="container-fluid">
-
-                <div class="d-flex align-items-center mb-4">
-                    <a class="text-decoration-none" href="{{ request('next', route('portal::vacation.submission.index')) }}"><i class="mdi mdi-arrow-left-circle-outline mdi-36px"></i></a>
-                    <div class="ms-4">
-                        <h2 class="mb-1">Ubah pengajuan cuti/libur hari raya</h2>
-                        <div class="text-muted">Ada revisi dari atasanmu, silakan ubah melalui form di bawah ini!</div>
+                {{-- Header --}}
+                <div class="d-flex align-items-center mb-4 ps-2">
+                    <a href="{{ request('next', route('portal::vacation.submission.index')) }}" class="btn btn-link text-dark p-0 me-3">
+                        <span class="material-symbols-rounded" style="font-size: 32px;">arrow_back_ios_new</span>
+                    </a>
+                    <div>
+                        <h3 class="font-weight-bolder mb-0">Ubah Pengajuan Cuti</h3>
+                        <p class="text-sm mb-0 text-secondary">Silakan perbaiki data pengajuan Anda sesuai arahan atasan.</p>
                     </div>
                 </div>
-                <div class="card card-body border-0">
-                    <div class="row justify-content-center">
-                        <div class="col-xl-11 col-xxl-9">
-                            @error('dates.*')
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    {{ $message }} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            @enderror
-                            <form class="form-confirm form-block" action="{{ route('portal::vacation.submission.update', ['vacation' => $vacation->id]) }}" method="post"> @csrf @method('PUT')
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label required">Jenis cuti/libur hari raya</label>
-                                    <div class="col-md-8">
-                                        <div class="card">
-                                            <div class="card-header border-bottom-0 text-muted small text-uppercase">{{ $vacation->quota->category->type->label() }}</div>
-                                            <div class="list-group list-group-flush show collapse">
-                                                @php($remain = $vacation->quota->quota - $vacation->quota->vacations->sum(fn($vacation) => $vacation->dates->count()) + $vacation->dates->count())
-                                                @php($is_remain = !is_null($vacation->quota->quota) && $remain > 0)
-                                                <label class="list-group-item d-flex align-items-center">
-                                                    <input class="form-check-input me-3" type="radio" data-meta="{{ json_encode($vacation->quota->category->meta) }}" value="{{ $vacation->quota->id }}" data-quota="{{ !is_null($vacation->quota->quota ?? null) ? $remain : -1 }}" checked readonly>
-                                                    <div>
-                                                        <div class="fw-bold mb-0">{{ $vacation->quota->category->name }}</div>
-                                                        <div class="small text-muted">Sisa kuota {{ is_null($vacation->quota->quota) ? '∞' : ($remain <= 0 ? 0 : $remain) }} hari</div>
+
+                {{-- Errors --}}
+                @error('dates.*')
+                    <div class="alert alert-danger border-0 text-white shadow-sm mb-4 border-radius-md" role="alert">
+                        <div class="d-flex align-items-center">
+                            <span class="material-symbols-rounded me-2">error</span>
+                            <span class="text-sm">{{ $message }}</span>
+                        </div>
+                    </div>
+                @enderror
+
+                <div class="card card-form border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-11">
+                                <form class="form-confirm form-block" action="{{ route('portal::vacation.submission.update', ['vacation' => $vacation->id]) }}" method="post">
+                                    @csrf @method('PUT')
+
+                                    {{-- Jenis Cuti (Readonly) --}}
+                                    <div class="row align-items-start mb-4">
+                                        <div class="col-lg-3 divider-vertical">
+                                            <label class="form-label-custom font-weight-bold">
+                                                <span class="material-symbols-rounded me-1 text-danger" style="font-size: 20px;">category</span>
+                                                Jenis Cuti
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-9 content-right">
+                                            <div class="category-item-static d-flex align-items-center p-3">
+                                                <div class="form-check mb-0">
+                                                    <input class="form-check-input" type="radio" checked disabled>
+                                                </div>
+                                                <div class="ms-2 flex-grow-1">
+                                                    <div class="text-sm font-weight-bold text-dark mb-0">{{ $vacation->quota->category->name }}</div>
+                                                    <div class="text-xxs text-secondary">
+                                                        Kategori: <span class="font-weight-bold text-uppercase">{{ $vacation->quota->category->type->label() }}</span>
+                                                        @php($remain = $vacation->quota->quota - $vacation->quota->vacations->sum(fn($v) => $v->dates->count()) + $vacation->dates->count())
+                                                        &bull; Sisa Kuota: <span class="font-weight-bold">{{ is_null($vacation->quota->quota) ? '∞' : ($remain <= 0 ? 0 : $remain) }} Hari</span>
                                                     </div>
-                                                </label>
+                                                </div>
                                             </div>
+                                            <input type="hidden" data-meta="{{ json_encode($vacation->quota->category->meta) }}" data-quota="{{ !is_null($vacation->quota->quota ?? null) ? $remain : -1 }}">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row mb-3" id="fields-options">
-                                    <label class="col-md-4 col-lg-3 col-form-label required">Pilih tanggal cuti/libur hari raya</label>
-                                    <div class="col-md-8">
-                                        @if ($vacation->quota->category->meta->fields == 'options')
-                                            <div class="inputs-meta-fields" id="inputs-options">
-                                                <table class="table-borderless mb-0 table">
-                                                    <tbody id="fields-options-tbody">
+
+                                    <hr class="horizontal dark my-4">
+
+                                    {{-- Tanggal Cuti --}}
+                                    <div class="row align-items-start mb-4" id="fields-options">
+                                        <div class="col-lg-3 divider-vertical">
+                                            <label class="form-label-custom font-weight-bold">
+                                                <span class="material-symbols-rounded me-1 text-danger" style="font-size: 20px;">calendar_month</span>
+                                                Tanggal
+                                            </label>
+                                            <p class="text-xxs text-secondary mt-1 d-none d-lg-block">Sesuaikan kembali tanggal yang diajukan.</p>
+                                        </div>
+                                        <div class="col-lg-9 content-right">
+                                            @if ($vacation->quota->category->meta->fields == 'options')
+                                                <div class="inputs-meta-fields" id="inputs-options">
+                                                    <div id="fields-options-tbody">
                                                         @foreach ($vacation->dates as $date)
-                                                            <tr @if ($loop->first) id="fields-options-template" @endif>
-                                                                <td class="ps-0 pt-0">
+                                                            <div class="d-flex align-items-center mb-3" @if ($loop->first) id="fields-options-template" @endif>
+                                                                <div class="flex-grow-1">
                                                                     <div class="input-group">
-                                                                        <input type="date" class="form-control" name="dates[]" value="{{ $date['d'] }}">
-                                                                        <div class="input-group-text inputs-meta-as_freelances @if (!isset($vacation->quota->category->meta->as_freelance)) d-none @endif">
-                                                                            <label class="d-flex align-items-center">
-                                                                                <input class="form-check-input mt-0" name="as_freelances[]" type="checkbox" value="1" onchange="toggleCheckbox(event)" @isset($date['f']) checked="checked" @endisset> <span class="ps-1">Freelance</span>
-                                                                            </label>
-                                                                            <input class="form-check-input d-none unchecked mt-0" name="as_freelances[]" type="checkbox" value="0" @empty($date['f']) checked="checked" @endempty> <span class="ps-1"></span>
+                                                                        <input type="date" class="form-control border-radius-md" name="dates[]" value="{{ $date['d'] }}">
+                                                                        <div class="input-group-text bg-light inputs-meta-as_freelances @if (!isset($vacation->quota->category->meta->as_freelance)) d-none @endif">
+                                                                            <div class="form-check mb-0 d-flex align-items-center">
+                                                                                <input class="form-check-input mt-0" name="as_freelances[]" type="checkbox" value="1" onchange="toggleCheckbox(event)" @isset($date['f']) checked="checked" @endisset>
+                                                                                <span class="ms-1 text-xxs font-weight-bold text-uppercase">Freelance</span>
+                                                                            </div>
+                                                                            <input class="form-check-input d-none unchecked mt-0" name="as_freelances[]" type="checkbox" value="0" @empty($date['f']) checked="checked" @endempty>
                                                                         </div>
                                                                     </div>
-                                                                </td>
-                                                                <td class="pe-0 pt-0 text-end" width="50"><button class="btn btn-light btn-delete text-danger @if ($loop->first) d-none @endif" type="button" onclick="removeRow(event)"><i class="mdi mdi-trash-can-outline"></i></button></td>
-                                                            </tr>
+                                                                </div>
+                                                                <button class="btn btn-link text-danger btn-delete @if ($loop->first) d-none @endif mb-0 px-2 py-1" type="button" onclick="removeRow(event)">
+                                                                    <span class="material-symbols-rounded">delete</span>
+                                                                </button>
+                                                            </div>
                                                         @endforeach
-                                                    </tbody>
-                                                </table>
-                                                <div id="inputs-meta-as_freelances-text" class="text-muted small d-none mb-3 mt-2">Centang kolom kanan untuk menandai tanggal yang dipilih sebagai freelance</div>
-                                                <button id="fields-options-add" type="button" class="btn btn-light text-danger {{ $is_remain ? '' : 'disabled' }}"><i class="mdi mdi-plus-circle-outline"></i> Tambah tanggal</button>
-                                            </div>
-                                        @else
-                                            <div class="inputs-meta-fields" id="inputs-range">
-                                                <div class="input-group">
-                                                    <input id="inputs-range-from" type="date" class="form-control" onchange="changeMinDateOfRangeEndAt(event)" value="{{ $vacation->dates->first()['d'] }}">
-                                                    <div class="input-group-text">s.d.</div>
-                                                    <input id="inputs-range-to" type="date" class="form-control" onchange="createDateRange()" min="{{ $vacation->dates->first()['d'] }}" value="{{ $vacation->dates->last()['d'] }}">
+                                                    </div>
+                                                    <button id="fields-options-add" type="button" class="btn btn-outline-danger btn-sm border-radius-md mb-0 @if(!is_null($vacation->quota->quota) && $remain <= 0) disabled @endif">
+                                                        <span class="material-symbols-rounded text-sm">add_circle</span> Tambah Tanggal
+                                                    </button>
                                                 </div>
-                                                <div id="inputs-range-dates-group">
-                                                    @foreach ($vacation->dates as $date)
-                                                        <input type="hidden" name="dates[]" class="inputs-range-dates" value="{{ $date['d'] }}">
-                                                    @endforeach
+                                            @else
+                                                <div class="inputs-meta-fields" id="inputs-range">
+                                                    <div class="input-group shadow-none border-radius-md overflow-hidden" style="border: 1px solid #d2d6da;">
+                                                        <input id="inputs-range-from" type="date" class="form-control border-0" onchange="changeMinDateOfRangeEndAt(event)" value="{{ $vacation->dates->first()['d'] }}">
+                                                        <span class="input-group-text bg-light border-0">s.d.</span>
+                                                        <input id="inputs-range-to" type="date" class="form-control border-0" onchange="createDateRange()" min="{{ $vacation->dates->first()['d'] }}" value="{{ $vacation->dates->last()['d'] }}">
+                                                    </div>
+                                                    <div id="inputs-range-dates-group">
+                                                        @foreach ($vacation->dates as $date)
+                                                            <input type="hidden" name="dates[]" class="inputs-range-dates" value="{{ $date['d'] }}">
+                                                        @endforeach
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endif
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Untuk keperluan</label>
-                                    <div class="col-md-8">
-                                        <textarea class="form-control" name="description" rows="5" placeholder="Silakan tulis keterangan/alasan/catatan terkait cuti kamu ...">{{ $vacation->description }}</textarea>
+
+                                    <hr class="horizontal dark my-4">
+
+                                    {{-- Keperluan --}}
+                                    <div class="row align-items-start mb-4">
+                                        <div class="col-lg-3 divider-vertical">
+                                            <label class="form-label-custom font-weight-bold">
+                                                <span class="material-symbols-rounded me-1 text-danger" style="font-size: 20px;">description</span>
+                                                Keperluan
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-9 content-right">
+                                            <textarea class="form-control border-radius-md" name="description" rows="4" placeholder="Tulis alasan pengambilan cuti...">{{ $vacation->description }}</textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row mb-3 pt-3">
-                                    <div class="col-lg-8 offset-lg-4 offset-xl-3">
-                                        <button class="btn btn-soft-danger"><i class="mdi mdi-exit-to-app"></i> Ajukan ulang</button>
-                                        <a class="btn btn-ghost-light text-dark" href="{{ request('next', route('portal::vacation.submission.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
+
+                                    {{-- Actions --}}
+                                    <div class="row mt-5">
+                                        <div class="col-lg-9 offset-lg-3 content-right d-flex gap-2">
+                                            <button type="submit" class="btn bg-gradient-danger border-radius-md px-4 d-flex align-items-center gap-2 mb-0">
+                                                <span class="material-symbols-rounded">sync</span> Ajukan Ulang
+                                            </button>
+                                            <a href="{{ request('next', route('portal::vacation.submission.index')) }}" class="btn btn-outline-secondary border-radius-md px-4 mb-0">
+                                                Batal
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -171,46 +189,56 @@
     <script>
         const tbody = document.querySelector('#fields-options-tbody');
         let quota = @json($vacation->quota->quota);
-        let meta = {}
 
         document.addEventListener('DOMContentLoaded', () => {
-            let addROw = document.getElementById('fields-options-add')
-            if (addROw) {
-                addROw.addEventListener('click', addRow);
+            let addButton = document.getElementById('fields-options-add');
+            if (addButton) {
+                addButton.addEventListener('click', addRow);
             }
         });
 
         const toggleAddButtonBasedQuota = () => {
-            document.getElementById('fields-options-add').classList.toggle('disabled', !(tbody.children.length < quota))
-            document.getElementById('fields-options-add').classList.toggle('text-muted', !(tbody.children.length < quota))
+            const btn = document.getElementById('fields-options-add');
+            if(btn && quota !== null) {
+                const canAdd = tbody.children.length < quota;
+                btn.classList.toggle('disabled', !canAdd);
+                btn.classList.toggle('opacity-5', !canAdd);
+            }
         }
 
         const addRow = () => {
-            let tr = document.querySelector('#fields-options-template');
-            if (tbody.children.length < quota) {
-                tbody.insertAdjacentHTML('beforeend', tr.innerHTML);
-                Array.from(tbody.children).forEach((el, i) => {
-                    if (i > 0) {
-                        el.querySelector('.btn-delete').classList.remove('d-none');
-                    }
-                    if (i == tbody.children.length - 1) {
-                        el.querySelector('[name="dates[]"]').value = '';
-                        el.querySelector('[name="dates[]"]').required = true;
-                        el.querySelector('[name="as_freelances[]"]').checked = false;
-                    }
-                });
+            let firstRow = document.querySelector('#fields-options-template');
+            if (tbody.children.length < quota || quota === null) {
+                let newRow = firstRow.cloneNode(true);
+                newRow.removeAttribute('id');
+
+                // Reset values
+                let dateInput = newRow.querySelector('input[type="date"]');
+                dateInput.value = '';
+                dateInput.required = true;
+
+                newRow.querySelector('.btn-delete').classList.remove('d-none');
+
+                let freelanceCheck = newRow.querySelector('[name="as_freelances[]"]');
+                if(freelanceCheck) freelanceCheck.checked = false;
+
+                let unchecked = newRow.querySelector('.unchecked');
+                if(unchecked) unchecked.checked = true;
+
+                tbody.appendChild(newRow);
             }
             toggleAddButtonBasedQuota();
         }
 
         const removeRow = (e) => {
-            e.target.parentNode.closest('tr').remove();
+            e.target.closest('.d-flex').remove();
             toggleAddButtonBasedQuota();
         }
 
         const toggleCheckbox = (el) => {
-            let checkbox = el.target.parentNode.closest('.input-group-text').querySelectorAll('[name="as_freelances[]"]');
-            checkbox[1].checked = !checkbox[0].checked
+            let container = el.target.closest('.input-group-text');
+            let checkboxes = container.querySelectorAll('[name="as_freelances[]"]');
+            checkboxes[1].checked = !checkboxes[0].checked;
         }
 
         const changeMinDateOfRangeEndAt = (e) => {
@@ -221,7 +249,7 @@
 
             if (quota >= 0 && quota !== null) {
                 let max = new Date(e.target.value);
-                max.setDate(max.getDate() + quota);
+                max.setDate(max.getDate() + (quota - 1));
                 end_at.max = max.toISOString().split('T')[0];
             }
         }
@@ -235,7 +263,7 @@
 
             if (from && to) {
                 for (dt = new Date(from); dt <= new Date(to); dt.setDate(dt.getDate() + 1)) {
-                    input = document.createElement('input');
+                    let input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'dates[]';
                     input.classList.add('inputs-range-dates');
