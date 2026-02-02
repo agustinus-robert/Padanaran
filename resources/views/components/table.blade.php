@@ -104,16 +104,16 @@
     </form>
 @endif
         {{-- Alerts --}}
-        <div class="col-12 p-2">
+        <div class="row p-2">
             <div class="container">
                 @if(Session::has('success'))
                 <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                    <div class="alert alert-success">{!! Session::get('success') !!}</div>
+                    <div class="alert alert-success text-white">{!! Session::get('success') !!}</div>
                 </div>
                 @endif
                 @if(Session::has('danger'))
                 <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1500)" x-show="show">
-                    <div class="alert alert-danger">{!! Session::get('danger') !!}</div>
+                    <div class="alert alert-danger text-white">{!! Session::get('danger') !!}</div>
                 </div>
                 @endif
                 @if($trash)
