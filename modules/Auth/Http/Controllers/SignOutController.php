@@ -15,7 +15,7 @@ class SignOutController extends Controller
      */
     public function destroy(Request $request)
     {
-        $request->user()->token()->revoke();
+      //  $request->user()->token()->revoke();
         
         Cache::flush();
 
