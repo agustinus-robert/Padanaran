@@ -138,7 +138,9 @@
                 <tbody>
                     @if($isEmpty)
                         <tr>
-                            <td colspan="{{ count($columns)+1 }}" class="text-center py-4"><i>Tidak ada data</i></td>
+                            <td colspan="{{ count($columns)+1 }}" class="text-center py-4"><i>
+                                @include('components.notfound')
+                            </td>
                         </tr>
                     @else
                         @foreach($data as $index => $item)

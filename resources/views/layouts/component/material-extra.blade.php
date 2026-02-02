@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <hr class="horizontal dark my-sm-4">
+        <hr class="horizontal dark my-sm-4">›
 
         <div class="row">
             <div class="col-12">

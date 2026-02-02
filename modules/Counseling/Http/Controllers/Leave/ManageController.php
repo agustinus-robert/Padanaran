@@ -64,7 +64,7 @@ class ManageController extends Controller
 
 		// Handle notifications
 		$user = auth()->user()->employee;
-	
+
 		if ($request->input('result') == ApprovableResultEnum::APPROVE->value) {
             $approvable->modelable->student->user->notify(new ApprovedNotification($approvable->modelable, $approvable));
 			if ($superior = $approvable->modelable->approvables->sortBy('level')->filter(fn ($a) => $a->level > $approvable->level)->first()) {

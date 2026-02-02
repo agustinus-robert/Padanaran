@@ -136,7 +136,7 @@ class CreateAcademicsTable extends Migration
         Schema::create('acdmc_classroom_presences', function(Blueprint $table){
             $table->bigIncrements('id');
             $table->unsignedBigInteger('classroom_id');
-            $table->date('presenced_at');
+            $table->dateTime('presenced_at');
             $table->text('presence');
             $table->unsignedSmallInteger('presenced_by');
 
