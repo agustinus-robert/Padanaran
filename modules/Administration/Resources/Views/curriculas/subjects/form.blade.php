@@ -169,12 +169,11 @@
                         <x-select
                             name="academic"
                             disabled
-                            :options="[
-                                [
-                                    'value' => $subject->semester->id ?? '',
-                                    'label' => $subject->semester->full_name
-                                ]
-                            ]"
+                            :options="$acsems->map(fn($item) => [
+                                'value' => $item->id,
+                                'label' => $item->full_name,
+                                'selected' => request('academic', $acsem->id) == $item->id
+                            ])->toArray()"
                         />
 
                         </x-col>
