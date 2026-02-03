@@ -36,8 +36,9 @@ class OutworkCategoryController extends Controller
     public function create()
     {
         $this->authorize('store', CompanyOutworkCategory::class);
+        $category = [];
 
-        return view('core::company.services.outwork-categories.form');
+        return view('core::company.services.outwork-categories.form', compact('category'));
     }
 
     /**

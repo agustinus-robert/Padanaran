@@ -10,7 +10,11 @@
 @endpush
 
 @php
-    $isEdit = isset($category) && $category?->exists;
+    $isEdit = isset($category) && is_object($category) && $category->exists;
+    
+    if (isset($category) && is_array($category)) {
+        $isEdit = !empty($category);
+    }
 @endphp
 
 
@@ -91,7 +95,7 @@
                             @foreach(['prepareable' => 'Persiapan kegiatan', 'fixed' => 'Tarif flat'] as $v => $description)
                                 <div class="form-check mb-2 d-grid" style="grid-template-columns: 20px 1fr;">
                                     <input class="form-check-input only_one" type="checkbox" name="meta[{{ $v }}]" id="meta{{ $v }}" value="1"
-                                        @checked(old("meta.$v", data_get($category, "meta.$v", 0)))>
+                                        @checked(old("meta.$v", data_get($category ?? [], "meta.$v", 0)))>
                                     <label class="form-check-label ms-2" for="meta{{ $v }}">
                                         <code>{{ $v }}</code> <br>
                                         <small class="text-muted">{{ $description }}</small>
