@@ -3,6 +3,8 @@
 @section('title', isset($subject) ? 'Edit Mapel - ' : 'Tambah Mapel - ')
 @section('titleTemplate', config('account.admin.name'))
 
+@section('navtitle', 'Mapel')
+
 @section('breadcrumb')
     <li class="breadcrumb-item">Kesiswaan</li>
     <li class="breadcrumb-item">
