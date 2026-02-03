@@ -64,6 +64,7 @@ $columns = [
                                 <x-select
                                     name="building_id"
                                     placeholder="Pilih Gedung"
+                                    required
                                     :options="$buildings->map(fn($b) => [
                                         'value' => $b->id,
                                         'label' => $b->name
