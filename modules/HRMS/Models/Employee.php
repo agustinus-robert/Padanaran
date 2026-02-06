@@ -15,10 +15,11 @@ use Modules\HRMS\Models\Traits\EmployeeTrait;
 use Modules\Academic\Models\AcademicSubjectMeet;
 use Modules\Academic\Models\AcademicSubjectMeetPlan;
 use App\Models\References\Grade;
+use App\Models\Traits\HasGradeFromSession;
 
 class Employee extends Model
 {
-    use Metable, Userstamps, Restorable, Searchable, EmployeeTrait;
+    use Metable, Userstamps, Restorable, Searchable, EmployeeTrait, HasGradeFromSession;
 
     /**
      * The table associated with the model.

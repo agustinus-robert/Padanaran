@@ -129,6 +129,8 @@ Route::middleware('auth')->group(function() {
             Route::put('/curriculas/{curricula}/restore', 'CurriculaController@restore')->name('curriculas.restore');
             Route::delete('/curriculas/{curricula}/kill', 'CurriculaController@kill')->name('curriculas.kill');
             Route::resource('curriculas', 'CurriculaController');
+
+            Route::post('/academics/sync-smt', 'AcademicController@sync')->name('academics.sync-smt');
         });
     });
     // Empty academic semesters

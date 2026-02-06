@@ -9,6 +9,8 @@ use Modules\Administration\Http\Controllers\Controller;
 use Modules\Academic\Models\Academic;
 use Modules\Administration\Http\Requests\Database\Academic\StoreRequest;
 use Modules\Administration\Http\Requests\Database\Academic\UpdateRequest;
+use App\Jobs\SyncDataJob;
+use Modules\Academic\Models\AcademicSemester;
 
 class AcademicController extends Controller
 {
@@ -29,8 +31,9 @@ class AcademicController extends Controller
         })->orderByDesc('id')->paginate($request->get('limit', 10));
 
         $academics_count = Academic::count();
+        $academic_smt_data = AcademicSemester::with('academic')->get();
 
-        return view('administration::database.academics.index', compact('academics', 'academics_count'));
+        return view('administration::database.academics.index', compact('academics', 'academics_count', 'academic_smt_data'));
     }
 
     /**
@@ -145,5 +148,24 @@ class AcademicController extends Controller
         $academic->forceDelete();
 
         return redirect()->back()->with('success', 'Tahun akademik <strong>'.$tmp->name.'</strong> berhasil dihapus permanen dari sistem');
+    }
+
+    public function sync(Request $request)
+    {
+        $this->authorize('access', Academic::class);
+
+        $oldSemesterId = $request->input('old_semester_id');
+        $targetSemesterId = $request->input('target_semester_id');
+
+        if (!$oldSemesterId || !$targetSemesterId) {
+            return response()->json(['message' => 'ID Semester tidak valid'], 422);
+        }
+
+        SyncDataJob::dispatch($oldSemesterId, $targetSemesterId);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Proses sinkronisasi data sedang berjalan di background.'
+        ]);
     }
 }

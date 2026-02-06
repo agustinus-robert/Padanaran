@@ -115,6 +115,44 @@ $columns = [
 					</form>
 				</div>
 			</div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="text-black">Sinkronisasi Data Semester</h6>
+                </div>
+                <div class="card-body">
+                    <form id="formSync">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Data Semester Dari</label>
+                            <select class="form-select p-2 border border-secondary-subtle select-2" id="old_semester_id">
+                                <option value="">Pilih Semester Asal</option>
+                                {{-- @foreach($academic_smt_data as $val)  {{ $val->id }} {{$val->name}} {{$val->academic->name}} --}}
+
+                                    <option value="77">Semester sekarang</option>
+                                {{-- @endforeach --}}
+                            </select>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold">Data Semester Ke</label>
+                            <select class="form-select p-2 border border-secondary-subtle select-2" id="new_semester_id">
+                                <option value="">Pilih Semester Tujuan</option>
+                                @foreach($academic_smt_data as $val)
+                                    <option value="{{ $val->id }}">{{$val->name}} {{$val->academic->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <x-btn type="button" variant="dark" onclick="doSync()">
+                                <span class="material-symbols-rounded mr-3">sync_alt</span> Sync
+                            </x-btn>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
 			<div class="card">
 				<div class="card-header">
                     <h6 class="text-black">Lanjutan</h6>
@@ -126,3 +164,56 @@ $columns = [
 		</div>
 	</div>
 @endsection
+
+<script>
+    function doSync() {
+    const oldSmt = $('#old_semester_id').val();
+    const newSmt = $('#new_semester_id').val();
+
+    if (!oldSmt || !newSmt) {
+        notyf.error("Pilih kedua semester terlebih dahulu!");
+        return;
+    }
+
+    Swal.fire({
+        title: 'Konfirmasi',
+        text: "Jalankan sinkronisasi data?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Jalankan!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('administration::database.academics.sync-smt') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    old_semester_id: oldSmt,
+                    target_semester_id: newSmt
+                },
+                beforeSend: function(xhr) {
+                    if (window.Echo && 
+                        window.Echo.connector && 
+                        typeof window.Echo.socketId === "function") {
+                        
+                        try {
+                            const sId = window.Echo.socketId();
+                            if (sId) {
+                                xhr.setRequestHeader('X-Socket-ID', sId);
+                            }
+                        } catch (e) {
+                            console.warn("Socket ID belum siap, lanjut tanpa header.");
+                        }
+                    }
+                },
+                success: function(response) {
+                    notyf.success(response.message);
+                },
+                error: function(xhr) {
+                    notyf.error("Gagal koneksi ke server.");
+                }
+            });
+        }
+    });
+}
+</script>

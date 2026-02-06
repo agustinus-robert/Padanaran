@@ -9,9 +9,10 @@
 @endpush
 
 @section('body-content')
-<div class="row container-fluid justify-content-center">
-    @include('components.navbar-admin')
 
+@include('components.navbar-admin')
+<div class="row container-fluid justify-content-center">
+    
     <div class="col-xxl-8 col-xl-10">
         <div class="card mb-4 border-0 shadow-sm">
             <x-card-header type="{{ config('theme.default') }}">

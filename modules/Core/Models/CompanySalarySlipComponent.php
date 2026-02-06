@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Core\Enums\SalaryUnitEnum;
 use Modules\Core\Enums\SalaryAllowanceEnum;
 use Modules\Core\Enums\SalaryOperateEnum;
+use App\Models\Traits\HasGradeFromSession;
 
 class CompanySalarySlipComponent extends Model
 {
-    use Restorable, Searchable;
+    use Restorable, Searchable, HasGradeFromSession;
 
     /**
      * The table associated with the model.

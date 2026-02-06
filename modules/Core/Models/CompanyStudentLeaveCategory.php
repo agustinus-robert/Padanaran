@@ -5,10 +5,11 @@ namespace Modules\Core\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Searchable\Searchable;
 use App\Models\Traits\Restorable\Restorable;
+use App\Models\Traits\HasGradeFromSession;
 
 class CompanyStudentLeaveCategory extends Model
 {
-    use Searchable, Restorable;
+    use Searchable, Restorable, HasGradeFromSession;
 
     /**
      * The table associated with the model.
