@@ -149,7 +149,7 @@
                                     </ul> --}}
                                 </li>
                                 <li>
-                                    <a href="{{ route('web::cart.page') }}">Shop</a>
+                                    {{-- <a href="{{ route('web::cart.page') }}">Shop</a> --}}
                                     {{-- <ul>  class="menu-item-has-children"
                                         <li><a href="shop.html">Shop</a></li>
                                         <li><a href="shop-grid.html">Shop Grid</a></li>
@@ -159,7 +159,7 @@
                                         <li><a href="checkout.html">Checkout</a></li>
                                     </ul> --}}
                                 </li>
-                                <li><a href="{{ route('web::contact.page') }}">Contact</a></li>
+                                {{-- <li><a href="{{ route('web::contact.page') }}">Contact</a></li> --}}
                             </ul>
                         </div>
                     </div>

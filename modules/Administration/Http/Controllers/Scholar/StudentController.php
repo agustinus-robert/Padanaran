@@ -42,18 +42,27 @@ class StudentController extends Controller
 
         $cacheCountKey = "students_count:grade={$gradeId}";
 
-        $students = Cache::tags(['students'])->remember($cacheKey, 60, function () use ($trashed, $search, $limit, $gradeId) {
-            return Student::with('user', 'generation')
+        // $students = Cache::tags(['students'])->remember($cacheKey, 60, function () use ($trashed, $search, $limit, $gradeId) {
+        //     return Student::with('user', 'generation')
+        //         ->where('grade_id', $gradeId)
+        //         ->search($search)
+        //         ->when($trashed, fn($query) => $query->onlyTrashed())
+        //         ->orderByDesc('id')
+        //         ->paginate($limit);
+        // });
+
+        $students = Student::with('user', 'generation')
                 ->where('grade_id', $gradeId)
                 ->search($search)
                 ->when($trashed, fn($query) => $query->onlyTrashed())
                 ->orderByDesc('id')
                 ->paginate($limit);
-        });
 
-        $students_count = Cache::tags(['students'])->remember($cacheCountKey, 60, function () use ($gradeId) {
-            return Student::where('grade_id', $gradeId)->count();
-        });
+        // $students_count = Cache::tags(['students'])->remember($cacheCountKey, 60, function () use ($gradeId) {
+        //     return Student::where('grade_id', $gradeId)->count();
+        // });
+
+        $students_count = Student::where('grade_id', $gradeId)->count();
 
         return view('administration::scholar.students.index', compact('students', 'students_count'));
     }

@@ -1,7 +1,22 @@
-@extends('academic::layouts.default')
+@extends('layouts.horizontal-layout')
 
-@section('content')
-    <div class="row">
+@section('title', 'Rapor Murid - ')
+
+@section('navtitle', 'Rapor Murid')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item">Akademik</li>
+    <li class="breadcrumb-item active">Rapor</li>
+@endsection
+
+@push('nav')
+@include('academic::layouts.includes.navbar-academic')
+@endpush
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-md-8">
             <div class="jumbotron mb-4 border bg-white p-4">
                 <h2>Assalamu'alaikum {{ \Str::title(auth()->user()->name) }}!</h2>

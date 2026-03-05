@@ -32,7 +32,7 @@
     @stack('style')
 </head>
 
-<body data-topbar="dark" data-layout="horizontal">
+<body class="g-sidenav-show bg-gray-100" data-topbar="dark" data-layout="horizontal">
 
     @if(config('theme.default') == 'material')
         @if (!Route::has('portal::dashboard.index'))

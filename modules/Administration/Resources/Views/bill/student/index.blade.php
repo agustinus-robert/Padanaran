@@ -165,13 +165,14 @@ document.addEventListener("DOMContentLoaded", function() {
         let semesterSelect = $modal.querySelector("#semester_id");
         let batchSelect    = $modal.querySelector("#batch_id");
         let referenceSelect= $modal.querySelector("#reference_id");
+        let studentSelect = $modal.querySelector('#student_id');
 
 
         if(!modalId == 'applyStudent'){
             if (!semesterSelect || !batchSelect || !referenceSelect) return;
         }
 
-        if(modalId === 'applyClass') {
+        if(modalId === 'applyClass' || modalId == 'applyStudent') {
             if(gradeSelect){
                 gradeSelect.innerHTML = '<option value="">Pilih</option>';
             }
@@ -227,9 +228,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
         semesterSelect.addEventListener("change", function() {
             let semesterId = this.value;
-            batchSelect.innerHTML = '<option value="">Pilih</option>';
-            referenceSelect.innerHTML = '<option value="">Pilih</option>';
 
+            if(modalId == 'applyStudent'){
+                fetch(`{{ route('api::administration.batches') }}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(item => {
+                        let opt = new Option(item.name, item.id);
+                        batchSelect.add(opt);
+                    });
+                });
+            }
+
+            if(!modalId == 'applyStudent'){
+                batchSelect.innerHTML = '<option value="">Pilih</option>';
+            }
+
+            if(!modalId == 'referenceSelect '){
+                referenceSelect.innerHTML = '<option value="">Pilih</option>';
+            }
+            
             if (!semesterId) return;
 
             fetch(`{{ route('api::administration.batches') }}?semester_id=${semesterId}`)

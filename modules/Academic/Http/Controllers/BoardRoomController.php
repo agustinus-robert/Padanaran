@@ -28,9 +28,12 @@ class BoardRoomController extends Controller
         $user = auth()->user();
     	$student = $user->student->semesters;
         $classroom = $student->first()->classroom_id;
+        $boardFriends = [];
 
         $boardStatus = BoardingStudents::with('employee', 'room', 'room.building', 'student')->where('student_id', $user->student->id)->first(); 
-        $boardFriends = BoardingStudents::with('employee', 'room', 'room.building', 'student')->where(['building_id' => $boardStatus->building_id, 'room_id' => $boardStatus->room_id])->get();
+        if(!empty($boardStatus->building_id)){
+            $boardFriends = BoardingStudents::with('employee', 'room', 'room.building', 'student')->where(['building_id' => $boardStatus->building_id, 'room_id' => $boardStatus->room_id])->get();
+        }
 
         return view('academic::boardroom', compact('boardStatus', 'boardFriends'));
     }

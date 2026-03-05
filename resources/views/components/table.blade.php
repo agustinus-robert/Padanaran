@@ -13,6 +13,7 @@
 
 @php
     $isEmpty = $data->isEmpty();
+    $isPaginated = method_exists($data, 'links');
 @endphp
 
 @if($type === 'material')
@@ -145,7 +146,9 @@
                     @else
                         @foreach($data as $index => $item)
                             <tr>
-                                <td>{{ isset($data->firstItem) ? $data->firstItem() + $index : $loop->iteration }}</td>
+                                <td class="ps-3 text-sm">
+                                    {{ $isPaginated ? ($data->firstItem() + $index) : ($loop->iteration) }}
+                                </td>
 
                                 @foreach($columns as $col)
                                     <td class="align-items-center">
@@ -183,6 +186,14 @@
             </table>
         </div>
 
+        @if($isPaginated)
+            <div class="d-flex justify-content-between align-items-center p-3">
+                <p class="text-xs text-muted mb-0">Total: <b>{{ $data->total() }}</b> data</p>
+                <div>
+                    {!! $data->appends(request()->query())->links('pagination::bootstrap-4') !!}
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 

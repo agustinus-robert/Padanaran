@@ -17,7 +17,7 @@ class GradeLevel extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'kd', 'rome', 'name'
+        'kd', 'rome', 'name', 'grade_id'
     ];
 
     /**

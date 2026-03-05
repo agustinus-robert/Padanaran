@@ -1,10 +1,23 @@
-@extends('academic::layouts.default')
+@extends('layouts.horizontal-layout')
 
-@section('title', 'Data konseling - ')
+@section('title', 'Data Murid - ')
 
-@section('content')
+@section('navtitle', 'Data Murid')
 
-<div class="row">
+@section('breadcrumb')
+    <li class="breadcrumb-item">Akademik</li>
+    <li class="breadcrumb-item active">Asrama</li>
+@endsection
+
+@push('nav')
+@include('academic::layouts.includes.navbar-academic')
+@endpush
+
+@section('body-content')
+
+@include('components.navbar-admin')
+
+<div class="row container-fluid">
     <div class="col-xl-6">
         <div class="card">
             <div class="card-body">
@@ -29,7 +42,7 @@
                                     </span>
                             </div>
                             <h5 class="font-size-15">Asrama</h5>
-                            <p class="text-muted mb-0">{{$boardStatus->room->building->name}}</p>
+                            <p class="text-muted mb-0">{{$boardStatus?->room?->building->name}}</p>
                         </div>
                     </div>
                     <div class="col-4">
@@ -41,7 +54,7 @@
                             </div>
                             <h5 class="font-size-15">Jenis Asrama</h5>
                             <p class="text-muted mb-0">
-                                @if($boardStatus->room->building->id == 1)
+                                @if($boardStatus?->room?->building?->id == 1)
                                      <span class="badge badge-pill badge-soft-danger font-size-11">Putri</span>
                                 @else
                                      <span class="badge badge-pill badge-soft-success font-size-11">Putra</span>
@@ -57,7 +70,7 @@
                                     </span>
                             </div>
                             <h5 class="font-size-15">Kepala Asrama</h5>
-                            <p class="text-muted mb-0">{{$boardStatus->employee->user->name}}</p>
+                            <p class="text-muted mb-0">{{$boardStatus?->employee?->user?->name}}</p>
                         </div>
                     </div>
                 </div>
@@ -91,7 +104,7 @@
                                     </span>
                             </div>
                             <h5 class="font-size-15">Nama Ruang</h5>
-                            <p class="text-muted mb-0">{{$boardStatus->room->name}}</p>
+                            <p class="text-muted mb-0">{{$boardStatus?->room?->name}}</p>
                         </div>
                     </div>
 
@@ -103,7 +116,7 @@
                                     </span>
                             </div>
                             <h5 class="font-size-15">Kapasitas</h5>
-                            <p class="text-muted mb-0">{{$boardStatus->room->capacity}}</p>
+                            <p class="text-muted mb-0">{{$boardStatus?->room?->capacity}}</p>
                         </div>
                     </div>
                 </div>

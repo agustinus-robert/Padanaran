@@ -8,7 +8,7 @@ use Modules\Web\Http\Livewire\ProductsCommerces\ProductManage;
 use  Modules\Editor\Models\EditorWebPages;
 
 // routes/web.php
-//Route::get('/', 'HomeCommerceController@index')->name('home.page');
+// Route::get('/', 'HomeCommerceController@index')->name('home.page');
 // Route::get('/{page}', function ($page) {
 //     $pageData = json_decode(EditorWebPages::where('page', $page)->first()->web_json, true)['content'];
 //     return view('web::dynamic-page', compact('pageData'));
@@ -27,5 +27,5 @@ use  Modules\Editor\Models\EditorWebPages;
 //     Route::get('/builder', 'PageBuilderController@index')->name('page.builder');
 // });
 
-Route::get('/webrequest', 'RequestorController@index')->name('page.webrequest');
+//Route::get('/webrequest', 'RequestorController@index')->name('page.webrequest');
 

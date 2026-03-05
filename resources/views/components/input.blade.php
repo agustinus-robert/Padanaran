@@ -15,8 +15,11 @@
         'lg' => 'px-6 py-3 text-lg',
     ];
 
-    // Pilih kelas sesuai type
-    $form = $type === 'checkbox' ? 'form-check-input' : 'form-control ' . ($sizes[$size] ?? $sizes['md']);
+    $isControl = in_array($type, ['text', 'number', 'time', 'date', 'email', 'password']);
+    
+    $form = ($type === 'checkbox' || $type === 'radio') 
+        ? 'form-check-input' 
+        : 'form-control ' . ($sizes[$size] ?? $sizes['md']);
 @endphp
 
 <input
@@ -24,7 +27,6 @@
     value="{{ $inputValue }}"
     {{ $disabled ? 'disabled' : '' }}
 
-    {{-- Tambahkan Validasi Jika Type adalah Number --}}
     @if($type === 'number')
         pattern="[0-9]*"
         inputmode="numeric"

@@ -1,72 +1,54 @@
-@extends('academic::layouts.default')
+@extends('layouts.horizontal-layout')
 
-@section('title', 'Data konseling - ')
+@section('title', 'Data Murid - ')
 
-@section('content')
-    <div class="row">
+@section('navtitle', 'Data Murid')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item">Akademik</li>
+    <li class="breadcrumb-item active">Aktivitas</li>
+@endsection
+
+@push('nav')
+@include('academic::layouts.includes.navbar-academic')
+@endpush
+
+@php
+    $trashed = false;
+    $columns = [
+        [
+            'field' => 'type',
+            'label' => 'Tipe',
+            'slot'  => function($item) {
+                if ($item->modelable_type === \Modules\Boarding\Models\BoardingStudentsLeave::class) {
+                    return '<span class="badge bg-info">Izin Pulang</span>';
+                } elseif ($item->modelable_type === \Modules\Boarding\Models\BoardingStudents::class) {
+                    return '<span class="badge bg-success">Pondok</span>';
+                }
+                return '-';
+            }
+        ],
+        [
+            'field' => 'message',
+            'label' => 'Keterangan',
+            'slot'  => fn($item) => $item->message ?? '-'
+        ],
+    ];
+@endphp
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-md-7 col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-file-cabinet float-left mr-2"></i>Data konseling
-                </div>
-                <div class="card-body">
-
-                    <form action="{{ route('academic::counselings.index') }}" method="GET">
-                        <div class="input-group mb-2">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama/deskripsi disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('academic::counselings.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                        <small class="text-muted">Menampilkan data konseling Tahun Ajaran <strong>{{ $acsem->full_name }}</strong></small>
-                    </form>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            @if (session('success'))
-                                <div id="flash-success" class="alert alert-success mt-4">
-                                    {!! session('success') !!}
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>No</th>
-                                <th nowrap>Tipe</th>
-                                {{-- <th>Nama Siswa</th> --}}
-                                <th>Keterangan</th>
-                                {{-- <th></th> --}}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($activityStudent as $activity)
-                                <tr>
-                                    <td>
-                                        {{ $loop->iteration + ($activityStudent->currentPage() - 1) * $activityStudent->perPage() }}
-                                    </td>
-                                    <td>
-                                        @if($activity->modelable_type === \Modules\Boarding\Models\BoardingStudentsLeave::class)
-                                            <span class="badge bg-info">Izin Pulang</span>
-                                        @elseif($activity->modelable_type === \Modules\Boarding\Models\BoardingStudents::class)
-                                            <span class="badge bg-success">Pondok</span>
-                                        @endif
-                                    </td>
-                                    <td>{!! $activity->message ?? '-' !!}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $activityStudent->links() }}
-                    {{-- {{ $counselings->appends(request()->all())->links() }} --}}
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$activityStudent"
+                :columns="$columns"
+                title="Riwayat Aktivitas"
+                searchRoute="{{ route('academic::counselings.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-5 col-lg-4">
             <div class="card">

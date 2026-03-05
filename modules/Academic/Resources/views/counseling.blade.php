@@ -1,80 +1,64 @@
-@extends('academic::layouts.default')
+@extends('layouts.horizontal-layout')
 
-@section('title', 'Data konseling - ')
+@section('title', 'Data Konseling Murid - ')
 
-@section('content')
-    <div class="row">
+@section('navtitle', 'Data Konseling Murid')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item">Akademik</li>
+    <li class="breadcrumb-item active">Konseling Murid</li>
+@endsection
+
+@push('nav')
+@include('academic::layouts.includes.navbar-academic')
+@endpush
+
+@php
+    $trashed = false;
+    $columns = [
+        [
+            'field' => 'no',
+            'label' => 'No',
+            'class' => 'align-middle',
+            'slot'  => fn($item) => ($counselings->getCollection()->search($item) + $counselings->firstItem())
+        ],
+        [
+            'field' => 'name',
+            'label' => 'Nama',
+            'slot'  => fn($item) => '
+                ' . $item->semester->student->full_name . ' <br>
+                <small class="text-muted">' . $item->semester->classroom->name . '</small>
+            '
+        ],
+        [
+            'field' => 'case',
+            'label' => 'Kasus',
+            'slot'  => fn($item) => '
+                ' . $item->description . ' <br>
+                <small class="text-muted">' . $item->category->name . '</small>
+            '
+        ],
+        [
+            'field' => 'follow_up',
+            'label' => 'Tindak lanjut',
+            'slot'  => fn($item) => $item->follow_up ?? '-'
+        ],
+    ];
+@endphp
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="row container-fluid">
         <div class="col-md-7 col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="mdi mdi-file-cabinet float-left mr-2"></i>Data konseling
-                </div>
-                <div class="card-body">
-
-                    <form action="{{ route('academic::counselings.index') }}" method="GET">
-                        <div class="input-group mb-2">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama/deskripsi disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('academic::counselings.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                        <small class="text-muted">Menampilkan data konseling Tahun Ajaran <strong>{{ $acsem->full_name }}</strong></small>
-                    </form>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            @if (session('success'))
-                                <div id="flash-success" class="alert alert-success mt-4">
-                                    {!! session('success') !!}
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>No</th>
-                                <th nowrap>Nama</th>
-                                <th>Kasus</th>
-                                <th>Tindak lanjut</th>
-                                {{-- <th></th> --}}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($counselings as $counseling)
-                                <tr>
-                                    <td class="align-middle">{{ $loop->iteration + ($counselings->firstItem() - 1) }}</td>
-                                    <td nowrap>
-                                        {{ $counseling->semester->student->full_name }} <br>
-                                        <small class="text-muted">{{ $counseling->semester->classroom->name }}</small>
-                                    </td>
-                                    <td style="min-width: 200px;">
-                                        {{ $counseling->description }} <br>
-                                        <small class="text-muted">{{ $counseling->category->name }}</small>
-                                    </td>
-                                    <td nowrap>{{ $counseling->follow_up }}</td>
-                                    {{-- <td nowrap class="py-2 text-right align-middle">
-                                        <a class="btn btn-warning btn-sm" href="{{ route('academic::counselings.edit', ['counseling' => $counseling->id]) }}" data-toggle="tooltip" title="Ubah"><i class="mdi mdi-pencil-outline"></i></a>
-                                        <form class="d-inline form-block form-confirm" action="{{ route('counseling::counselings.destroy', ['counseling' => $counseling->id]) }}" method="POST"> @csrf @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-delete-outline"></i></button>
-                                        </form>
-                                    </td> --}}
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body">
-                    {{ $counselings->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$counselings"
+                :columns="$columns"
+                title="Data Konseling"
+                searchRoute="{{ route('academic::counselings.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
         <div class="col-md-5 col-lg-4">
             <div class="card">

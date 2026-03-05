@@ -1,150 +1,174 @@
-@extends('boarding::layouts.default')
+@extends('layouts.horizontal-layout')
 
 @section('title', 'Gedung - ')
+
+@section('navtitle', 'Asrama')
 
 @section('breadcrumb')
     <li class="breadcrumb-item">Gedung</li>
     <li class="breadcrumb-item active">Siswa</li>
 @endsection
 
-@section('content')
-    <div class="row">
+@push('nav')
+@include('boarding::layouts.includes.navbar-boarding')
+@endpush
+
+@php
+$trashed = false; 
+$columns = [
+    ['field' => 'no', 'label' => 'No', 'slot' => fn($item) => $loop->iteration],
+    
+    [
+        'field' => 'student.user.profile.name', 
+        'label' => 'Nama Siswa', 
+        'slot' => fn($item) => $item->student->user->profile->name
+    ],
+    
+    [
+        'field' => 'ground.name', 
+        'label' => 'Gedung', 
+        'slot' => fn($item) => $item->ground->name
+    ],
+    
+    [
+        'field' => 'actions', 
+        'label' => '', 
+        'slot' => fn($item) => view('components.partial-actions', [
+            'item' => $item,
+            'routes' => [
+                'edit'    => 'boarding::facility.student.edit',
+                'destroy' => 'boarding::facility.student.destroy',
+                'restore' => 'boarding::facility.buildings.restore',
+                'kill'    => 'boarding::facility.buildings.kill',
+            ],
+            // Jika component partial-actions mendukung parameter custom untuk route key
+            'params' => [
+                'edit' => ['student' => $item->id],
+                'destroy' => ['student' => $item->id],
+                'restore' => ['building' => $item->id],
+                'kill' => ['building' => $item->id],
+            ]
+        ])->render()
+    ]
+];
+@endphp
+
+@section('body-content')
+     <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Data Asrama Siswa</div>
-                <div class="card-body">
-                    <form action="{{ route('administration::facility.buildings.index') }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('administration::facility.buildings.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div id="flash-danger" class="alert alert-danger mt-4">
-                            {!! session('error') !!}
-                        </div>
-                    @endif
-
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
-                </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <th>No</th>
-                            <th>Nama Siswa</th>
-                            <th>Gedung</th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            @forelse($boardingFacilityStdn as $building)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $building->student->user->profile->name }}</td>
-                                    <td>{{ $building->ground->name }}</td>
-                                    <td>
-                                        @if ($building->trashed())
-                                            <form class="d-inline form-block form-confirm" action="{{ route('boarding::facility.buildings.restore', ['building' => $building->id]) }}" method="POST"> @csrf @method('PUT')
-                                                <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                            </form>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('boarding::facility.buildings.kill', ['building' => $building->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus Permanen"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @else
-                                            <a class="btn btn-warning btn-sm" data-toggle="tooltip" title="Ubah Asrama Siswa" href="{{ route('boarding::facility.student.edit', ['student' => $building->id]) }}"><i class="mdi mdi-pencil"></i></a>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('boarding::facility.student.destroy', ['student' => $building->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    <p style="margin-top: 10px; margin-left: 10px;">Jumlah Murid terdaftar : {{ $boardingFacilityStdn->total() }}</p>
-                </div>
-                <div class="card-body">
-                    {{ $boardingFacilityStdn->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$boardingFacilityStdn"
+                :columns="$columns"
+                title="Ruangan"
+                searchRoute="{{ route('administration::facility.buildings.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
+       
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Tambah Gedung</div>
+                <div class="card-header pb-0 p-3">
+                    <h6 class="text-black">
+                        <i class="mdi mdi-office-building float-left mr-2"></i>
+                        {{ isset($editItem) ? 'Ubah' : 'Tambah' }} Asrama Siswa
+                    </h6>
+                </div>
                 <div class="card-body">
-                    <form class="form-block" action="{{ isset($editItem) ? route('boarding::facility.student.update', ['student' => $editItem->id, 'next' => request()->fullUrl()]) : route('boarding::facility.student.store', ['next' => request()->fullUrl()]) }}" method="POST">
+                    <form class="form-block" 
+                        action="{{ isset($editItem) ? route('boarding::facility.student.update', ['student' => $editItem->id, 'next' => request()->fullUrl()]) : route('boarding::facility.student.store', ['next' => request()->fullUrl()]) }}" 
+                        method="POST">
                         @csrf
                         @if (isset($editItem))
                             @method('PUT')
                         @endif
 
+                        {{-- Hidden inputs untuk state JS (dependent dropdown) --}}
                         <input type="hidden" id="selected-room-id" value="{{ $editItem->room_id ?? '' }}">
                         <input type="hidden" id="selected-building-id" value="{{ $editItem->building_id ?? '' }}">
 
-                        <div class="form-group mb-3">
-                            <label>Gedung</label>
-                            <select name="building_id" id="building-select" class="select-2 form-select">
-                                <option value="">Pilih Gedung</option>
-                                @foreach ($buildings as $value)
-                                    <option value="{{ $value->id }}" {{ isset($editItem) && $editItem->building_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- Select Gedung --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Gedung" />
+                            <x-col size="12">
+                                <x-select
+                                    name="building_id"
+                                    id="building-select"
+                                    placeholder="Pilih Gedung"
+                                    required
+                                    class="select-2"
+                                    :options="$buildings->map(fn($b) => [
+                                        'value' => $b->id,
+                                        'label' => $b->name
+                                    ])"
+                                    :value="$editItem->building_id ?? old('building_id')"
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Ruang</label>
-                            <select name="room_id" id="room-select" class="select-2 form-select">
-                                <option value="">Pilih Ruang</option>
-                            </select>
-                        </div>
+                        {{-- Select Ruang (Biasanya diisi via AJAX berdasarkan Gedung) --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Ruang" />
+                            <x-col size="12">
+                                <x-select
+                                    name="room_id"
+                                    id="room-select"
+                                    placeholder="Pilih Ruang"
+                                    required
+                                    class="select-2"
+                                    :options="[]" 
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Pengasuh</label>
-                            <select name="empl_id" id="empl-select" class="select-2 form-select">
-                                <option value="">Pilih Pengasuh</option>
-                                @foreach ($empBoarding as $value)
-                                    <option value="{{ $value->id }}" {{ isset($editItem) && $editItem->empl_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- Select Pengasuh --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Pengasuh" />
+                            <x-col size="12">
+                                <x-select
+                                    name="empl_id"
+                                    id="empl-select"
+                                    placeholder="Pilih Pengasuh"
+                                    required
+                                    class="select-2"
+                                    :options="$empBoarding->map(fn($e) => [
+                                        'value' => $e->id,
+                                        'label' => $e->user->name
+                                    ])"
+                                    :value="$editItem->empl_id ?? old('empl_id')"
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Siswa</label>
-                            <select name="student_id" class="select-2 form-select">
-                                <option value="">Pilih Siswa</option>
-                                @foreach ($students as $value)
-                                    <option value="{{ $value->id }}" {{ !empty($editItem) && is_object($editItem) && $editItem->student_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->user->profile->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- Select Siswa --}}
+                        <x-input-group :isRow="true">
+                            <x-label value="Siswa" />
+                            <x-col size="12">
+                                <x-select
+                                    name="student_id"
+                                    placeholder="Pilih Siswa"
+                                    required
+                                    class="select-2"
+                                    :options="$students->map(fn($s) => [
+                                        'value' => $s->id,
+                                        'label' => $s->user->profile->name
+                                    ])"
+                                    :value="$editItem->student_id ?? old('student_id')"
+                                />
+                            </x-col>
+                        </x-input-group>
 
-                        <div class="form-group mb-0">
-                            <button class="btn btn-primary">{{ isset($editItem) ? 'Update' : 'Simpan' }}</button>
-                        </div>
+                        <x-input-group class="mb-0">
+                            <x-btn class="mt-2" type="submit" variant="{{ isset($editItem) ? 'warning' : 'success' }}">
+                                {{ isset($editItem) ? 'Update' : 'Simpan' }}
+                            </x-btn>
+                            @if(isset($editItem))
+                                <a href="{{ route('boarding::facility.student.index') }}" class="btn btn-light mt-2">Batal</a>
+                            @endif
+                        </x-input-group>
+
                     </form>
                 </div>
             </div>

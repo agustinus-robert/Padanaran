@@ -1,4 +1,4 @@
-<x-regular-modal size="xl" id="applyStudent" title="Pembayaran Per Kelas">
+<x-regular-modal size="xl" id="applyStudent" title="Pembayaran Per Murid">
     <form id="formApply" method="POST" action="{{ route('administration::bill.students.store') }}">
         @csrf
         <input type="hidden" name="status" value="2" />
@@ -40,7 +40,7 @@
 
             {{-- KANAN 8 --}}
             <div class="col-md-6">
-                <div class="mb-3" wire:key="students-list">
+                <div class="mb-3" :isRow="true">
                     <label>Pilih Siswa</label>
                     <x-select id="student_id" name="student_id" placeholder="Pilih" :options="[]" required />
                 </div>

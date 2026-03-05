@@ -1,210 +1,183 @@
-@extends('boarding::layouts.default')
+@extends('layouts.horizontal-layout')
 
-@section('title', 'Gedung - ')
+@section('title', 'Kegiatan Siswa - ')
+
+@section('navtitle', 'Kegiatan Siswa')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">Kegiatan</li>
-    <li class="breadcrumb-item active">Siswa</li>
+    <li class="breadcrumb-item">Pondok</li>
+    <li class="breadcrumb-item active">Kegiatan Siswa</li>
 @endsection
 
-@section('content')
-    <div class="row">
+@push('nav')
+@include('boarding::layouts.includes.navbar-boarding')
+@endpush
+
+@php
+$trashed = false; // Sesuaikan dengan logic controller jika sedang menampilkan trash
+
+$columns = [
+    [
+        'field' => 'no', 
+        'label' => 'No', 
+        'slot' => fn($item, $loop) => $loop->iteration
+    ],
+    [
+        'field' => 'modelable', 
+        'label' => 'Peserta', 
+        'slot' => function($item) {
+            if ($item->modelable_type == 'Modules\Academic\Models\AcademicClassroom') {
+                return optional($item->modelable)->name ?? '-';
+            }
+            return optional(optional($item->modelable)->user)->name ?? '-';
+        }
+    ],
+    [
+        'field' => 'teacher.user.name', 
+        'label' => 'Guru Pengampu', 
+        'slot' => fn($item) => $item->teacher->user->name ?? '-'
+    ],
+    [
+        'field' => 'supervisor.user.name', 
+        'label' => 'Guru Pengurus', 
+        'slot' => fn($item) => $item->supervisor->user->name ?? '-'
+    ],
+    [
+        'field' => 'event.name', 
+        'label' => 'Kegiatan', 
+        'slot' => function($item) {
+            $name = $item->event->name ?? 'Kegiatan dihapus';
+            $badge = '';
+
+            if (optional($item->event)->type?->value == 2 && !empty($item->event->end_date)) {
+                $today = \Carbon\Carbon::today();
+                $endDate = \Carbon\Carbon::parse($item->event->end_date);
+
+                if ($today->greaterThan($endDate)) {
+                    $badge = '<p class="mb-0"><span class="badge bg-danger"><small>Selesai</small></span></p>';
+                } else {
+                    $badge = '<p class="mb-0"><span class="badge bg-secondary"><small>' . $endDate->format('d M Y') . '</small></span></p>';
+                }
+            }
+            return '<div>' . $name . $badge . '</div>';
+        }
+    ],
+    [
+        'field' => 'actions', 
+        'label' => '', 
+        'slot' => fn($item) => view('components.partial-actions', [
+            'item' => $item,
+            'trashed' => $item->trashed(),
+            'routes' => [
+                'edit'    => 'boarding::event.event-student.edit',
+                'destroy' => 'boarding::event.event-student.destroy',
+                'restore' => 'boarding::facility.buildings.restore', // Sesuaikan jika ada route khusus restore event
+                'kill'    => 'boarding::facility.buildings.kill',    // Sesuaikan jika ada route khusus kill event
+            ],
+            'params' => [
+                'edit'    => ['event_student' => $item->id],
+                'destroy' => ['event_student' => $item->id],
+                'restore' => ['building' => $item->id],
+                'kill'    => ['building' => $item->id],
+            ]
+        ])->render()
+    ]
+];
+@endphp
+
+@section('body-content')
+    <div class="row container-fluid">
+        @include('components.navbar-admin')
+
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Data Kegiatan Siswa</div>
-                <div class="card-body">
-                    <form action="{{ route('boarding::event.event-student.index') }}" method="GET">
-                        <input type="hidden" name="trash" value="{{ request('trash') }}">
-                        <div class="input-group">
-                            <input class="form-control" name="search" type="text" value="{{ request('search') }}" placeholder="Cari nama disini ...">
-                            <div class="input-group-append">
-                                <a class="btn btn-outline-secondary" href="{{ route('boarding::event.event-student.index') }}"><i class="mdi mdi-refresh"></i></a>
-                                <button class="btn btn-primary">Cari</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    @if (session('success'))
-                        <div id="flash-success" class="alert alert-success mt-4">
-                            {!! session('success') !!}
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div id="flash-danger" class="alert alert-danger mt-4">
-                            {!! session('error') !!}
-                        </div>
-                    @endif
-
-                    @if (request('trash'))
-                        <div class="alert alert-warning text-danger mb-0 mt-3">
-                            <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
-                        </div>
-                    @endif
-                </div>
-                <div class="table-responsive">
-                    <table class="table-hover border-bottom mb-0 table">
-                        <thead class="thead-dark">
-                            <th>No</th>
-                            <th>Peserta</th>
-                            <th>Guru Pengampu</th>
-                            <th>Guru Pengurus</th>
-                            <th>Kegiatan</th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            @forelse($boardingEventStdn as $event)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-        
-                                    <td>
-                                        @if ($event->modelable_type == 'Modules\Academic\Models\AcademicClassroom')
-                                            {{ optional($event->modelable)->name ?? '-' }}
-                                        @else
-                                            {{ optional(optional($event->modelable)->user)->name ?? '-' }}
-                                        @endif
-                                    </td>
-                                    <td>{{ $event->teacher->user->name ?? '-' }}</td>
-                                    <td>{{ $event->supervisor->user->name ?? '-' }}</td>
-                                    <td>
-                                        {{ $event->event->name ?? 'Kegiatan dihapus' }}
-                                        @if($event->event->type->value == 2)
-                                            @if(!empty($event->event->start_date) && !empty($event->event->end_date))
-                                               @if($event->event->end_date)
-                                                    @php
-                                                        $today = \Carbon\Carbon::today();
-                                                        $endDate = \Carbon\Carbon::parse($event->event->end_date);
-                                                    @endphp
-
-                                                    @if ($today->greaterThan($endDate))
-                                                        <p><span class="badge bg-danger">
-                                                            <small>Selesai</small>
-                                                        </span></p>
-                                                    @else
-                                                        <p>
-                                                        <span class="badge bg-secondary">
-                                                            <small>
-                                                                {{ $endDate->format('d M Y') }}
-                                                            </small>
-                                                        </span>
-                                                        </p>
-                                                    @endif
-                                                @endif
-                                            @endif                                     
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($event->trashed())
-                                            {{-- <form class="d-inline form-block form-confirm" action="{{ route('boarding::facility.buildings.restore', ['building' => $building->id]) }}" method="POST"> @csrf @method('PUT')
-                                                <button class="btn btn-primary btn-sm" data-toggle="tooltip" title="Pulihkan"><i class="mdi mdi-restore"></i></button>
-                                            </form>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('boarding::facility.buildings.kill', ['building' => $building->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus Permanen"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form> --}}
-                                        @else
-                                            <a class="btn btn-warning btn-sm" data-toggle="tooltip" title="Ubah Event Siswa" href="{{ route('boarding::event.event-student.edit', ['event_student' => $event->id]) }}"><i class="mdi mdi-pencil"></i></a>
-                                            <form class="d-inline form-block form-confirm" action="{{ route('boarding::event.event-student.destroy', ['event_student' => $event->id]) }}" method="POST"> @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Buang"><i class="mdi mdi-delete-outline"></i></button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center"><i>Tidak ada data</i></td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    <p style="margin-top: 10px; margin-left: 10px;">Jumlah Murid terdaftar pada kegiatan : {{ $boardingEventStdn->total() }}</p>
-                </div>
-                <div class="card-body">
-                    {{ $boardingEventStdn->appends(request()->all())->links() }}
-                </div>
-            </div>
+            <x-table
+                type="material"
+                :data="$boardingEventStdn"
+                :columns="$columns"
+                title="Daftar Kegiatan Siswa"
+                searchRoute="{{ route('boarding::event.event-student.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+            />
         </div>
+
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Kelola Kegiatan Siswa</div>
                 <div class="card-body">
                     <form class="form-block" action="{{ isset($editItem) ? route('boarding::event.event-student.update', ['event_student' => $editItem->id, 'next' => request()->fullUrl()]) : route('boarding::event.event-student.store', ['next' => request()->fullUrl()]) }}" method="POST">
-                        @csrf
-                        @if (isset($editItem))
-                            @method('PUT')
-                        @endif
+                    @csrf
+                    @if (isset($editItem))
+                        @method('PUT')
+                    @endif
 
-                        <div class="form-group mb-3">
-                            <label>Kegiatan</label>
-                            @php
-                                use Modules\Boarding\Enums\BoardingEventTypeEnum;
-                                $groupedEvents = $events->groupBy(fn($event) => $event->type->value);
-                            @endphp
+                    {{-- Kegiatan --}}
+                    <x-input-group label="Kegiatan" required>
+                        @php
+                            $groupedEvents = $events->groupBy(fn($event) => $event->type->value);
+                        @endphp
+                        <select name="event_id" id="event-select" class="form-select select-2" required>
+                            <option value="">Pilih Kegiatan</option>
+                            @foreach ($groupedEvents as $typeValue => $group)
+                                @php 
+                                    $enumType = \Modules\Boarding\Enums\BoardingEventTypeEnum::tryFrom((int) $typeValue); 
+                                @endphp
+                                @if ($enumType)
+                                    <optgroup label="{{ $enumType->label() }}">
+                                        @foreach ($group as $value)
+                                            <option data-participant="{{ $value->type_participant }}" value="{{ $value->id }}"
+                                                {{ (isset($editItem) && $editItem->event_id == $value->id) || old('event_id') == $value->id ? 'selected' : '' }}>
+                                                {{ $value->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endif
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="participant_type" id="participant-type-input" value="{{ old('participant_type', $editItem->event->type_participant ?? '') }}">
+                        </x-input-group>
 
-                            <select name="event_id" id="event-select" class="form-select select-2" required>
-                                <option value="">Pilih Kegiatan</option>
-                                @foreach ($groupedEvents as $typeValue => $group)
-                                    @php $enumType = BoardingEventTypeEnum::tryFrom((int) $typeValue); @endphp
-                                    @if ($enumType)
-                                        <optgroup label="{{ $enumType->label() }}">
-                                            @foreach ($group as $value)
-                                                <option data-participant="{{ $value->type_participant }}" value="{{ $value->id }}"
-                                                    {{ isset($editItem) && $editItem->event_id == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name }}
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endif
-                                @endforeach
-                            </select>
-                            <input type="hidden" name="participant_type" id="participant-type-input" value="{{ old('participant_type', $editItem->event->type_participant ?? '') }}">
-
+                        {{-- Siswa --}}
+                        <div id="participant-student-container" style="display:none;">
+                            <x-input-group label="Siswa">
+                                <x-select id="student-select" name="student_id" class="select-2"
+                                    :options="$students->map(fn($s) => ['value' => $s->id, 'label' => $s->user->profile->name])"
+                                    :selected="isset($editItem) ? $editItem->modelable_id : old('student_id')"
+                                    placeholder="Pilih Siswa" 
+                                />
+                            </x-input-group>
                         </div>
 
-                        <div class="form-group mb-3" id="participant-student-container" style="display:none;">
-                            <label>Siswa</label>
-                            <select id="student-select" name="student_id" class="form-select select-2">
-                                <option value="">Pilih Siswa</option>
-                                @foreach ($students as $value)
-                                    <option value="{{ $value->id }}" {{ !empty($editItem) && is_object($editItem) && $editItem->modelable_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->user->profile->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        {{-- Rombel --}}
+                        <div id="participant-rombel-container" style="display:none; width: 100%;">
+                            <x-input-group label="Rombel">
+                                <select id="participant-select" name="academic_id" class="form-select select-2">
+                                    <option value="">Pilih Rombel</option>
+                                </select>
+                            </x-input-group>
                         </div>
 
-                        <div class="form-group mb-3" id="participant-rombel-container" style="display:none;width: 100%;">
-                            <label>Rombel</label>
-                            <select id="participant-select" name="academic_id" class="form-select select-2">
-                                <option value="">Pilih Rombel</option>
-                            </select>
-                        </div>
+                        {{-- Guru Pengampu --}}
+                        <x-input-group label="Guru Pengampu" required>
+                            <x-select name="teacher_id" class="select-2" required
+                                :options="$employeeTeacher->map(fn($t) => ['value' => $t->id, 'label' => $t->user->name])"
+                                :selected="isset($editItem) ? $editItem->teacher_id : old('teacher_id')"
+                                placeholder="Pilih Guru Pengampu"
+                            />
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Guru Pengampu</label>
-                            <select name="teacher_id" class="form-select select-2" required>
-                                <option value="">Pilih Guru Pengampu</option>
-                                @foreach ($employeeTeacher as $value)
-                                    <option value="{{ $value->id }}" {{ !empty($editItem) && is_object($editItem) && $editItem->teacher_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- Guru Pengurus --}}
+                        <x-input-group label="Pengurus" required>
+                            <x-select name="supervisor_id" class="select-2" required
+                                :options="$employeeSupervisor->map(fn($s) => ['value' => $s->id, 'label' => $s->user->name])"
+                                :selected="isset($editItem) ? $editItem->supervisor_id : old('supervisor_id')"
+                                placeholder="Pilih Pengasuh"
+                            />
+                        </x-input-group>
 
-                        <div class="form-group mb-3">
-                            <label>Pengurus</label>
-                            <select name="supervisor_id" class="form-select select-2" required>
-                                <option value="">Pilih Pengasuh</option>
-                                @foreach ($employeeSupervisor as $value)
-                                    <option value="{{ $value->id }}" {{ !empty($editItem) && is_object($editItem) && $editItem->supervisor_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-0">
-                            <button class="btn btn-primary">{{ isset($editItem) ? 'Update' : 'Simpan' }}</button>
+                        <div class="mt-3">
+                            <x-btn type="submit" variant="dark">
+                                {{ isset($editItem) ? 'Update' : 'Simpan' }}
+                            </x-btn>
                         </div>
                     </form>
                 </div>

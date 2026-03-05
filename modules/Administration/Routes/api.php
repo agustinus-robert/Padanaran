@@ -10,6 +10,7 @@ use Modules\Administration\Http\Controllers\API\Facility\RoomAPIController;
 use Modules\Administration\Http\Controllers\API\Facility\BuildingAPIController;
 use Modules\Administration\Http\Controllers\API\Scholar\ClassroomAPIController;
 use Modules\Administration\Http\Controllers\API\Invoice\InvoicesMidtransControllerAPI;
+use Modules\Academic\Models\StudentSemester;
 
 Route::get('/semesters', function () {
     return AcademicSemester::whereNull('deleted_at')
@@ -23,17 +24,8 @@ Route::get('/semesters', function () {
         });
 })->name('semesters');
 
-
 Route::get('/grade_class', function() {
-    $classroomId = request()->query('class_id');
-
     $query = GradeLevel::query();
-
-    if($classroomId == 1){
-        $query->where('grade_id', 4);
-    } else {
-        $query->where('grade_id', 5);
-    }
 
     return $query->get(['id', 'name'])
         ->map(function ($item){
@@ -42,7 +34,8 @@ Route::get('/grade_class', function() {
                 'name' => $item->name
             ];
         });
-})->name('grade_class');
+})->middleware(['web','auth'])->name('grade_class');
+
 
 
 Route::get('/classrooms', function () {
@@ -56,7 +49,7 @@ Route::get('/classrooms', function () {
                 'name' => $item->name
             ];
         });
-})->name('classrooms');
+})->middleware(['web','auth'])->name('classrooms');
 
 
 
@@ -115,6 +108,24 @@ Route::get('/references_category', function () {
         ->values();
 })->middleware(['web','auth'])->name('references_category');
 
+Route::get('/student-list', function(){
+    $classId = request()->query('class_id');
+    $classroomId = request()->query('classroom_id');
+    $smtId = request()->query('semester_id');
+   
+    return StudentSemester::where('batch_id', $batchId)
+        ->select('payment_category')
+        ->get()
+        ->map(function ($ref) {
+            $enum = $ref->payment_category;
+
+            return [
+                'payment_category'       => $enum->value,
+                'payment_category_label' => $enum->label(),
+            ];
+        })
+        ->values();
+})->middleware(['web','auth']);
 
 // api
 
