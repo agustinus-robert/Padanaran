@@ -65,42 +65,45 @@ $columns = [
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="row container-fluid">
-        <div class="col-md-8">
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$contracts"
-                :columns="$columns"
-                title="Daftar Perjanjian Kerja"
-                searchRoute="{{ route('hrms::employment.contracts.index', ['search' => request('search')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah perjanjian kerja aktif</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-5">{{ $contracts_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-                <div><i class="mdi mdi-account-group-outline mdi-48px text-light"></i></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$contracts"
+                    :columns="$columns"
+                    title="Daftar Perjanjian Kerja"
+                    searchRoute="{{ route('hrms::employment.contracts.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                />
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h6>Menu lainnya</h6>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Jumlah perjanjian kerja aktif</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="display-5">{{ $contracts_count }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
+                    </div>
+                    <div><i class="mdi mdi-account-group-outline mdi-48px text-light"></i></div>
                 </div>
 
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        @can('store', Modules\HRMS\Models\EmployeeContract::class)
-                            <a class="list-group-item list-group-item-action" href="{{ route('hrms::employment.contracts.create', ['next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Tambah perjanjian kerja baru</a>
-                        @endcan
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('hrms::employment.contracts.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat perjanjian kerja yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Menu lainnya</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="list-group list-group-flush border-top border-light">
+                            @can('store', Modules\HRMS\Models\EmployeeContract::class)
+                                <a class="list-group-item list-group-item-action" href="{{ route('hrms::employment.contracts.create', ['next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Tambah perjanjian kerja baru</a>
+                            @endcan
+                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('hrms::employment.contracts.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat perjanjian kerja yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        </div>
                     </div>
                 </div>
             </div>

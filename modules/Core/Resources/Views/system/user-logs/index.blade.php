@@ -57,16 +57,18 @@
 @section('body-content')
     @include('components.navbar-admin')
 
-    <x-table
-        :isSearch="false"
-        type="material"
-        :data="$logs"
-        :columns="$columns"
-        title="Daftar Log"
-        searchRoute="{{ route('core::system.user-logs.index', ['search' => request('search')]) }}"
-        :trash="$trashed"
-        :extra="[view('core::system.user-logs.extra-filter')->render()]"
-    />
+    <div class="container-fluid">
+        <x-table
+            :isSearch="false"
+            type="material"
+            :data="$logs"
+            :columns="$columns"
+            title="Daftar Log"
+            searchRoute="{{ route('core::system.user-logs.index', ['search' => request('search')]) }}"
+            :trash="$trashed"
+            :extra="[view('core::system.user-logs.extra-filter')->render()]"
+        />
+    </div>
 @endsection
 
 @push('styles')

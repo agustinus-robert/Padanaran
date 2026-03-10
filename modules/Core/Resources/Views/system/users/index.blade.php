@@ -80,90 +80,93 @@
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="container-fluid row">
-        <div class="col-md-8">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
 
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$users"
-                :columns="$columns"
-                title="Kelola Pengguna"
-                searchRoute="{{ route('core::system.users.index', ['search' => request('search')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah pengguna</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-5">{{ $users_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-                <div><i class="mdi mdi-account-group-outline mdi-48px text-light"></i></div>
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$users"
+                    :columns="$columns"
+                    title="Kelola Pengguna"
+                    searchRoute="{{ route('core::system.users.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                />
             </div>
-            @can('store', Modules\Account\Models\User::class)
+
+            <div class="col-md-4">
                 <div class="card mb-3">
                     <div class="card-header">
-                        <h6>Tambah pengguna baru</h6>
+                        <h6>Jumlah pengguna</h6>
                     </div>
 
                     <div class="card-body">
-                        <form class="form-block" action="{{ route('core::system.users.store', ['next' => url()->full()]) }}" method="post"> @csrf
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Nama lengkap" for="name" />
-                                <x-col size="12">
-                                    <x-input
-                                        type="text"
-                                        name="name"
-                                        :value="old('name')"
-                                        required
-                                        @class(['is-invalid' => $errors->has('name')])
-                                    />
-                                    @error('name')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </x-col>
-                            </x-input-group>
-
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Username" for="username" />
-                                <x-col size="12">
-                                    <x-input
-                                        type="text"
-                                        name="username"
-                                        :value="old('username')"
-                                        required
-                                        @class(['is-invalid' => $errors->has('username')])
-                                    />
-                                    @error('username')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </x-col>
-                            </x-input-group>
-
-                            <x-input-group :isRow="false">
-                                <x-col size="12">
-                                    <x-btn variant="dark">
-                                        <i class="mdi mdi-check"></i> Simpan
-                                    </x-btn>
-                                </x-col>
-                            </x-input-group>
-                        </form>
+                        <div class="display-5">{{ $users_count }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
                     </div>
+                    <div><i class="mdi mdi-account-group-outline mdi-48px text-light"></i></div>
                 </div>
-            @endcan
-            <div class="card">
-                <div class="card-header">
-                    <h6>Menu lainnya</h6>
-                </div>
+                @can('store', Modules\Account\Models\User::class)
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6>Tambah pengguna baru</h6>
+                        </div>
 
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::system.users.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat pengguna yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        <div class="card-body">
+                            <form class="form-block" action="{{ route('core::system.users.store', ['next' => url()->full()]) }}" method="post"> @csrf
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Nama lengkap" for="name" />
+                                    <x-col size="12">
+                                        <x-input
+                                            type="text"
+                                            name="name"
+                                            :value="old('name')"
+                                            required
+                                            @class(['is-invalid' => $errors->has('name')])
+                                        />
+                                        @error('name')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </x-col>
+                                </x-input-group>
+
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Username" for="username" />
+                                    <x-col size="12">
+                                        <x-input
+                                            type="text"
+                                            name="username"
+                                            :value="old('username')"
+                                            required
+                                            @class(['is-invalid' => $errors->has('username')])
+                                        />
+                                        @error('username')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </x-col>
+                                </x-input-group>
+
+                                <x-input-group :isRow="false">
+                                    <x-col size="12">
+                                        <x-btn variant="dark">
+                                            <i class="mdi mdi-check"></i> Simpan
+                                        </x-btn>
+                                    </x-col>
+                                </x-input-group>
+                            </form>
+                        </div>
+                    </div>
+                @endcan
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Menu lainnya</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="list-group list-group-flush border-top border-light">
+                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::system.users.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat pengguna yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        </div>
                     </div>
                 </div>
             </div>

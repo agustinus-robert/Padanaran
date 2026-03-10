@@ -371,7 +371,7 @@
             <div class="content py-0">
                 <div class="row fs-sm">
                     <div class="col-sm-6 order-sm-2 mb-sm-0 text-sm-end mb-1 text-center">
-                        Crafted with <i class="fa fa-heart text-danger"></i> by <a class="fw-semibold" target="_blank">Backend2</a>
+                        Crafted with <i class="fa fa-heart text-danger"></i> by <b><a class="fw-semibold" target="_blank">Backend2</a></b>
                     </div>
                     <div class="col-sm-6 order-sm-1 text-sm-start text-center">
                         <a class="fw-semibold" target="_blank">Point Of Sale</a> &copy; <span data-toggle="year-copy"></span>

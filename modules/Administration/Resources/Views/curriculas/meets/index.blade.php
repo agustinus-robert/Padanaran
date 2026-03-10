@@ -62,74 +62,85 @@
             'useModal' => true,
         ])->render()],
     ];
-    @endphp
+@endphp
+
+@php
+    $extraMenus = [
+        [
+            'label' => 'Tambah Pertemuan',
+            'route' => route('administration::curriculas.meets.create', ['academic' => request('academic', $acsem->id)]),
+            'icon' => 'add_circle',
+            'icon_class' => 'text-success'
+        ],
+        [
+            'label' => 'Kelola Rombel',
+            'route' => route('administration::scholar.classrooms.index', ['academic' => request('academic', $acsem->id)]),
+            'icon' => 'groups',
+            'icon_class' => 'text-primary'
+        ],
+        [
+            'label' => 'Kelola Mapel',
+            'route' => route('administration::curriculas.subjects.index', ['academic' => request('academic', $acsem->id)]),
+            'icon' => 'menu_book',
+            'icon_class' => 'text-info'
+        ],
+        [
+            'label' => 'Data Guru',
+            'route' => route('administration::employees.teachers.index'),
+            'icon' => 'person_pin',
+            'icon_class' => 'text-warning'
+        ],
+        ['divider' => true],
+        [
+            'label' => request('trash') ? 'Data Aktif' : 'Tampilkan Sampah',
+            'route' => route('administration::curriculas.meets.index', ['trash' => request('trash') ? 0 : 1]),
+            'icon' => request('trash') ? 'visibility' : 'delete',
+            'class' => request('trash') ? 'bg-light text-primary font-weight-bold' : 'text-danger'
+        ]
+    ];
+@endphp
+
+
+@push('additional-content')
+    <x-sidebar-card title="Tahun Ajaran" icon="calendar_month" type="form">
+        <form action="{{ route('administration::curriculas.meets.index') }}" method="GET">
+            <div class="d-flex gap-2">
+                <div class="flex-grow-1">
+                    <select name="academic" class="form-select form-select-sm border ps-2" style="font-size: 12px;">
+                        @foreach($acsems as $_acsem)
+                            <option value="{{ $_acsem->id }}" @selected(request('academic', $acsem->id) == $_acsem->id)>
+                                {{ $_acsem->full_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-sm bg-gradient-dark mb-0 px-3">Set</button>
+            </div>
+        </form>
+    </x-sidebar-card>
+
+    <x-sidebar-card title="Lanjutan" icon="settings_input_component" :items="$extraMenus" />
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
-    <div class="row container-fluid">
-        <div class="col-md-8">
-            <x-table
-                type="material"
-                :data="$meets"
-                :columns="$columns"
-                title="Pertemuan"
-                searchRoute="{{ route('administration::curriculas.meets.index', ['academic' => request('academic')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header pb-0 p-3">
-                    <h6 class="text-black">Tahun Ajaran</h6>
-                </div>
-
-                <div class="card-body">
-                    <form class="form-block" action="{{ route('administration::curriculas.meets.index') }}" method="GET">
-                        <x-input-group :isRow="true" required>
-                            <x-col size="9">
-                                <x-select
-                                    name="academic"
-                                    class="form-control"
-                                    :value="request('academic', $acsem->id)"
-                                    :options="$acsems->map(fn($_acsem) => [
-                                        'value' => $_acsem->id,
-                                        'label' => $_acsem->full_name,
-                                    ])"
-                                />
-                            </x-col>
-
-                            <x-col size="2">
-                                <button class="btn bg-gradient-dark">Tetapkan</button>
-                            </x-col>
-                        </x-input-group>
-                    </form>
-                </div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <x-table
+                    type="material"
+                    :data="$meets"
+                    :columns="$columns"
+                    title="Pertemuan"
+                    :createRoute="route('administration::curriculas.meets.create', ['academic' => request('academic', $acsem->id)])"                
+                    searchRoute="{{ route('administration::curriculas.meets.index', ['academic' => request('academic')]) }}"
+                    :trash="$trashed"
+                    :count="$meets_count"
+                    countLabel="Jumlah Pertemuan"
+                />
             </div>
-            <div class="card mb-3">
-                 <div class="card-header pb-0 p-3">
-                    <h6 class="text-black">Jumlah pertemuan</h6>
-                </div>
 
-                <div class="card-body">
-                    <div class="h1 text-muted text-right">
-                        <i class="mdi mdi-account-box-multiple-outline float-right"></i>
-                    </div>
-                    <div class="text-value">{{ $meets_count }}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">Total</small>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="text-black">Lanjutan</h6>
-                </div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::curriculas.meets.create', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-plus-circle-outline"></i> Tambah pertemuan</a>
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.classrooms.index', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-account-group-outline"></i> Kelola rombel</a>
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::curriculas.subjects.index', ['academic' => request('academic', $acsem->id)]) }}"><i class="mdi mdi-book-outline"></i> Kelola mapel</a>
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::employees.teachers.index') }}"><i class="mdi mdi-account-circle-outline"></i> Data guru</a>
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::curriculas.meets.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan pertemuan yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
-                </div>
-            </div>
         </div>
     </div>
 @endsection

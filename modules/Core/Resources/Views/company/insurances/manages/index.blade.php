@@ -54,7 +54,8 @@
 
 @include('components.navbar-admin')
 
-<div class="row container-fluid">
+<div class="container-fluid">
+    <div class="row">
         <div class="col-md-8">
             <x-table
                 :isSearch="true"
@@ -67,6 +68,7 @@
             />
 
         </div>
+
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-header">
@@ -95,4 +97,5 @@
             </div>
         </div>
     </div>
+</div>
 @endsection

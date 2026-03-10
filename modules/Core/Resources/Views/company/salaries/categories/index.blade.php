@@ -57,103 +57,105 @@
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="container-fluid row">
-        <div class="col-md-8">
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$categories"
-                :columns="$columns"
-                title="Daftar Kategori Gaji"
-                searchRoute="{{ route('core::company.salaries.categories.index', ['search' => request('search')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah Kategori Gaji</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-4">{{ $categories->count() }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-                <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$categories"
+                    :columns="$columns"
+                    title="Daftar Kategori Gaji"
+                    searchRoute="{{ route('core::company.salaries.categories.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                />
             </div>
-            @can('store', Modules\Core\Models\CompanySalarySlipCategory::class)
+            <div class="col-md-4">
                 <div class="card mb-3">
                     <div class="card-header">
-                         <h6>Tambah kategori gaji baru</h6>
+                        <h6>Jumlah Kategori Gaji</h6>
                     </div>
 
-                    <div class="card-body border-top">
-                        <form class="form-block" action="{{ route('core::company.salaries.categories.store', ['next' => url()->full()]) }}" method="post"> @csrf
-                            {{-- Index urutan --}}
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Index urutan" />
-                                <x-col size="12">
-                                    <div class="input-group">
-                                        <x-input
-                                            type="number"
-                                            name="az"
-                                            :value="old('az')"
-                                            required
-                                            @class(['is-invalid' => $errors->has('az')])
-                                        />
-                                        <span class="p-2 border text-center" style="width:35px;">#</span>
-                                    </div>
-                                </x-col>
-                            </x-input-group>
-
-                            {{-- Pilih slip --}}
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Pilih slip" />
-                                <x-col size="12">
-                                    <x-select
-                                        name="slip_id"
-                                        :value="old('slip_id')"
-                                        required
-                                        :options="$slips->map(fn($slip) => ['value' => $slip->id, 'label' => $slip->name])"
-                                        placeholder="-- Pilih --"
-                                        @class(['is-invalid' => $errors->has('slip_id')])
-                                    />
-                                </x-col>
-                            </x-input-group>
-
-                            {{-- Nama kategori --}}
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Nama kategori" />
-                                <x-col size="12">
-                                    <x-input
-                                        type="text"
-                                        name="name"
-                                        :value="old('name')"
-                                        required
-                                        @class(['is-invalid' => $errors->has('name')])
-                                    />
-                                </x-col>
-                            </x-input-group>
-
-                            {{-- Button submit --}}
-                            <x-input-group :isRow="false">
-                                <x-col size="12">
-                                    <x-btn type="submit" variant="dark">
-                                        <span class="material-symbols-rounded">check</span> Simpan
-                                    </x-btn>
-                                </x-col>
-                            </x-input-group>
-
-                        </form>
+                    <div class="card-body">
+                        <div class="display-4">{{ $categories->count() }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
                     </div>
+                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
                 </div>
-            @endcan
-            <div class="card">
-                <div class="card-header"><h6>Menu lainnya</h6></div>
+                @can('store', Modules\Core\Models\CompanySalarySlipCategory::class)
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6>Tambah kategori gaji baru</h6>
+                        </div>
 
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.categories.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat slip gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        <div class="card-body border-top">
+                            <form class="form-block" action="{{ route('core::company.salaries.categories.store', ['next' => url()->full()]) }}" method="post"> @csrf
+                                {{-- Index urutan --}}
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Index urutan" />
+                                    <x-col size="12">
+                                        <div class="input-group">
+                                            <x-input
+                                                type="number"
+                                                name="az"
+                                                :value="old('az')"
+                                                required
+                                                @class(['is-invalid' => $errors->has('az')])
+                                            />
+                                            <span class="p-2 border text-center" style="width:35px;">#</span>
+                                        </div>
+                                    </x-col>
+                                </x-input-group>
+
+                                {{-- Pilih slip --}}
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Pilih slip" />
+                                    <x-col size="12">
+                                        <x-select
+                                            name="slip_id"
+                                            :value="old('slip_id')"
+                                            required
+                                            :options="$slips->map(fn($slip) => ['value' => $slip->id, 'label' => $slip->name])"
+                                            placeholder="-- Pilih --"
+                                            @class(['is-invalid' => $errors->has('slip_id')])
+                                        />
+                                    </x-col>
+                                </x-input-group>
+
+                                {{-- Nama kategori --}}
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Nama kategori" />
+                                    <x-col size="12">
+                                        <x-input
+                                            type="text"
+                                            name="name"
+                                            :value="old('name')"
+                                            required
+                                            @class(['is-invalid' => $errors->has('name')])
+                                        />
+                                    </x-col>
+                                </x-input-group>
+
+                                {{-- Button submit --}}
+                                <x-input-group :isRow="false">
+                                    <x-col size="12">
+                                        <x-btn type="submit" variant="dark">
+                                            <span class="material-symbols-rounded">check</span> Simpan
+                                        </x-btn>
+                                    </x-col>
+                                </x-input-group>
+
+                            </form>
+                        </div>
+                    </div>
+                @endcan
+                <div class="card">
+                    <div class="card-header"><h6>Menu lainnya</h6></div>
+
+                    <div class="card-body">
+                        <div class="list-group list-group-flush border-top border-light">
+                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.categories.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat slip gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        </div>
                     </div>
                 </div>
             </div>

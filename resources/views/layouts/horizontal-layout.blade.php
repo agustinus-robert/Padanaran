@@ -89,7 +89,6 @@
         </div>
     @endif
 
-    {{-- Pemanggilan Extra tetap ada jika lo butuh Sidebar Modul bawaan --}}
     @if(config('theme.default') == 'material')
         @include('layouts.component.material-extra')
     @elseif(config('theme.default') == 'skote')

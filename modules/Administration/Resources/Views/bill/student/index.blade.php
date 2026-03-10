@@ -16,131 +16,134 @@
 @endpush
 
 @section('body-content')
-    <div class="row container-fluid align-items-stretch">
-        @include('components.navbar-admin')
+    @include('components.navbar-admin')
 
-        <div class="col-xl-12">
-            @if (session('success'))
-                <div id="flash-success" class="alert alert-success mt-4">
-                    {!! session('success') !!}
-                </div>
-            @endif
+    <div class="container-fluid align-items-stretch">
+        <div class="row">
+            <div class="col-xl-12">
+                @if (session('success'))
+                    <div id="flash-success" class="alert alert-success mt-4">
+                        {!! session('success') !!}
+                    </div>
+                @endif
 
-            @if (request('trash'))
-                <div class="alert alert-warning text-danger mb-0 mt-3">
-                    <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
+                @if (request('trash'))
+                    <div class="alert alert-warning text-danger mb-0 mt-3">
+                        <i class="mdi mdi-alert-circle-outline"></i> Menampilkan data yang dihapus
+                    </div>
+                @endif
+            </div>
+
+        <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex">
+                        <!-- Logo di kiri -->
+                        <div class="me-3 d-flex align-items-start justify-content-center">
+                            <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
+                                person_raised_hand
+                            </span>
+                        </div>
+
+                        <!-- Konten di kanan -->
+                        <div class="d-flex flex-column w-100">
+                            <h5 class="fs-17 mb-2">
+                                <a href="javascript:void(0);" class="text-dark mb-3">
+                                    Semua pembayaran akan didistribusikan bagi semua murid
+
+                                </a>
+                                <p>
+                                    <small class="text-muted fw-normal">
+                                        Jenjang
+                                        {{ auth()->user()->employee->education->name }}
+
+                                    </small>
+                                </p>
+                            </h5>
+
+                            <div class="mt-auto hstack gap-2">
+                                {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Murid</a> --}}
+                                @if(count($semesterStudent) > 0)
+                                    <x-btn href="#applyAll" data-bs-toggle="modal" variant="dark">Kelola</x-btn>
+                                @else
+                                    <p class="text-danger">Belum ada siswa di semester ini</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @endif
-        </div>
-       <div class="col-xl-6 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body d-flex">
-                    <!-- Logo di kiri -->
+            </div>
+
+            <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex">
+
+                        <!-- Logo di kiri -->
                     <div class="me-3 d-flex align-items-start justify-content-center">
-                        <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
-                            person_raised_hand
-                        </span>
-                    </div>
+                            <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
+                                cast_for_education
+                            </span>
+                        </div>
 
-                    <!-- Konten di kanan -->
-                    <div class="d-flex flex-column w-100">
-                        <h5 class="fs-17 mb-2">
-                            <a href="javascript:void(0);" class="text-dark mb-3">
-                                Semua pembayaran akan didistribusikan bagi semua murid
+                        <!-- Konten di kanan -->
+                        <div class="d-flex flex-column w-100">
+                            <h5 class="fs-17 mb-2">
+                                <a href="javascript:void(0);" class="text-dark mb-3">Pembayaran Per Kelas</a>
+                                <p>
+                                    <small class="text-muted fw-normal">
 
-                            </a>
-                            <p>
-                                <small class="text-muted fw-normal">
-                                    Jenjang
-                                    {{ auth()->user()->employee->education->name }}
+                                        Jenjang {{ auth()->user()->employee->education->name }}
+                                        {{-- 0 Jumlah Kelas didistribusikan pembayaran --}}
+                                    </small>
+                                </p>
+                            </h5>
 
-                                </small>
-                            </p>
-                        </h5>
-
-                        <div class="mt-auto hstack gap-2">
-                            {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Murid</a> --}}
-                            @if(count($semesterStudent) > 0)
-                                <x-btn href="#applyAll" data-bs-toggle="modal" variant="dark">Kelola</x-btn>
-                            @else
-                                <p class="text-danger">Belum ada siswa di semester ini</p>
-                            @endif
+                            <div class="mt-auto hstack gap-2">
+                                {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Kelas</a> --}}
+                                @if(count($semesterStudent) > 0)
+                                    <x-btn href="{{ !empty($semesterStudent) ? '#applyClass' : 'javascript:void(0);' }}"
+                                    data-bs-toggle="modal" variant="dark">Kelola</x-btn>
+                                @else
+                                    <p class="text-danger">Belum ada siswa di semester ini</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-6 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body d-flex">
+            <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex">
 
-                    <!-- Logo di kiri -->
-                   <div class="me-3 d-flex align-items-start justify-content-center">
-                        <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
-                            cast_for_education
-                        </span>
-                    </div>
-
-                    <!-- Konten di kanan -->
-                    <div class="d-flex flex-column w-100">
-                        <h5 class="fs-17 mb-2">
-                            <a href="javascript:void(0);" class="text-dark mb-3">Pembayaran Per Kelas</a>
-                            <p>
-                                <small class="text-muted fw-normal">
-
-                                    Jenjang {{ auth()->user()->employee->education->name }}
-                                    {{-- 0 Jumlah Kelas didistribusikan pembayaran --}}
-                                </small>
-                            </p>
-                        </h5>
-
-                        <div class="mt-auto hstack gap-2">
-                            {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Kelas</a> --}}
-                            @if(count($semesterStudent) > 0)
-                                <x-btn href="{{ !empty($semesterStudent) ? '#applyClass' : 'javascript:void(0);' }}"
-                                data-bs-toggle="modal" variant="dark">Kelola</x-btn>
-                            @else
-                                <p class="text-danger">Belum ada siswa di semester ini</p>
-                            @endif
+                        <!-- Logo di kiri -->
+                    <div class="me-3 d-flex align-items-start justify-content-center">
+                            <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
+                                account_circle
+                            </span>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-xl-6 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body d-flex">
+                        <!-- Konten di kanan -->
+                        <div class="d-flex flex-column w-100">
+                            <h5 class="fs-17 mb-2">
+                                <a href="javascript:void(0);" class="text-dark mb-3">Pembayaran Khusus Murid</a>
+                                <p>
+                                    <small class="text-muted fw-normal">
 
-                    <!-- Logo di kiri -->
-                   <div class="me-3 d-flex align-items-start justify-content-center">
-                        <span class="material-symbols-rounded" style="font-size:32px; line-height:1; opacity:0.5;">
-                            account_circle
-                        </span>
-                    </div>
+                                        Jenjang {{ auth()->user()->employee->education->name }}
+                                        {{-- 0 Jumlah Kelas didistribusikan pembayaran --}}
+                                    </small>
+                                </p>
+                            </h5>
 
-                    <!-- Konten di kanan -->
-                    <div class="d-flex flex-column w-100">
-                        <h5 class="fs-17 mb-2">
-                            <a href="javascript:void(0);" class="text-dark mb-3">Pembayaran Khusus Murid</a>
-                            <p>
-                                <small class="text-muted fw-normal">
-
-                                    Jenjang {{ auth()->user()->employee->education->name }}
-                                    {{-- 0 Jumlah Kelas didistribusikan pembayaran --}}
-                                </small>
-                            </p>
-                        </h5>
-
-                        <div class="mt-auto hstack gap-2">
-                            {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Kelas</a> --}}
-                            @if(count($semesterStudent) > 0)
-                                <x-btn href="{{ !empty($semesterStudent) ? '#applyStudent' : 'javascript:void(0);' }}"
-                                data-bs-toggle="modal" variant="dark">Kelola</x-btn>
-                            @else
-                                <p class="text-danger">Belum ada siswa di semester ini</p>
-                            @endif
+                            <div class="mt-auto hstack gap-2">
+                                {{-- <a href="#!" data-bs-toggle="modal" class="btn btn-soft-success w-100">Lihat Kelas</a> --}}
+                                @if(count($semesterStudent) > 0)
+                                    <x-btn href="{{ !empty($semesterStudent) ? '#applyStudent' : 'javascript:void(0);' }}"
+                                    data-bs-toggle="modal" variant="dark">Kelola</x-btn>
+                                @else
+                                    <p class="text-danger">Belum ada siswa di semester ini</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

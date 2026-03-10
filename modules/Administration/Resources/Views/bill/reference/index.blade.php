@@ -149,170 +149,180 @@ $searchDynamic = [
 ];
 @endphp
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => request('trash') ? 'Tampilkan Referensi Aktif' : 'Tampilkan Referensi Terhapus',
+                'route' => route('administration::facility.buildings.index', ['trash' => request('trash', 0) ? 0 : 1]),
+                'icon' => request('trash') ? 'visibility' : 'delete',
+                'class' => request('trash') ? 'bg-light text-primary font-weight-bold' : 'text-danger'
+            ]
+        ];
+    @endphp
+
+    <x-sidebar-card title="Lanjutan" icon="settings" :items="$extraMenus" />
+@endpush
+
 
 @section('body-content')
-    <div class="row container-fluid">
-        @include('components.navbar-admin')
+    @include('components.navbar-admin')
 
-        <div class="col-md-8">
-               <x-table
-                type="material"
-                :data="$bills"
-                :isSearch="false"
-                :columns="$columns"
-                title="Referensi Tagihan"
-                :searchDynamic="$searchDynamic"
-                searchRoute="{{ route('administration::bill.references.index', ['academic' => request('academic')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-4 p-0">
-                <div class="card-header">
-                    <h6>Kelola Referensi Pembayaran</h6>
-                </div>
-                <div class="card-body">
-                    <form class="form-block" action="{{ isset($editBill) ? route('administration::bill.references.update', $editBill->id) : route('administration::bill.references.store') }}" method="POST">
-                        @csrf
-
-                        @if(isset($editBill))
-                            @method('PUT')
-                        @endif
-
-                       {{-- KODE --}}
-                      {{-- KODE --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Kode" />
-                            <x-col size="12">
-                                <x-input
-                                    name="kd"
-                                    value="{{ old('kd', $editBill->kd ?? '') }}"
-                                    autocomplete="off"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-                        {{-- NAMA --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Nama" />
-                            <x-col size="12">
-                                <x-input
-                                    name="name"
-                                    value="{{ old('name', $editBill->name ?? '') }}"
-                                    autocomplete="off"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-                        {{-- GELOMBANG --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Gelombang" />
-                            <x-col size="12">
-                                <x-select
-                                    name="batch_id"
-                                    placeholder="Pilih"
-                                    :value="old('batch_id', $editBill->batch_id ?? null)"
-                                    :options="$academicBatch->map(fn($batch) => [
-                                        'value' => $batch->id,
-                                        'label' =>
-                                            $batch->semesters->academic->name.' '.
-                                            $batch->semesters->name.' - '.
-                                            $batch->name
-                                    ])"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-                        {{-- PAKET PEMBAYARAN --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Paket Pembayaran" />
-                            <x-col size="12">
-                                <x-select
-                                    name="payment_category"
-                                    placeholder="Pilih"
-                                    :value="old('payment_category', $editBill->payment_category->value ?? null)"
-                                    :options="collect(\Modules\Core\Enums\BillReferencesCategoryEnum::cases())
-                                        ->map(fn($p) => [
-                                            'value' => $p->value,
-                                            'label' => $p->label()
-                                        ])"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-                        {{-- SIKLUS PEMBAYARAN --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Siklus Pembayaran" />
-                            <x-col size="12">
-                                <x-select
-                                    name="payment_cycle"
-                                    placeholder="Pilih"
-                                    :value="old('payment_cycle', $editBill->payment_cycle->value ?? null)"
-                                    :options="collect(\Modules\Core\Enums\PaymentCycleEnum::cases())
-                                        ->map(fn($c) => [
-                                            'value' => $c->value,
-                                            'label' => $c->label()
-                                        ])"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-                        {{-- TIPE --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Tipe" />
-                            <x-col size="12">
-                                <x-select
-                                    name="type"
-                                    placeholder="Pilih"
-                                    :value="old('type', $editBill->type->value ?? null)"
-                                    :options="collect(\Modules\Core\Enums\BillCategoryEnum::cases())
-                                        ->map(fn($t) => [
-                                            'value' => $t->value,
-                                            'label' => $t->label()
-                                        ])"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-                        {{-- HARGA --}}
-                        <x-input-group :isRow="true">
-                            <x-label value="Harga" />
-                            <x-col size="12">
-                                <x-input
-                                    type="number"
-                                    name="price"
-                                    value="{{ old('price', $editBill->price ?? '') }}"
-                                    autocomplete="off"
-                                    required
-                                />
-                            </x-col>
-                        </x-input-group>
-
-
-                        <div class="form-group mb-0">
-                            <x-btn variant="success">
-                                {{ isset($editBill) ? 'Update' : 'Simpan' }}
-                            </x-btn>
-                            @if(isset($editBill))
-                                <a href="{{ route('administration::bill.references.index') }}" class="btn btn-secondary">Batal</a>
-                            @endif
-                        </div>
-                    </form>
-
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    type="material"
+                    :data="$bills"
+                    :isSearch="false"
+                    :columns="$columns"
+                    title="Referensi Tagihan"
+                    :searchDynamic="$searchDynamic"
+                    :count="count($bills)"
+                    searchRoute="{{ route('administration::bill.references.index', ['academic' => request('academic')]) }}"
+                    :trash="$trashed"
+                />
             </div>
-            <div class="card mt-2">
-                <div class="card-header">
-                    <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
-                </div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::facility.buildings.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan Referensi Pembayaran yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
+            <div class="col-md-4">
+                <div class="card mb-4 p-0">
+                    <div class="card-header">
+                        <h6>Kelola Referensi Pembayaran</h6>
+                    </div>
+                    <div class="card-body">
+                        <form class="form-block" action="{{ isset($editBill) ? route('administration::bill.references.update', $editBill->id) : route('administration::bill.references.store') }}" method="POST">
+                            @csrf
+
+                            @if(isset($editBill))
+                                @method('PUT')
+                            @endif
+
+                        {{-- KODE --}}
+                        {{-- KODE --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Kode" />
+                                <x-col size="12">
+                                    <x-input
+                                        name="kd"
+                                        value="{{ old('kd', $editBill->kd ?? '') }}"
+                                        autocomplete="off"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- NAMA --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Nama" />
+                                <x-col size="12">
+                                    <x-input
+                                        name="name"
+                                        value="{{ old('name', $editBill->name ?? '') }}"
+                                        autocomplete="off"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- GELOMBANG --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Gelombang" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="batch_id"
+                                        placeholder="Pilih"
+                                        :value="old('batch_id', $editBill->batch_id ?? null)"
+                                        :options="$academicBatch->map(fn($batch) => [
+                                            'value' => $batch->id,
+                                            'label' =>
+                                                $batch->semesters->academic->name.' '.
+                                                $batch->semesters->name.' - '.
+                                                $batch->name
+                                        ])"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- PAKET PEMBAYARAN --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Paket Pembayaran" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="payment_category"
+                                        placeholder="Pilih"
+                                        :value="old('payment_category', $editBill->payment_category->value ?? null)"
+                                        :options="collect(\Modules\Core\Enums\BillReferencesCategoryEnum::cases())
+                                            ->map(fn($p) => [
+                                                'value' => $p->value,
+                                                'label' => $p->label()
+                                            ])"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- SIKLUS PEMBAYARAN --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Siklus Pembayaran" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="payment_cycle"
+                                        placeholder="Pilih"
+                                        :value="old('payment_cycle', $editBill->payment_cycle->value ?? null)"
+                                        :options="collect(\Modules\Core\Enums\PaymentCycleEnum::cases())
+                                            ->map(fn($c) => [
+                                                'value' => $c->value,
+                                                'label' => $c->label()
+                                            ])"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- TIPE --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Tipe" />
+                                <x-col size="12">
+                                    <x-select
+                                        name="type"
+                                        placeholder="Pilih"
+                                        :value="old('type', $editBill->type->value ?? null)"
+                                        :options="collect(\Modules\Core\Enums\BillCategoryEnum::cases())
+                                            ->map(fn($t) => [
+                                                'value' => $t->value,
+                                                'label' => $t->label()
+                                            ])"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+                            {{-- HARGA --}}
+                            <x-input-group :isRow="true">
+                                <x-label value="Harga" />
+                                <x-col size="12">
+                                    <x-input
+                                        type="number"
+                                        name="price"
+                                        value="{{ old('price', $editBill->price ?? '') }}"
+                                        autocomplete="off"
+                                        required
+                                    />
+                                </x-col>
+                            </x-input-group>
+
+
+                            <div class="form-group mb-0">
+                                <x-btn variant="success">
+                                    {{ isset($editBill) ? 'Update' : 'Simpan' }}
+                                </x-btn>
+                                @if(isset($editBill))
+                                    <a href="{{ route('administration::bill.references.index') }}" class="btn btn-secondary">Batal</a>
+                                @endif
+                            </div>
+                        </form>
+
+                    </div>
                 </div>
             </div>
         </div>

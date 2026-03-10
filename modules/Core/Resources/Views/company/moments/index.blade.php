@@ -63,48 +63,51 @@ $columns = [
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="row container-fluid">
-        <div class="col-md-8">
-            <x-table
-                :isSearch="false"
-                type="material"
-                :data="$moments"
-                :columns="$columns"
-                title="Daftar hari libur"
-                searchRoute="{{ route('core::company.moments.index', ['search' => request('search')]) }}"
-                :trash="$trashed"
-                :extra="[view('core::company.moments.extra-filter')->render()]"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah hari libur tahun {{ date('Y') }}</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-5">{{ $moments_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-                <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    :isSearch="false"
+                    type="material"
+                    :data="$moments"
+                    :columns="$columns"
+                    title="Daftar hari libur"
+                    searchRoute="{{ route('core::company.moments.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                    :extra="[view('core::company.moments.extra-filter')->render()]"
+                />
             </div>
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Menu lainnya</h6>
-                </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Jumlah hari libur tahun {{ date('Y') }}</h6>
+                    </div>
 
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        @can('store', Modules\Core\Models\CompanyDepartment::class)
-                            <a class="list-group-item list-group-item-action" href="{{ route('core::company.moments.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat hari libur baru</a>
-                        @endcan
+                    <div class="card-body">
+                        <div class="display-5">{{ $moments_count }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
+                    </div>
+                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Menu lainnya</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="list-group list-group-flush border-top border-light">
+                            @can('store', Modules\Core\Models\CompanyDepartment::class)
+                                <a class="list-group-item list-group-item-action" href="{{ route('core::company.moments.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat hari libur baru</a>
+                            @endcan
+                        </div>
                     </div>
                 </div>
+                <a class="btn btn-outline-primary w-100 text-primary d-flex align-items-center bg-white py-3 text-start" style="cursor: pointer;" href="{{ route('core::company.moments.sync', ['next' => url()->current()]) }}">
+                    <i class="mdi mdi-progress-upload me-3"></i>
+                    <div>Ambil data hari libur <br> <small class="text-muted">Daftar hari libur diambil dari API</small></div>
+                </a>
             </div>
-            <a class="btn btn-outline-primary w-100 text-primary d-flex align-items-center bg-white py-3 text-start" style="cursor: pointer;" href="{{ route('core::company.moments.sync', ['next' => url()->current()]) }}">
-                <i class="mdi mdi-progress-upload me-3"></i>
-                <div>Ambil data hari libur <br> <small class="text-muted">Daftar hari libur diambil dari API</small></div>
-            </a>
         </div>
     </div>
 @endsection

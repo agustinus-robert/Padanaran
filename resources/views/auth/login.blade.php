@@ -138,7 +138,7 @@
                                     <p class="mb-0">©
                                         <script>
                                             document.write(new Date().getFullYear())
-                                        </script> Manajemen Terintegrasi. Made with <i class="mdi mdi-heart text-danger"></i> DigiPemad
+                                        </script> Manajemen Terintegrasi. By <b>Backend2</b>
                                     </p>
                                 </div>
                             </div>

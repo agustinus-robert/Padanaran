@@ -75,42 +75,44 @@ $columns = [
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="row container-fluid">
-        <div class="col-md-8">
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$categories"
-                :columns="$columns"
-                title="Daftar Kategori Insentif"
-                searchRoute="{{ route('core::company.services.outwork-categories.index', ['search' => request('search')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah Kategori</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-4">{{ $categories_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-                <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$categories"
+                    :columns="$columns"
+                    title="Daftar Kategori Insentif"
+                    searchRoute="{{ route('core::company.services.outwork-categories.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                />
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <h6>Menu lainnya</h6>
-                </div>
 
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        @can('store', Modules\Core\Models\CompanyOutworkCategory::class)
-                            <a class="list-group-item list-group-item-action" href="{{ route('core::company.services.outwork-categories.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat kategori baru</a>
-                        @endcan
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.services.outwork-categories.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat kategori yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Jumlah Kategori</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="display-4">{{ $categories_count }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
+                    </div>
+                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Menu lainnya</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="list-group list-group-flush border-top border-light">
+                            @can('store', Modules\Core\Models\CompanyOutworkCategory::class)
+                                <a class="list-group-item list-group-item-action" href="{{ route('core::company.services.outwork-categories.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat kategori baru</a>
+                            @endcan
+                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.services.outwork-categories.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat kategori yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        </div>
                     </div>
                 </div>
             </div>

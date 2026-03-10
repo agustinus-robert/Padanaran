@@ -49,112 +49,110 @@ $columns = [
 @endphp
 
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => request('trash') ? 'Tampilkan Kurikulum Aktif' : 'Tampilkan Kurikulum Terhapus',
+                'route' => route('administration::database.curriculas.index', ['trash' => request('trash', 0) ? 0 : 1]),
+                'icon' => request('trash') ? 'visibility' : 'delete',
+                'class' => request('trash') ? 'bg-light text-primary font-weight-bold' : 'text-danger'
+            ]
+        ];
+    @endphp
+
+    <x-sidebar-card title="Lanjutan" icon="settings" :items="$extraMenus" />
+@endpush
+
 @section('body-content')
-	<div class="row container-fluid">
-        @include('components.navbar-admin')
+    @include('components.navbar-admin')
 
-		<div class="col-md-8">
-             <x-table
-                type="material"
-                :data="$curriculas"
-                :columns="$columns"
-                title="Kurikulum"
-                searchRoute="{{ route('administration::database.curriculas.index', ['academic' => request('academic')]) }}"
-                :trash="$trashed"
-            />
-		</div>
-		<div class="col-md-4">
-			<div class="card mb-3">
-                <div class="card-header pb-0 p-3">
-                    <h6 class="text-black">Jumlah tahun akademik</h6>
-                </div>
+	<div class="container-fluid">
+        <div class="row">
 
-				<div class="card-body">
-					<div class="h1 text-muted text-right">
-						<i class="mdi mdi-account-box-multiple-outline float-right"></i>
-					</div>
-					<div class="text-value">{{ $curriculas_count }}</div>
-					<small class="text-muted text-uppercase font-weight-bold">Total</small>
-				</div>
-			</div>
-			<div class="card mb-3">
-                <div class="card-header pb-0 p-3">
-                    <h6 class="text-black">Tambah tahun akademik</h6>
-                </div>
+            <div class="col-md-8">
+                <x-table
+                    type="material"
+                    :data="$curriculas"
+                    :columns="$columns"
+                    title="Kurikulum"
+                    :count="$curriculas_count"
+                    searchRoute="{{ route('administration::database.curriculas.index', ['academic' => request('academic')]) }}"
+                    :trash="$trashed"
+                />
+            </div>
 
-				<div class="card-body">
-					<form class="form-block" action="{{ route('administration::database.curriculas.store') }}" method="POST"> @csrf
-						<x-input-group :isRow="true">
-                            <x-label value="Nama Kurikulum" />
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header pb-0 p-3">
+                        <h6 class="text-black">Tambah tahun akademik</h6>
+                    </div>
 
-                            <x-col size="12">
-                                <x-input
-                                    name="name"
-                                    value="{{ old('name') }}"
-                                    required
-                                    autocomplete="off"
-                                    :class="$errors->has('name') ? 'is-invalid' : ''"
-                                />
-                            </x-col>
-                            @error('name')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </x-input-group>
+                    <div class="card-body">
+                        <form class="form-block" action="{{ route('administration::database.curriculas.store') }}" method="POST"> @csrf
+                            <x-input-group :isRow="true">
+                                <x-label value="Nama Kurikulum" />
 
-						<div class="row">
-							<div class="col-sm-6 mb-2">
-								<x-input-group :isRow="true" :isForm="true">
-                                    <x-label value="Kode Kurikulum" />
+                                <x-col size="12">
                                     <x-input
-                                    name="kd"
-                                    value="{{ old('kd') }}"
-                                    required
-                                    autocomplete="off"
-                                    :class="$errors->has('kd') ? 'is-invalid' : ''"
-                                />
-                                    @error('kd')
-                                        <small class="text-danger"> {{ $message }} </small>
-                                    @enderror
-                                </x-input-group>
-							</div>
-							<div class="col-sm-6 mb-3">
-								<x-input-group :isRow="true" :isForm="true">
-                                    <x-label value="Tahun" />
-                                    <x-input
-                                    type="number"
-                                    name="year"
-                                    value="{{ old('year') }}"
-                                    required
-                                    autocomplete="off"
-                                    :class="$errors->has('year') ? 'is-invalid' : ''"
-                                />
+                                        name="name"
+                                        value="{{ old('name') }}"
+                                        required
+                                        autocomplete="off"
+                                        :class="$errors->has('name') ? 'is-invalid' : ''"
+                                    />
+                                </x-col>
+                                @error('name')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </x-input-group>
 
-									{{-- <input type="number" class="form-control @error('year') is-invalid @enderror" name="year" value="{{ old('year') }}" required autocomplete="off"> --}}
-									@error('year')
-										<small class="text-danger"> {{ $message }} </small>
-									@enderror
-                                </x-input-group>
-							</div>
-						</div>
+                            <div class="row">
+                                <div class="col-sm-6 mb-2">
+                                    <x-input-group :isRow="true" :isForm="true">
+                                        <x-label value="Kode Kurikulum" />
+                                        <x-input
+                                        name="kd"
+                                        value="{{ old('kd') }}"
+                                        required
+                                        autocomplete="off"
+                                        :class="$errors->has('kd') ? 'is-invalid' : ''"
+                                    />
+                                        @error('kd')
+                                            <small class="text-danger"> {{ $message }} </small>
+                                        @enderror
+                                    </x-input-group>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <x-input-group :isRow="true" :isForm="true">
+                                        <x-label value="Tahun" />
+                                        <x-input
+                                        type="number"
+                                        name="year"
+                                        value="{{ old('year') }}"
+                                        required
+                                        autocomplete="off"
+                                        :class="$errors->has('year') ? 'is-invalid' : ''"
+                                    />
+
+                                        {{-- <input type="number" class="form-control @error('year') is-invalid @enderror" name="year" value="{{ old('year') }}" required autocomplete="off"> --}}
+                                        @error('year')
+                                            <small class="text-danger"> {{ $message }} </small>
+                                        @enderror
+                                    </x-input-group>
+                                </div>
+                            </div>
 
 
-                        <x-input-group class="mb-0">
-                            <x-btn type="submit" class="mt-2" variant="success">
-                                Simpan
-                            </x-btn>
-                        </x-input-group>
-					</form>
-				</div>
-			</div>
-			<div class="card">
-                <div class="card-header pb-0 p-3">
-                    <h6 class="text-black">Lanjutan</h6>
+                            <x-input-group class="mb-0">
+                                <x-btn type="submit" class="mt-2" variant="success">
+                                    Simpan
+                                </x-btn>
+                            </x-input-group>
+                        </form>
+                    </div>
                 </div>
-
-				<div class="list-group list-group-flush">
-					<a class="list-group-item list-group-item-action text-black" href="{{ route('administration::database.curriculas.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan tahun akademik yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
-				</div>
-			</div>
-		</div>
+            </div>
+        </div>
 	</div>
 @endsection

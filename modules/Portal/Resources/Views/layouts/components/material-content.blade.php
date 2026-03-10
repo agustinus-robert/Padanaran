@@ -304,8 +304,8 @@
             © <script>
                 document.write(new Date().getFullYear())
             </script>,
-            made with <i class="fa fa-heart"></i> by
-            <a href="javascript:void(0)" class="font-weight-bold" target="_blank">Digipemad</a>
+            made by
+            <a href="javascript:void(0)" class="font-weight-bold" target="_blank">Backend2</a>
             for a better web.
             </div>
         </div>

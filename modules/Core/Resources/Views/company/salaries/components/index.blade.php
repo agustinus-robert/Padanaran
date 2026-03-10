@@ -65,138 +65,141 @@
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="container-fluid row">
-        <div class="col-md-8">
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$components"
-                :columns="$columns"
-                title="Daftar Komponen Gaji"
-                searchRoute="{{ route('core::company.salaries.components.index', ['search' => request('search')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah komponen gaji</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-4">{{ $components_count }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-
-                <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$components"
+                    :columns="$columns"
+                    title="Daftar Komponen Gaji"
+                    searchRoute="{{ route('core::company.salaries.components.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                />
             </div>
-            @can('store', Modules\Core\Models\CompanySalarySlipComponent::class)
+
+            <div class="col-md-4">
                 <div class="card mb-3">
                     <div class="card-header">
-                        <h6>Tambah komponen gaji baru</h6>
+                        <h6>Jumlah komponen gaji</h6>
                     </div>
-                    <div class="card-body border-top">
-                        <form class="form-block" action="{{ route('core::company.salaries.components.store', ['next' => url()->full()]) }}" method="post"> @csrf
-                           @php
-                                // Slips tetap array atau collection
-                                $slips = collect($slips);
 
-                                $categoryOptions = $slips->map(fn($slip) => [
-                                    'label' => $slip->name,
-                                    'children' => collect($slip->categories ?? [])->map(fn($cat) => [
-                                        'value' => $cat->id,
-                                        'label' => $cat->name,
-                                    ])->toArray(),
-                                ])->toArray();
-
-                                // Units enum/object
-                                $unitOptions = collect($units)->map(fn($unit) => [
-                                    'value' => $unit->value,   // akses property enum
-                                    'label' => $unit->label() . ' (' . implode(' ', array_filter([$unit->prefix(), $unit->suffix()])) . ')'
-                                ])->toArray();
-
-                                // Operates enum/object
-                                $operateOptions = collect($operates)->map(fn($op) => [
-                                    'value' => $op->value,
-                                    'label' => $op->label()
-                                ])->toArray();
-                            @endphp
-
-
-
-                            {{-- Kategori --}}
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Kategori" />
-                                <x-col size="12">
-                                    <x-select
-                                        name="ctg_id"
-                                        :options="$categoryOptions"
-                                        placeholder="-- Pilih --"
-                                        required
-                                        @class(['is-invalid' => $errors->has('ctg_id')])
-                                    />
-                                </x-col>
-                            </x-input-group>
-
-                            {{-- Satuan --}}
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Satuan" />
-                                <x-col size="12">
-                                    <x-select
-                                        name="unit"
-                                        :options="$unitOptions"
-                                        placeholder="-- Pilih --"
-                                        required
-                                        @class(['is-invalid' => $errors->has('unit')])
-                                    />
-                                </x-col>
-                            </x-input-group>
-
-                            {{-- Jenis operasi --}}
-                            <x-input-group :isRow="true">
-                                <x-label value="Jenis operasi" />
-                                <x-col size="12">
-                                    <x-select
-                                        name="operate"
-                                        :options="$operateOptions"
-                                        placeholder="-- Pilih --"
-                                        @class(['is-invalid' => $errors->has('operate')])
-                                    />
-                                </x-col>
-                            </x-input-group>
-
-                            {{-- Nama komponen --}}
-                            <x-input-group :isRow="true" required>
-                                <x-label value="Nama komponen" />
-                                <x-col size="12">
-                                    <x-input
-                                        type="text"
-                                        name="name"
-                                        :value="old('name')"
-                                        required
-                                        @class(['is-invalid' => $errors->has('name')])
-                                    />
-                                </x-col>
-                            </x-input-group>
-
-
-                            <div>
-                                <x-btn class="mt-3" type="submit" variant="dark">
-                                        <span class="material-symbols-rounded">check</span> Simpan
-                                </x-btn>
-                            </div>
-                        </form>
+                    <div class="card-body">
+                        <div class="display-4">{{ $components_count }}</div>
+                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
                     </div>
-                </div>
-            @endcan
-            <div class="card">
-                <div class="card-header">
-                    <h6>Menu lainnya</h6>
-                </div>
 
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.components.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat komponen gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
+                </div>
+                @can('store', Modules\Core\Models\CompanySalarySlipComponent::class)
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6>Tambah komponen gaji baru</h6>
+                        </div>
+                        <div class="card-body border-top">
+                            <form class="form-block" action="{{ route('core::company.salaries.components.store', ['next' => url()->full()]) }}" method="post"> @csrf
+                            @php
+                                    // Slips tetap array atau collection
+                                    $slips = collect($slips);
+
+                                    $categoryOptions = $slips->map(fn($slip) => [
+                                        'label' => $slip->name,
+                                        'children' => collect($slip->categories ?? [])->map(fn($cat) => [
+                                            'value' => $cat->id,
+                                            'label' => $cat->name,
+                                        ])->toArray(),
+                                    ])->toArray();
+
+                                    // Units enum/object
+                                    $unitOptions = collect($units)->map(fn($unit) => [
+                                        'value' => $unit->value,   // akses property enum
+                                        'label' => $unit->label() . ' (' . implode(' ', array_filter([$unit->prefix(), $unit->suffix()])) . ')'
+                                    ])->toArray();
+
+                                    // Operates enum/object
+                                    $operateOptions = collect($operates)->map(fn($op) => [
+                                        'value' => $op->value,
+                                        'label' => $op->label()
+                                    ])->toArray();
+                                @endphp
+
+
+
+                                {{-- Kategori --}}
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Kategori" />
+                                    <x-col size="12">
+                                        <x-select
+                                            name="ctg_id"
+                                            :options="$categoryOptions"
+                                            placeholder="-- Pilih --"
+                                            required
+                                            @class(['is-invalid' => $errors->has('ctg_id')])
+                                        />
+                                    </x-col>
+                                </x-input-group>
+
+                                {{-- Satuan --}}
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Satuan" />
+                                    <x-col size="12">
+                                        <x-select
+                                            name="unit"
+                                            :options="$unitOptions"
+                                            placeholder="-- Pilih --"
+                                            required
+                                            @class(['is-invalid' => $errors->has('unit')])
+                                        />
+                                    </x-col>
+                                </x-input-group>
+
+                                {{-- Jenis operasi --}}
+                                <x-input-group :isRow="true">
+                                    <x-label value="Jenis operasi" />
+                                    <x-col size="12">
+                                        <x-select
+                                            name="operate"
+                                            :options="$operateOptions"
+                                            placeholder="-- Pilih --"
+                                            @class(['is-invalid' => $errors->has('operate')])
+                                        />
+                                    </x-col>
+                                </x-input-group>
+
+                                {{-- Nama komponen --}}
+                                <x-input-group :isRow="true" required>
+                                    <x-label value="Nama komponen" />
+                                    <x-col size="12">
+                                        <x-input
+                                            type="text"
+                                            name="name"
+                                            :value="old('name')"
+                                            required
+                                            @class(['is-invalid' => $errors->has('name')])
+                                        />
+                                    </x-col>
+                                </x-input-group>
+
+
+                                <div>
+                                    <x-btn class="mt-3" type="submit" variant="dark">
+                                            <span class="material-symbols-rounded">check</span> Simpan
+                                    </x-btn>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @endcan
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Menu lainnya</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="list-group list-group-flush border-top border-light">
+                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.components.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat komponen gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
+                        </div>
                     </div>
                 </div>
             </div>

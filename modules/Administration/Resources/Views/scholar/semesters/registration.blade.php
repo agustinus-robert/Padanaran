@@ -14,11 +14,34 @@
 @include('administration::layouts.includes.navbar-administration')
 @endpush
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => 'Data Siswa',
+                'route' => route('administration::scholar.students.index'),
+                'icon' => 'badge',
+                'icon_class' => 'text-primary'
+            ],
+            [
+                'label' => 'Registrasi Semester',
+                'route' => route('administration::scholar.semesters.index'),
+                'icon' => 'how_to_reg',
+                'icon_class' => 'text-success'
+            ],
+        ];
+    @endphp
+
+    <x-sidebar-card title="Lanjutan" icon="settings_input_component" :items="$extraMenus" />
+@endpush
+
 @section('body-content')
-<div class="row container-fluid">
-    @include('components.navbar-admin')
-    <div class="row">
-        <div class="col-md-8">
+
+@include('components.navbar-admin')
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
             <div class="card mb-4">
                 <x-card-header type="{{ config('theme.default') }}">
                     Registrasi Baru
@@ -100,18 +123,6 @@
                             <a class="btn btn-secondary" href="{{ request('next', route('administration::scholar.semesters.index')) }}"> Kembali</a>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header pb-0 p-3">
-                    <h6 class="text-black">Lanjutan</h6>
-                </div>
-
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.students.index') }}"><i class="mdi mdi-account-group-outline"></i> Data siswa</a>
-                    <a class="list-group-item list-group-item-action text-black" href="{{ route('administration::scholar.semesters.index') }}"><i class="mdi mdi-account-group-outline"></i> Registrasi semester</a>
                 </div>
             </div>
         </div>

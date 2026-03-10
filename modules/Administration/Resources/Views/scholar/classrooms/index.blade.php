@@ -36,78 +36,70 @@ $columns = [
 ];
 @endphp
 
-@section('body-content')
-<div class="row container-fluid">
-    @include('components.navbar-admin')
+@php
+    $extraMenus = [
+        [
+            'label' => 'Kelola Jurusan',
+            'route' => route('administration::scholar.majors.index', ['academic' => $acsem->id]),
+            'icon' => 'category',
+            'icon_class' => 'text-info'
+        ],
+        [
+            'label' => 'Kelola Unggulan',
+            'route' => route('administration::scholar.superiors.index', ['academic' => $acsem->id]),
+            'icon' => 'star_outline',
+            'icon_class' => 'text-warning'
+        ],
+        ['divider' => true],
+        [
+            'label' => request('trash') ? 'Data Aktif' : 'Tampilkan Sampah',
+            'route' => route('administration::scholar.classrooms.index', ['trash' => request('trash') ? 0 : 1]),
+            'icon' => request('trash') ? 'visibility' : 'delete',
+            'class' => request('trash') ? 'bg-light text-primary font-weight-bold' : 'text-danger'
+        ]
+    ];
+@endphp
 
-    <div class="col-md-8">
-        <x-table
-            type="material"
-            :data="$classrooms"
-            :columns="$columns"
-            title="Rombel"
-            searchRoute="{{ route('administration::scholar.classrooms.index', ['academic' => request('academic')]) }}"
-            :trash="$trashed"
-        />
-    </div>
-
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-header pb-0 p-3">
-                <h6 class="text-black">Tahun Ajaran</h6>
-            </div>
-
-            <div class="card-body">
-                <form action="{{ route('administration::scholar.classrooms.index') }}" method="GET">
-                    <div class="form-group mb-0">
-                        <div class="input-group">
-                            <select name="academic" class="form-control">
-                                @foreach($acsems as $_acsem)
-                                    <option value="{{ $_acsem->id }}" @selected(request('academic',$acsem->id)==$_acsem->id)>
-                                        {{ $_acsem->full_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="input-group-append">
-                                <button class="btn bg-gradient-dark">Tetapkan</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="card mb-3">
-            <div class="card-header pb-0 p-3">
-                <h6 class="text-black">Jumlah Rombel</h6>
-            </div>
-            <div class="card-body">
-                <div class="h1 text-muted text-right">
-                    <i class="mdi mdi-account-box-multiple-outline float-right"></i>
+@push('additional-content')
+   <x-sidebar-card title="Tahun Ajaran" icon="calendar_month" type="form">
+        <form action="{{ route('administration::scholar.classrooms.index') }}" method="GET">
+            <div class="d-flex gap-2">
+                <div class="flex-grow-1">
+                    <select name="academic" class="form-select form-select-sm border ps-2" style="font-size: 12px;">
+                        @foreach($acsems as $_acsem)
+                            <option value="{{ $_acsem->id }}" @selected(request('academic', $acsem->id) == $_acsem->id)>
+                                {{ $_acsem->full_name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="text-value">{{ $classrooms_count }}</div>
-                <small class="text-muted text-uppercase font-weight-bold">Total</small>
+                <button type="submit" class="btn btn-sm bg-gradient-dark mb-0 px-3">Set</button>
             </div>
-        </div>
+        </form>
+    </x-sidebar-card>
 
-        <div class="card">
-            <div class="card-header pb-0 p-3">
-                <h6 class="text-black">Lanjutan</h6>
-            </div>
-            <div class="list-group list-group-flush">
-                <a class="list-group-item text-black" href="{{ route('administration::scholar.classrooms.create', ['academic'=>$acsem->id]) }}">
-                    <i class="mdi mdi-plus-circle-outline"></i> Tambah rombel
-                </a>
-                <a class="list-group-item text-black" href="{{ route('administration::scholar.majors.index', ['academic'=>$acsem->id]) }}">
-                    <i class="mdi mdi-folder-settings-variant-outline"></i> Kelola jurusan
-                </a>
-                <a class="list-group-item text-black" href="{{ route('administration::scholar.superiors.index', ['academic'=>$acsem->id]) }}">
-                    <i class="mdi mdi-file-settings-variant-outline"></i> Kelola unggulan
-                </a>
-                <a class="list-group-item text-black" href="{{ route('administration::scholar.classrooms.index', ['trash'=>request('trash',0)?null:1]) }}">
-                    <i class="mdi mdi-delete-outline"></i> Tampilkan rombel yang {{ request('trash',0)?'tidak':'' }} dihapus
-                </a>
-            </div>
+    <x-sidebar-card title="Lanjutan" icon="settings_input_component" :items="$extraMenus" />
+@endpush
+
+@section('body-content')
+
+@include('components.navbar-admin')
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-12">
+            <x-table
+                type="material"
+                :data="$classrooms"
+                :columns="$columns"
+                title="Rombel"
+                :createRoute="route('administration::scholar.classrooms.create', ['academic' => $acsem->id])"                
+                searchRoute="{{ route('administration::scholar.classrooms.index', ['academic' => request('academic')]) }}"
+                :trash="$trashed"
+                :count="$classrooms_count"
+                countLabel="Jumlah Rombel"
+            />
         </div>
     </div>
 </div>
