@@ -43,56 +43,44 @@
     ];
 @endphp
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => request('trash') ? 'Tampilkan setting aktif' : 'Tampilkan setting dihapus',
+                'route' => route('core::company.salaries.configs.index', ['next' => url()->current(), 'trash' => !request('trash')]),
+                'icon' => request('trash') ? 'visibility' : 'delete',
+                'class' => request('trash') ? 'text-primary font-weight-bold' : 'text-danger'
+            ]
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Menu Lainnya" 
+        icon="tune" 
+        :items="$extraMenus" 
+    />
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <x-table
                     :isSearch="true"
                     type="material"
                     :data="$settings"
                     :columns="$columns"
                     title="Pengaturan Selip Gaji"
+                    :createCan="['store', Modules\Core\Models\CompanyPayrollSetting::class]"
+                    createRoute="{{ route('core::company.salaries.configs.create', ['next' => url()->current()]) }}"
                     searchRoute="{{ route('core::company.salaries.configs.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$setting_count"
+                    countLabel="Jumlah selip Gaji"
                 />
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>
-                            Jumlah Pengaturan
-                        </h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="display-4">{{ $setting_count }}</div>
-                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                    </div>
-                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>
-                            Menu lainnya
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush border-top border-light">
-                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.configs.index', ['next' => url()->current(), 'trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can"></i> Tampilkan setting {{ request('trash') ? 'tidak' : '' }} dihapus!</a>
-                        </div>
-                    </div>
-                </div>
-
-                @can('store', Modules\Core\Models\CompanyPayrollSetting::class)
-                    <a class="btn btn-outline-primary w-100 text-primary d-flex align-items-center bg-white py-3 text-start" style="cursor: pointer;" href="{{ route('core::company.salaries.configs.create', ['next' => url()->current()]) }}">
-                        <i class="mdi mdi-plus-outline me-3"></i>
-                        <div>Tambah pengaturan <br> <small class="text-muted">Klik di sini untuk menambah pengaturan!</small></div>
-                    </a>
-                @endcan
             </div>
         </div>
     </div>

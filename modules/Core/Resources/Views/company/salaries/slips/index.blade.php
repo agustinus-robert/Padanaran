@@ -45,6 +45,25 @@
 
 @endphp
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => request('trash') ? 'Lihat slip gaji aktif' : 'Lihat slip gaji dihapus',
+                'route' => route('core::company.salaries.slips.index', ['trash' => !request('trash')]),
+                'icon' => request('trash') ? 'visibility' : 'delete',
+                'class' => request('trash') ? 'text-primary font-weight-bold' : 'text-danger'
+            ]
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Menu Lainnya" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
+
 @section('body-content')
     @include('components.navbar-admin')
 
@@ -59,20 +78,11 @@
                     title="Daftar Slip Gaji"
                     searchRoute="{{ route('core::company.salaries.slips.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$slips_count"
+                    countLabel="Jumlah Selip Gaji"
                 />
             </div>
             <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah slip gaji</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="display-5">{{ $slips_count }}</div>
-                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                    </div>
-                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
-                </div>
                 @can('store', Modules\Core\Models\CompanySalary::class)
                     <div class="card mb-3">
                         <div class="card-header">
@@ -123,17 +133,6 @@
                         </div>
                     </div>
                 @endcan
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Menu lainnya</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="list-group list-group-flush border-top border-light">
-                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::company.salaries.slips.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat slip gaji yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

@@ -76,6 +76,24 @@
     ];
 @endphp
 
+@php
+    $extraMenus = [
+        [
+            'label' => request('trash') ? 'Lihat pengguna aktif' : 'Lihat pengguna dihapus',
+            'route' => route('core::system.users.index', ['trash' => !request('trash')]),
+            'icon' => request('trash') ? 'visibility' : 'delete',
+            'class' => request('trash') ? 'text-primary font-weight-bold' : 'text-danger'
+        ]
+    ];
+@endphp
+
+@push('additional-content')
+    <x-sidebar-card 
+        title="Menu Lainnya" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
@@ -92,21 +110,12 @@
                     title="Kelola Pengguna"
                     searchRoute="{{ route('core::system.users.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$users_count"
+                    countLabel="Jumlah Pengguna"
                 />
             </div>
 
             <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah pengguna</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="display-5">{{ $users_count }}</div>
-                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                    </div>
-                    <div><i class="mdi mdi-account-group-outline mdi-48px text-light"></i></div>
-                </div>
                 @can('store', Modules\Account\Models\User::class)
                     <div class="card mb-3">
                         <div class="card-header">
@@ -158,17 +167,6 @@
                         </div>
                     </div>
                 @endcan
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Menu lainnya</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="list-group list-group-flush border-top border-light">
-                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('core::system.users.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat pengguna yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

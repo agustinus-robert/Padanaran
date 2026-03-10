@@ -50,51 +50,46 @@
 
 @endphp
 
+@push('additional-content')
+    @php
+        $extraMenus = [];
+
+        $extraMenus[] = [
+            'label' => request('trash') ? 'Lihat item aktif' : 'Lihat item dihapus',
+            'route' => route('core::company.insurances.manages.index', ['trash' => !request('trash')]),
+            'icon' => request('trash') ? 'visibility' : 'delete',
+            'class' => (request('trash') ? 'text-primary font-weight-bold' : 'text-danger') . ' disabled' 
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Menu Lainnya" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
+
 @section('body-content')
 
 @include('components.navbar-admin')
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <x-table
                 :isSearch="true"
                 type="material"
                 :data="$insurances"
                 :columns="$columns"
+                :createCan="['store', Modules\Core\Models\CompanyBuilding::class]"
+                createRoute="{{ route('core::company.insurances.manages.create', ['next' => url()->current()]) }}"
                 title="Daftar Asuransi"
                 searchRoute="{{ route('core::company.insurances.manages.index', ['search' => request('search')]) }}"
                 :trash="$trashed"
+                :count="$insurances->count()"
+                countLabel="Jumlah Asuransi"
             />
 
-        </div>
-
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Jumlah Asuransi</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="display-5">{{ $insurances->count() }}</div>
-                    <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                </div>
-                <div><i class="mdi mdi-bank mdi-48px text-light"></i></div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    Menu lainnya
-                </div>
-
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top border-light">
-                        @can('store', Modules\Core\Models\CompanyBuilding::class)
-                            <a class="list-group-item list-group-item-action disabled" href="{{ route('core::company.insurances.manages.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Tambah baru</a>
-                        @endcan
-                        <a class="list-group-item list-group-item-action text-danger disabled" href="{{ route('core::company.insurances.manages.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat item yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

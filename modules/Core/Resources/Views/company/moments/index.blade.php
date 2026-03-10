@@ -59,54 +59,77 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    @php
+        $extraMenus = [];
+
+        if (auth()->user()->can('store', Modules\Core\Models\CompanyDepartment::class)) {
+            $extraMenus[] = [
+                'label' => 'Buat hari libur baru',
+                'route' => route('core::company.moments.create', ['next' => url()->current()]),
+                'icon' => 'add_circle',
+                'class' => 'text-dark'
+            ];
+        }
+    @endphp
+
+    <x-sidebar-card 
+        title="Menu Lainnya" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+
+    <a class="card border-0 shadow-sm bg-white mb-4 text-decoration-none transition-all" 
+    href="{{ route('core::company.moments.sync', ['next' => url()->current()]) }}"
+    style="border-radius: 12px; transition: all 0.3s ease;">
+        <div class="card-body p-3 d-flex align-items-center">
+            <div class="icon-shape bg-gradient-light shadow-sm rounded-3 d-flex align-items-center justify-content-center me-3" 
+                style="width: 48px; height: 48px; background-color: #f8f9fa;">
+                <span class="material-symbols-rounded text-primary" style="font-size: 1.8rem;">sync_saved_locally</span>
+            </div>
+            
+            <div class="flex-grow-1">
+                <h6 class="mb-0 text-dark font-weight-bold" style="letter-spacing: -0.02rem;">Ambil Data Hari Libur</h6>
+                <p class="mb-0 text-muted text-xs">Sinkronisasi otomatis via API</p>
+            </div>
+
+            <div class="text-secondary opacity-5">
+                <span class="material-symbols-rounded">chevron_right</span>
+            </div>
+        </div>
+    </a>
+
+    <style>
+        .transition-all:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            background-color: #fcfcfc !important;
+        }
+        .transition-all:hover .text-primary {
+            transform: rotate(180deg);
+            transition: transform 0.5s ease;
+        }
+    </style>
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <x-table
                     :isSearch="false"
                     type="material"
                     :data="$moments"
                     :columns="$columns"
                     title="Daftar hari libur"
-                    searchRoute="{{ route('core::company.moments.index', ['search' => request('search')]) }}"
+                    {{-- searchRoute="{{ route('core::company.moments.index', ['search' => request('search')]) }}" --}}
                     :trash="$trashed"
-                    :extra="[view('core::company.moments.extra-filter')->render()]"
+                    {{-- :extra="[view('core::company.moments.extra-filter')->render()]" --}}
+                    :count="$moments_count"
+                    countLabel="Jumlah Hari Libur"
                 />
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah hari libur tahun {{ date('Y') }}</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="display-5">{{ $moments_count }}</div>
-                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                    </div>
-                    <div><i class="mdi mdi-file-tree-outline mdi-48px text-light"></i></div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Menu lainnya</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="list-group list-group-flush border-top border-light">
-                            @can('store', Modules\Core\Models\CompanyDepartment::class)
-                                <a class="list-group-item list-group-item-action" href="{{ route('core::company.moments.create', ['next' => url()->current()]) }}"><i class="mdi mdi-plus"></i> Buat hari libur baru</a>
-                            @endcan
-                        </div>
-                    </div>
-                </div>
-                <a class="btn btn-outline-primary w-100 text-primary d-flex align-items-center bg-white py-3 text-start" style="cursor: pointer;" href="{{ route('core::company.moments.sync', ['next' => url()->current()]) }}">
-                    <i class="mdi mdi-progress-upload me-3"></i>
-                    <div>Ambil data hari libur <br> <small class="text-muted">Daftar hari libur diambil dari API</small></div>
-                </a>
             </div>
         </div>
     </div>
