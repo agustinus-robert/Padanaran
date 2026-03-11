@@ -165,9 +165,8 @@
         </div>
 
         @if($isPaginated)
-            <div class="d-flex justify-content-between align-items-center p-3">
-                <p class="text-xs text-muted mb-0">Total: <b>{{ $data->total() }}</b> data</p>
-                <div>{!! $data->appends(request()->query())->links('pagination::bootstrap-4') !!}</div>
+            <div class="row p-3">
+                {{ $data->links() }}
             </div>
         @endif
     </div>
