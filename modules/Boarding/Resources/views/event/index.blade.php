@@ -78,94 +78,122 @@ $columns = [
 ];
 @endphp
 
-@section('body-content')
-    <div class="row container-fluid">
-        @include('components.navbar-admin')
-
-        <div class="col-md-8">
-             <x-table
-                type="material"
-                :data="$boardingEvent"
-                :columns="$columns"
-                title="Daftar Event"
-                searchRoute="{{ route('boarding::event.event-reference.index', ['academic' => request('academic')]) }}"
-                :trash="$trashed"
-            />
+@push('additional-content')
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">settings</i> Lanjutan
+            </h6>
         </div>
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Kelola Refrensi Event</div>
-                <div class="card-body">
-                    <form class="form-block" action="{{ isset($editItem) ? route('boarding::event.event-reference.update', ['event_reference' => $editItem->id, 'next' => request()->fullUrl()]) : route('boarding::event.event-reference.store', ['next' => request()->fullUrl()]) }}" method="POST">
-                        @csrf
-                        @if (isset($editItem))
-                            @method('PUT')
-                        @endif
-
-                        {{-- Nama Kegiatan --}}
-                        <x-input-group label="Nama Kegiatan" required>
-                            <x-input type="text" name="name" :value="old('name', $editItem->name ?? '')" required />
-                        </x-input-group>
-
-                        {{-- Tipe Kegiatan --}}
-                        <x-input-group label="Tipe Kegiatan" required>
-                            <x-select name="type" id="type-select" required
-                                :options="collect(\Modules\Boarding\Enums\BoardingEventTypeEnum::cases())->map(fn($type) => ['value' => $type->value, 'label' => $type->label()])"
-                                :selected="old('type', $editItem->type->value ?? '')"
-                            />
-                        </x-input-group>
-
-                        {{-- Container Tanggal (Hidden by JS) --}}
-                        <div id="date-input-container" style="display: none;">
-                            <x-input-group label="Tanggal Mulai">
-                                <x-input type="date" name="start_date" id="start-date" :value="old('start_date', $editItem->start_date ?? '')" />
-                            </x-input-group>
-                            
-                            <x-input-group label="Tanggal Selesai">
-                                <x-input type="date" name="end_date" id="end-date" :value="old('end_date', $editItem->end_date ?? '')" />
-                            </x-input-group>
-                        </div>
-
-                        {{-- Jam Mulai --}}
-                        <x-input-group label="Jam Mulai Kegiatan" required>
-                            <x-input type="time" name="in" 
-                                :value="old('in', isset($editItem) ? \Carbon\Carbon::parse($editItem->in)->format('H:i') : '')" 
-                                required />
-                        </x-input-group>
-
-                        {{-- Jam Selesai --}}
-                        <x-input-group label="Jam Selesai Kegiatan" required>
-                            <x-input type="time" name="out" 
-                                :value="old('out', isset($editItem) ? \Carbon\Carbon::parse($editItem->out)->format('H:i') : '')" 
-                                required />
-                        </x-input-group>
-
-                        {{-- Peserta --}}
-                        <x-input-group label="Peserta Kegiatan" required>
-                            <x-select name="type_participant" required
-                                :options="[
-                                    ['value' => '1', 'label' => 'Per Siswa'],
-                                    ['value' => '2', 'label' => 'Rombel']
-                                ]"
-                                :selected="old('type_participant', $editItem->type_participant ?? '')"
-                                placeholder="Pilih Peserta Kegiatan"
-                            />
-                        </x-input-group>
-
-                        <div class="mt-4">
-                            <x-btn type="submit" variant="dark">
-                                {{ isset($editItem) ? 'Update' : 'Simpan' }}
-                            </x-btn>
-                        </div>
-                    </form>
-                </div>
+        <div class="card-body p-3 pt-0">
+            <div class="list-group list-group-flush">
+                <a href="{{ route('boarding::event.event-reference.index', ['trash' => request('trash', 0) ? null : 1]) }}" 
+                   class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 py-2 text-sm {{ request('trash') ? 'text-dark' : 'text-danger' }}">
+                    <i class="material-symbols-rounded me-2 {{ request('trash') ? '' : 'text-danger' }}">
+                        {{ request('trash') ? 'restore_from_trash' : 'delete_sweep' }}
+                    </i>
+                    <span>
+                        Tampilkan Referensi yang {{ request('trash') ? 'aktif' : 'telah dihapus' }}
+                    </span>
+                </a>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
+
+            @if(request('trash'))
+                <hr class="horizontal dark my-2">
+                <div class="bg-gray-100 border-radius-lg p-2 d-flex align-items-center">
+                    <i class="material-symbols-rounded text-xs me-2">info</i>
+                    <p class="text-xxs text-muted mb-0 italic">
+                        Menampilkan data dari <strong>Tempat Sampah</strong>.
+                    </p>
                 </div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-danger" href="{{ route('boarding::event.event-reference.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan Asrama Siswa yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
+            @endif
+        </div>
+    </div>
+@endpush
+
+@section('body-content')
+    @include('components.navbar-admin')
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <x-table
+                    type="material"
+                    :data="$boardingEvent"
+                    :columns="$columns"
+                    title="Daftar Event"
+                    searchRoute="{{ route('boarding::event.event-reference.index', ['academic' => request('academic')]) }}"
+                    :trash="$trashed"
+                />
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header"><i class="mdi mdi-office-building float-left mr-2"></i>Kelola Refrensi Event</div>
+                    <div class="card-body">
+                        <form class="form-block" action="{{ isset($editItem) ? route('boarding::event.event-reference.update', ['event_reference' => $editItem->id, 'next' => request()->fullUrl()]) : route('boarding::event.event-reference.store', ['next' => request()->fullUrl()]) }}" method="POST">
+                            @csrf
+                            @if (isset($editItem))
+                                @method('PUT')
+                            @endif
+
+                            {{-- Nama Kegiatan --}}
+                            <x-input-group label="Nama Kegiatan" required>
+                                <x-input type="text" name="name" :value="old('name', $editItem->name ?? '')" required />
+                            </x-input-group>
+
+                            {{-- Tipe Kegiatan --}}
+                            <x-input-group label="Tipe Kegiatan" required>
+                                <x-select name="type" id="type-select" required
+                                    :options="collect(\Modules\Boarding\Enums\BoardingEventTypeEnum::cases())->map(fn($type) => ['value' => $type->value, 'label' => $type->label()])"
+                                    :selected="old('type', $editItem->type->value ?? '')"
+                                />
+                            </x-input-group>
+
+                            {{-- Container Tanggal (Hidden by JS) --}}
+                            <div id="date-input-container" style="display: none;">
+                                <x-input-group label="Tanggal Mulai">
+                                    <x-input type="date" name="start_date" id="start-date" :value="old('start_date', $editItem->start_date ?? '')" />
+                                </x-input-group>
+                                
+                                <x-input-group label="Tanggal Selesai">
+                                    <x-input type="date" name="end_date" id="end-date" :value="old('end_date', $editItem->end_date ?? '')" />
+                                </x-input-group>
+                            </div>
+
+                            {{-- Jam Mulai --}}
+                            <x-input-group label="Jam Mulai Kegiatan" required>
+                                <x-input type="time" name="in" 
+                                    :value="old('in', isset($editItem) ? \Carbon\Carbon::parse($editItem->in)->format('H:i') : '')" 
+                                    required />
+                            </x-input-group>
+
+                            {{-- Jam Selesai --}}
+                            <x-input-group label="Jam Selesai Kegiatan" required>
+                                <x-input type="time" name="out" 
+                                    :value="old('out', isset($editItem) ? \Carbon\Carbon::parse($editItem->out)->format('H:i') : '')" 
+                                    required />
+                            </x-input-group>
+
+                            {{-- Peserta --}}
+                            <x-input-group label="Peserta Kegiatan" required>
+                                <x-select name="type_participant" required
+                                    :options="[
+                                        ['value' => '1', 'label' => 'Per Siswa'],
+                                        ['value' => '2', 'label' => 'Rombel']
+                                    ]"
+                                    :selected="old('type_participant', $editItem->type_participant ?? '')"
+                                    placeholder="Pilih Peserta Kegiatan"
+                                />
+                            </x-input-group>
+
+                            <div class="mt-4">
+                                <x-btn type="submit" variant="dark">
+                                    {{ isset($editItem) ? 'Update' : 'Simpan' }}
+                                </x-btn>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

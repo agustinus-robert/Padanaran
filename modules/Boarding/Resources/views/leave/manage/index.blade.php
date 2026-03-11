@@ -104,10 +104,28 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    <div class="card mb-3 shadow-sm border-radius-lg">
+        <a href="{{ route('boarding::leave.submission.create', ['next' => url()->full()]) }}" 
+           class="card-body p-3 d-flex justify-content-between align-items-center cursor-pointer transition-all hover-bg-light">
+            <div class="d-flex align-items-center">
+                <div class="icon icon-shape icon-sm bg-gradient-primary shadow text-center border-radius-md me-3">
+                    <i class="material-symbols-rounded opacity-10 text-xs">add_circle</i>
+                </div>
+                <div>
+                    <span class="d-block fw-bold text-dark text-sm mb-0">Pengajuan Izin Baru</span>
+                    <small class="text-xs text-muted">Buat pengajuan izin baru di sini</small>
+                </div>
+            </div>
+            <i class="material-symbols-rounded text-primary opacity-7">chevron_right</i>
+        </a>
+    </div>
+@endpush
+
 @section('body-content')
      <div class="row container-fluid">
         @include('components.navbar-admin')
-            <div class="col-xl-8">
+            <div class="col-xl-12">
                 <x-table
                     type="material"
                     :data="$leaves"
@@ -115,6 +133,8 @@ $columns = [
                     title="Perizinan"
                     searchRoute="{{ route('boarding::leave.manage.index', ['academic' => request('academic')]) }}"
                     :trash="$trashed"
+                    :count="$pending_leaves_count"
+                    countLabel="Jumlah Pengajuan Tertunda"
                 >
                     {{-- Slot untuk menampung baris collapse approval tepat di bawah tiap baris data --}}
                     @slot('after_row', function($item) {
@@ -123,30 +143,6 @@ $columns = [
                         return view('boarding::leave.components.approval-table', ['leave' => $item])->render();
                     })
                 </x-table>
-            </div>
-
-            <div class="col-xl-4">
-                <div class="card border-0 shadow-none bg-light">
-                    <div class="card-body d-flex justify-content-between align-items-center flex-row py-4">
-                        <div>
-                            <div class="display-4 fw-bold">{{ $pending_leaves_count }}</div>
-                            <div class="small fw-bold text-secondary text-uppercase">Jumlah pengajuan tertunda</div>
-                        </div>
-                        <div><i class="mdi mdi-timer-outline mdi-48px text-danger"></i></div>
-                    </div>
-                    <div class="list-group list-group-flush border-top">
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('boarding::leave.manage.index', ['pending' => !request('pending')]) }}">
-                            <i class="mdi mdi-progress-clock"></i> {{ request('pending') == 1 ? 'Tampilkan semua pengajuan' : 'Hanya tampilkan pengajuan yang tertunda' }}
-                        </a>
-                    </div>
-                </div>
-                <a class="btn w-100 d-flex justify-content-between align-items-center bg-white shadow-sm py-3 text-start mt-3" style="cursor: pointer;" href="{{ route('boarding::leave.submission.create', ['next' => url()->full()]) }}">
-                    <div>
-                        <span class="fw-bold">Pengajuan izin baru</span> <br> 
-                        <small class="text-muted">Silakan buat pengajuan izin kamu di sini</small>
-                    </div>
-                    <i class="mdi mdi-chevron-right-circle-outline mdi-24px text-primary"></i>
-                </a>
             </div>
         </div>
     </div>
