@@ -50,6 +50,27 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    @php
+        $isTrash = request('trash', 0);
+        
+        $extraMenus = [
+            [
+                'label' => $isTrash ? 'Tampilkan kategori aktif' : 'Tampilkan kategori dihapus',
+                'route' => route('counseling::manage.counseling.categories.index', ['trash' => $isTrash ? null : 1]),
+                'icon' => $isTrash ? 'visibility' : 'delete_outline',
+                'class' => $isTrash ? 'text-primary' : 'text-danger'
+            ],
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Lanjutan" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
+
 
 @section('body-content')
     @include('components.navbar-admin')
@@ -57,7 +78,7 @@ $columns = [
     <div class="container-fluid">
         <div class="row">
 
-            <div class="col-md-7 col-lg-8">
+            <div class="col-md-12">
                 <x-table
                     type="material"
                     :data="$categories"
@@ -65,6 +86,8 @@ $columns = [
                     title="Konseling"
                     searchRoute="{{ route('counseling::manage.counseling.categories.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$categories_count"
+                    countLabel="Jumlah Kategori Konseling"
                 />
             </div>
 
@@ -106,14 +129,6 @@ $columns = [
                                 <x-btn variant="dark">Simpan</x-btn>
                             </x-input-group>
                         </form>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('counseling::manage.counseling.categories.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan kategori yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
                     </div>
                 </div>
             </div>

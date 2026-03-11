@@ -12,14 +12,39 @@
     @include('counseling::layouts.includes.navbar-counseling')
 @endpush
 
+@push('additional-content')
+    @php
+        $menus = [
+            [
+                'label' => 'Data konseling',
+                'route' => route('counseling::counselings.index'),
+                'icon' => 'folder_open',
+                'class' => 'text-dark'
+            ],
+            [
+                'label' => 'Kelola kategori',
+                'route' => route('counseling::manage.counseling.categories.index'),
+                'icon' => 'category',
+                'class' => 'text-dark'
+            ],
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Lanjutan" 
+        icon="settings" 
+        :items="$menus" 
+    />
+@endpush
+
 @section('body-content')
 
 @include('components.navbar-admin')
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row justify-content-center">
 
-        <div class="col-md-7 col-lg-8">
+        <div class="col-md-10">
             <div class="card mb-4">
                 <x-card-header type="{{ config('theme.default') }}">
                     {{ $isEdit ? 'Ubah kasus' : 'Input konseling baru' }}
@@ -149,27 +174,6 @@
             </div>
         </div>
 
-        <div class="col-md-5 col-lg-4">
-            @include('account::includes.account-info')
-
-            <div class="card">
-                <div class="card-header">
-                    <h6>Lanjutan</h6>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <a class="list-group-item list-group-item-action text-muted"
-                        href="{{ route('counseling::counselings.index') }}">
-                            <i class="mdi mdi-file-cabinet"></i> Data konseling
-                        </a>
-                        <a class="list-group-item list-group-item-action text-muted"
-                        href="{{ route('counseling::manage.counseling.categories.index') }}">
-                            <i class="mdi mdi-file-cabinet"></i> Kelola kategori
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 @endsection

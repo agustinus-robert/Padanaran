@@ -83,7 +83,7 @@ $columns = [
                 :data="$leaves"
                 :columns="$columns"
                 :trash="$trashed"
-                searchRoute="{{ route($module . '::leave.manage.index') }}"
+                {{-- searchRoute="{{ route($module . '::leave.manage.index') }}" --}}
                 :extra="[view('boarding::layouts.component.extra-filter', ['module' => $module])->render()]"
             />
         </div>

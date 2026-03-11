@@ -62,24 +62,13 @@
                     {{-- searchRoute="{{ route('counseling::manage.cases.descriptions.index', ['search' => request('search')]) }}" --}}
                     :trash="$trashed"
                     :extra="[view('counseling::manage.cases.descriptions.extra-filter', compact('categories'))->render()]"
+                    :count="$descriptions_count"
+                    countLabel="Jumlah Deskripsi Khasus"
                 />
             </div>
 
             <div class="col-md-5 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah deskripsi kasus</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="h1 text-muted mb-4 text-right">
-                            <i class="mdi mdi-briefcase-outline float-right"></i>
-                        </div>
-                        <div class="text-value">{{ $descriptions_count }}</div>
-                        <small class="text-muted text-uppercase font-weight-bold">Total</small>
-                    </div>
-                </div>
-
+               
                 <div class="card">
                     <div class="card-header">
                         <h6>Tambah deskripsi</h6>

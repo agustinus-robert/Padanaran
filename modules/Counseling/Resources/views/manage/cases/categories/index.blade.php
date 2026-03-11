@@ -43,6 +43,25 @@
     ];
 @endphp
 
+@php
+    $extraMenus = [
+        [
+            'label' => request('trash') ? 'Tampilkan kategori aktif' : 'Tampilkan kategori dihapus',
+            'route' => route('counseling::manage.cases.categories.index', ['trash' => request('trash') ? null : 1]),
+            'icon' => request('trash') ? 'visibility' : 'delete',
+            'class' => request('trash') ? 'text-primary font-weight-bold' : 'text-danger'
+        ],
+    ];
+@endphp
+
+@push('additional-content')
+
+    <x-sidebar-card 
+        title="Lanjutan" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
@@ -57,20 +76,12 @@
                     title="Kategori"
                     searchRoute="{{ route('counseling::manage.cases.categories.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$categories_count"
+                    countLabel="Jumlah Kategori Khasus"
                 />
             </div>
             
             <div class="col-md-5 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah Kategori Khasus</h6>
-                    </div>
-
-                    <div class="card-header">
-                        <div class="text-value">{{ $categories_count }}</div>
-                        <small class="text-muted text-uppercase font-weight-bold">Total</small>
-                    </div>
-                </div>
                 <div class="card mb-3">
                     <div class="card-header">
                         <h6>Tambah kategori</h6>
@@ -93,14 +104,6 @@
                                 <x-btn variant="dark" type="submit">Simpan</x-btn>
                             </x-input-group>
                         </form>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <a class="list-group-item list-group-item-action text-danger" href="{{ route('counseling::manage.cases.categories.index', ['trash' => request('trash', 0) ? null : 1]) }}"><i class="mdi mdi-delete-outline"></i> Tampilkan kategori yang {{ request('trash', 0) ? 'tidak' : '' }} dihapus</a>
                     </div>
                 </div>
             </div>

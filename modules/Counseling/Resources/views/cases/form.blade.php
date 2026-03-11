@@ -13,12 +13,43 @@
 
 @section('body-content')
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => 'Data Kasus',
+                'route' => route('counseling::cases.index'),
+                'icon' => 'folder_shared',
+                'class' => 'text-dark'
+            ],
+            [
+                'label' => 'Kelola Kategori',
+                'route' => route('counseling::manage.cases.categories.index'),
+                'icon' => 'category',
+                'class' => 'text-dark'
+            ],
+            [
+                'label' => 'Kelola Deskripsi',
+                'route' => route('counseling::manage.cases.descriptions.index'),
+                'icon' => 'description',
+                'class' => 'text-dark'
+            ],
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Menu Lanjutan" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
+
 @include('components.navbar-admin')
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row justify-content-center">
 
-        <div class="col-md-7 col-lg-8">
+        <div class="col-md-10">
             <div class="card mb-4">
                 <x-card-header type="{{ config('theme.default') }}">
                     {{ $isEdit ? 'Ubah kasus' : 'Input kasus baru' }}
@@ -136,18 +167,6 @@
                             <a class="btn btn-secondary" href="{{ request('next', route('counseling::cases.index')) }}">Kembali</a>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-5 col-lg-4">
-            @include('account::includes.account-info')
-            <div class="card">
-                <div class="card-header"><i class="mdi mdi-cogs mr-2"></i>Lanjutan</div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::cases.index') }}"><i class="mdi mdi-briefcase-account-outline"></i> Data kasus</a>
-                    <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::manage.cases.categories.index') }}"><i class="mdi mdi-briefcase-outline"></i> Kelola kategori</a>
-                    <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::manage.cases.descriptions.index') }}"><i class="mdi mdi-briefcase-outline"></i> Kelola deskripsi</a>
                 </div>
             </div>
         </div>

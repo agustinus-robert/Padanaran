@@ -50,44 +50,50 @@ $columns = [
 ];
 @endphp
 
+@php
+    $extraMenus = [
+        [
+            'label' => 'Kelola kategori',
+            'route' => route('counseling::manage.cases.categories.index'),
+            'icon' => 'category',
+            'class' => 'text-muted'
+        ],
+        [
+            'label' => 'Kelola deskripsi',
+            'route' => route('counseling::manage.cases.descriptions.index'),
+            'icon' => 'description',
+            'class' => 'text-muted'
+        ],
+    ];
+@endphp
+
+@push('additional-content')
+    <x-sidebar-card 
+        title="Menu Lanjutan" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
+
 @section('body-content')
     @include('components.navbar-admin')
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-7 col-lg-8">
+            <div class="col-md-12">
                 <x-table
                     type="material"
                     :data="$cases"
                     :columns="$columns"
                     title="Data Khasus"
+                    createRoute="{{ route('counseling::cases.create', ['next' => url()->full()]) }}"                
                     searchRoute="{{ route('counseling::cases.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$cases_count"
+                    countLabel="Jumlah Khasus"
                 />
             </div>
-            
-            <div class="col-md-5 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah Khasus Saat Ini
-                    </div>
-
-                    <div class="card-body">
-                        <div class="text-value">{{ $cases_count }}</div>
-                        <small class="text-muted text-uppercase font-weight-bold">Total</small>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::cases.create', ['next' => url()->full()]) }}"><i class="mdi mdi-briefcase-plus-outline"></i> Input kasus baru</a>
-                        <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::manage.cases.categories.index') }}"><i class="mdi mdi-briefcase-outline"></i> Kelola kategori</a>
-                        <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::manage.cases.descriptions.index') }}"><i class="mdi mdi-briefcase-outline"></i> Kelola deskripsi</a>
-                    </div>
-                </div>
-            </div>
+        
         </div>
     </div>
 @endsection

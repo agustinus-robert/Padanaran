@@ -51,49 +51,43 @@
     ];
 @endphp
 
+@push('additional-content')
+    @php
+        $extraMenus = [
+            [
+                'label' => 'Kelola kategori',
+                'route' => route('counseling::manage.counseling.categories.index'),
+                'icon' => 'inventory_2',
+                'class' => 'text-dark'
+            ],
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Lanjutan" 
+        icon="settings" 
+        :items="$extraMenus" 
+    />
+@endpush
+
 
 @section('body-content')
     @include('components.navbar-admin')
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-7 col-lg-8">
+            <div class="col-md-12">
                 <x-table
                     type="material"
                     :data="$counselings"
                     :columns="$columns"
                     title="Konseling"
+                    :createRoute="route('counseling::counselings.create', ['next' => url()->current()])"                
                     searchRoute="{{ route('counseling::counselings.index', ['search' => request('search')]) }}"
                     :trash="$trashed"
+                    :count="$counselings_count"
+                    countLabel="Jumlah Konseling"
                 />
-            </div>
-            <div class="col-md-5 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah Konseling Saat Ini</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="h1 text-muted text-right">
-                            <i class="mdi mdi-file-cabinet float-right"></i>
-                        </div>
-                        <div class="text-value">{{ $counselings_count }}</div>
-                        <small class="text-muted text-uppercounseling font-weight-bold">Total</small>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Lanjutan</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::counselings.create', ['next' => url()->full()]) }}"><i class="mdi mdi-file-plus-outline"></i> Input konseling baru</a>
-                            <a class="list-group-item list-group-item-action text-muted" href="{{ route('counseling::manage.counseling.categories.index') }}"><i class="mdi mdi-file-cabinet"></i> Kelola kategori</a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
