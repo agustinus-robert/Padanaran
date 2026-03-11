@@ -83,94 +83,105 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">filter_alt</i> Filter Pengajuan Izin
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            <form action="{{ route('hrms::service.leave.manage.index') }}" method="get">
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Periode Pengajuan</label>
+                    <x-date-range-select />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Departemen</label>
+                    <x-select
+                        id="select-departments"
+                        name="department"
+                        placeholder="Semua departemen"
+                        data-dependent="#select-positions"
+                        data-source="positions"
+                        :options="$departments->map(function($department) {
+                            return [
+                                'value' => $department->id,
+                                'label' => $department->name,
+                                'data-positions' => $department->positions->pluck('name', 'id'),
+                                'selected' => request('department') == $department->id
+                            ];
+                        })->toArray()"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Jabatan</label>
+                    <x-select id="select-positions" name="position" placeholder="Semua jabatan" />
+                </div>
+
+                <div class="input-group input-group-dynamic mb-3 {{ request('search') ? 'is-filled' : '' }}">
+                    <label class="form-label">Cari Nama Karyawan</label>
+                    <x-input type="text" name="search" value="{{ request('search') }}" onkeyup="searchTable()" />
+                </div>
+
+                <div class="form-check p-0 mb-3">
+                    <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" {{ request('trashed') ? 'checked' : '' }}>
+                    <label class="form-check-label text-xs mb-0" for="trashed">
+                        Tampilkan pengajuan dihapus
+                    </label>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <x-btn type="submit" variant="dark" class="btn-sm mb-0 flex-grow-1">Terapkan</x-btn>
+                    <a class="btn btn-light btn-sm mb-0" href="{{ route('hrms::service.leave.manage.index') }}" title="Reset">
+                        <i class="material-symbols-rounded text-sm">restart_alt</i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">summarize</i> Laporan
+            </h6>
+        </div>
+        <div class="card-body p-3 pt-0">
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 py-2 text-sm disabled text-muted" href="javascript:;">
+                    <i class="material-symbols-rounded me-2">file_download</i> Rekapitulasi izin
+                </a>
+            </div>
+
+            <hr class="horizontal dark my-2">
+
+            <div class="bg-gray-100 border-radius-lg p-2">
+                <p class="text-xxs text-muted mb-0 italic" style="line-height: 1.4;">
+                    Laporan per tanggal: <br>
+                    <strong>{{ date('d M Y', strtotime($start_at)) }}</strong> s.d. <strong>{{ date('d M Y', strtotime($end_at)) }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
-    <div class="container-fluid row">
-        <div class="col-xl-8">
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$leaves"
-                :columns="$columns"
-                title="Kelola izin karyawan"
-                {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-xl-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Filter
-                </div>
-                <div class="card-body border-top">
-                    <form class="form-block" action="{{ route('hrms::service.leave.manage.index') }}" method="get">
-                        <div class="mb-3">
-                            <label class="form-label required">Periode pengajuan</label>
-                            <x-date-range-select />
-                        </div>
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
-                             <x-select
-                                id="select-departments"
-                                name="department"
-                                placeholder="Semua departemen"
-                                data-dependent="#select-positions"
-                                data-source="positions"
-                                :options="$departments->map(function($department) {
-                                    return [
-                                        'value' => $department->id,
-                                        'label' => $department->name,
-                                        'data-positions' => $department->positions->pluck('name', 'id'),
-                                        'selected' => request('department') == $department->id
-                                    ];
-                                })->toArray()"
-                            />
-                         </x-input-group>
-
-                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
-                            <x-select
-                                id="select-positions"
-                                name="position"
-                                placeholder="Semua jabatan"
-                            />
-                        </x-input-group>
-
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
-                            <x-input
-                                class="mb-3"
-                                name="search"
-                                placeholder="Cari nama karyawan ..."
-                                value="{{ request('search') }}"
-                                onkeyup="searchTable()"
-                            />
-                        </x-input-group>
-
-                        <div class="card card-body border mb-3 justify checklist-item checklist-item-primary">
-                            <div class="form-check">
-                               <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" @if (request('trashed', 0)) checked @endif>
-                                <label class="form-check-label" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <x-btn variant="dark">Terapkan</x-btn>
-                            <a class="btn btn-light" href="{{ route('hrms::service.leave.manage.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
-                </div>
-                <div class="list-group list-group-flush border-top">
-                    <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi izin</a>
-                </div>
-                <div class="card-body border-top">
-                    <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni mulai tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$leaves"
+                    :columns="$columns"
+                    title="Kelola izin karyawan"
+                    {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
+                    :trash="$trashed"
+                />
             </div>
         </div>
     </div>

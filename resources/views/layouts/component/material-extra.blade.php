@@ -69,24 +69,47 @@
     </button>
 </div>
 
-<div id="sidebar-search-custom">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div id="sidebar-search-custom" style="height: 100vh; display: flex; flex-direction: column;">
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 pb-0">
         <h5 class="mb-0 text-dark">Pencarian & Informasi</h5>
         <button class="btn btn-link text-dark p-0" onclick="toggleSearchSidebar(false)">
             <i class="material-symbols-rounded">close</i>
         </button>
     </div>
     
-    <div class="search-body">
-        <hr class="horizontal dark">
+    <div class="search-body p-3 pt-0" style="flex: 1; overflow-y: auto; scrollbar-width: thin;">
+        <hr class="horizontal dark mt-0">
         <div class="additional-stack-container">
             @stack('additional-content')
         </div>
-        <div id="search-results-placeholder" class="mt-4">
+        
+        <div id="search-results-placeholder" class="mt-4 pb-5">
             <p class="text-muted text-center small">Silahkan kelola data anda</p>
         </div>
     </div>
 </div>
+
+<style>
+    #sidebar-search-custom .search-body::-webkit-scrollbar {
+        width: 4px;
+    }
+    #sidebar-search-custom .search-body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    #sidebar-search-custom .search-body::-webkit-scrollbar-thumb {
+        background: #d6d6d6;
+        border-radius: 10px;
+    }
+    #sidebar-search-custom .search-body::-webkit-scrollbar-thumb:hover {
+        background: #b5b5b5;
+    }
+
+    .additional-stack-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+</style>
 
 <div id="sync-fab-main">
     <button type="button" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center p-0" 

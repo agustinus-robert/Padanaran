@@ -15,8 +15,8 @@
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="container-fluid justify-content-center">
-        <div class="row">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
 
             <div class="col-xxl-8 col-xl-10">
                 <div class="card mb-4 border-0 shadow-sm">
@@ -92,7 +92,7 @@
                             {{-- Lokasi Kerja --}}
                             <x-input-group :isRow="true" required>
                                 <x-label>Lokasi kerja</x-label>
-                                <x-radio-group
+                                <x-radio-type1
                                     name="work_location"
                                     :options="collect(\Modules\Core\Enums\WorkLocationEnum::cases())->mapWithKeys(fn($v) => [$v->value => $v->name])->toArray()"
                                     :selected="old('work_location', $contract->work_location)"

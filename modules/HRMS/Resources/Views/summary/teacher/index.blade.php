@@ -89,48 +89,83 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    {{-- 1. KARTU FILTER --}}
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">filter_alt</i> Filter Rekap Mengajar
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            <form action="{{ route('hrms::summary.teachings.index') }}" method="get">
+                {{-- Periode --}}
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Periode Laporan</label>
+                    <x-date-range-select />
+                </div>
+
+                {{-- Nama Karyawan --}}
+                <div class="input-group input-group-dynamic mb-3 {{ request('search') ? 'is-filled' : '' }}">
+                    <label class="form-label">Cari Nama Pengajar</label>
+                    <x-input 
+                        type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        onkeyup="searchTable()" 
+                    />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <x-btn type="submit" variant="dark" class="btn-sm mb-0 flex-grow-1">Terapkan</x-btn>
+                    <a class="btn btn-light btn-sm mb-0" href="{{ route('hrms::summary.teachings.index') }}" title="Reset">
+                        <i class="material-symbols-rounded text-sm">restart_alt</i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- 2. KARTU LAPORAN & INFO --}}
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">history_edu</i> Ekspor Laporan
+            </h6>
+        </div>
+        <div class="card-body p-3 pt-0">
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 py-2 text-sm disabled text-muted" href="javascript:;">
+                    <i class="material-symbols-rounded me-2">file_download</i> Rekap Jam Mengajar (Excel)
+                </a>
+            </div>
+
+            <hr class="horizontal dark my-2">
+
+            <div class="bg-gray-100 border-radius-lg p-2">
+                <p class="text-xxs text-muted mb-0 italic" style="line-height: 1.4;">
+                    Menampilkan data dari: <br>
+                    <strong>{{ date('d M Y', strtotime($start_at)) }}</strong> s.d. <strong>{{ date('d M Y', strtotime($end_at)) }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+@endpush
+
 @section('body-content')
     @include('components.navbar-admin')
-    <div class="row container-fluid">
-        <div class="col-xl-8">
-            <x-table
-                :isSearch="true"
-                type="material"
-                :data="$employees"
-                :columns="$columns"
-                title="Rekapitulasi Mengajar Guru"
-                {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-xl-4">
-            <div class="card">
-                <div class="card-header">
-                    Filter
-                </div>
-                <div class="card-body border-top">
-                    <form class="form-block" action="{{ route('hrms::summary.teachings.index') }}" method="get">
-                        <div class="mb-3">
-                            <label class="form-label required">Periode pengajuan</label>
-                            <x-date-range-select />
-                        </div>
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
-                            <x-input
-                                class="mb-3"
-                                name="search"
-                                placeholder="Cari nama karyawan ..."
-                                value="{{ request('search') }}"
-                                onkeyup="searchTable()"
-                            />
-                        </x-input-group>
-
-                        <div class="d-flex justify-content-between">
-                             <x-btn type="submit" variant="dark">Terapkan</x-btn>
-                            <a class="btn btn-light" href="{{ route('hrms::summary.teachings.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
-                        </div>
-                    </form>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$employees"
+                    :columns="$columns"
+                    title="Rekapitulasi Mengajar Guru"
+                    {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
+                    :trash="$trashed"
+                />
             </div>
         </div>
     </div>

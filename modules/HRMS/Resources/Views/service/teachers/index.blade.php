@@ -82,131 +82,107 @@ $columns = [
 ];
 @endphp
 
-@section('body-content')
-@include('components.navbar-admin')
-<div class="row container-fluid">
-    <div class="col-md-8">
-        <x-table
-            :isSearch="true"
-            type="material"
-            :data="$employees"
-            :columns="$columns"
-            title="Daftar Karyawan"
-            searchRoute="{{ route('hrms::service.teacher.schedule.index', ['search' => request('search')]) }}"
-            :trash="$trashed"
-        />
-    </div>
-
-    <div class="col-xl-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <i class="mdi mdi-filter-outline"></i> Filter
-            </div>
-            <div class="card-body border-top">
-                <form class="form-block" action="{{ route('hrms::service.teacher.schedule.index') }}" method="get">
-                    <div class="mb-3">
-                        <label class="form-label required">Periode</label>
-                        <x-input-group required>
-                            <div class="d-flex">
-                                <x-col size="4">
-                                    <x-button color="light" size="sm" type="button" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                        <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                        <span class="d-none d-sm-inline">Rentang Waktu</span>
-                                    </x-button>
-                                </x-col>
-
-                                <x-col size="4">
-                                    <x-input
-                                        size="sm"
-                                        type="date"
-                                        name="start_at"
-                                    />
-                                </x-col>
-
-                                <x-col size="4">
-                                    <x-input
-                                        size="sm"
-                                        type="date"
-                                        name="end_at"
-                                    />
-                                </x-col>
-                            </div>
-                        </x-input-group>
-                    </div>
-                    <div class="mb-3">
-                        <x-input-group>
-                            <x-label for="select-positions" value="Nama" />
-                            <x-input name="search" placeholder="Cari nama karyawan ..." value="{{ request('search') }}" onkeyup="searchTable()" />
-                        </x-input-group>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check p-0">
-                            <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" @if (request('trashed', 0)) checked @endif>
-                            <label class="form-check-label" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-soft-danger" type="submit"><i class="mdi mdi-filter-outline"></i> Terapkan</button>
-                        <a class="btn btn-light" href="{{ route('hrms::service.vacation.manage.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
-                    </div>
-                </form>
-            </div>
+@push('additional-content')
+    {{-- 1. KARTU FILTER --}}
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">filter_list</i> Filter
+            </h6>
         </div>
-
-        {{-- @can('store', Modules\HRMS\Models\EmployeeSchedule::class)
-            <a class="btn btn-outline-secondary w-100 d-flex text-dark mb-4 rounded bg-white py-3 text-start" style="border-style: dashed;" href="{{ route('hrms::service.attendance.schedules.collective.create', ['month' => request('month', date('Y-m')), 'next' => url()->full()]) }}">
-                <i class="mdi mdi-calendar-multiple-check me-3"></i>
-                <div>Input jadwal kerja kolektif <br> <small class="text-muted">Jika Kamu ingin meregistrasikan 1 jadwal ke banyak karyawan</small></div>
-            </a>
-        @endcan --}}
-
-        <div class="card mb-3">
-            <div class="card-header">
-                <i class="mdi mdi-file-upload-outline"></i> Upload Jadwal
-            </div>
-
-            <form action="{{ route('hrms::service.teacher.teacher.schedule.import') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="card-body">
-                    <input type="hidden" name="start_at" value="{{ request('start_at') ?? '' }}" />
-                    <input type="hidden" name="end_at" value="{{ request('end_at') ?? '' }}" />
-                    <input type="hidden" name="smt_id" value="75" />
-                    <div class="list-group list-group-flush border-top">
-                        <div class="container">
-                            <input class="list-group-item list-group-item-action py-3 form-control mb-2" type="file" name="scheduleFile" />
-                            <select class="form-select" name="empl_category_id">
-                                <option value="1">Jadwal Umum</option>
-                                <option value="2">Jadwal Khusus</option>
-                            </select>
-                        </div>
-                    </div>
+        <div class="card-body p-3">
+            <form action="{{ route('hrms::service.teacher.duty.index') }}" method="get">
+                {{-- Periode Menggunakan Komponen Khusus --}}
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Periode pengajuan</label>
+                    <x-date-range-select />
                 </div>
 
-                <div class="card-footer">
-                    <input type="submit" class="btn btn-sm btn-soft-primary" value="unggah jadwal" />
+                {{-- Search dengan Style Dynamic --}}
+                <div class="input-group input-group-dynamic mb-3 {{ request('search') ? 'is-filled' : '' }}">
+                    <label class="form-label">Cari Nama Karyawan</label>
+                    <x-input size="sm" type="text" name="search" value="{{ request('search') }}" onkeyup="searchTable()"></x-input>
+                </div>
+
+                <div class="form-check p-0 mb-3">
+                    <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" {{ request('trashed') ? 'checked' : '' }}>
+                    <label class="form-check-label text-xs" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <x-btn type="submit" variant="dark" class="btn-sm mb-0 flex-grow-1">Terapkan</x-btn>
+                    <a class="btn btn-light btn-sm mb-0" href="{{ route('hrms::service.teacher.duty.index') }}" title="Reset">
+                        <i class="material-symbols-rounded text-sm">restart_alt</i>
+                    </a>
                 </div>
             </form>
         </div>
+    </div>
 
-        <div class="card mb-3">
-            <div class="card-body">
-                <i class="mdi mdi-file-download-outline"></i> Download Jadwal
-            </div>
+    {{-- 2. KARTU UPLOAD JADWAL (Tetap Dipertahankan) --}}
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center text-sm">
+                <i class="material-symbols-rounded me-2">upload_file</i> Upload Jadwal
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            <form action="{{ route('hrms::service.teacher.teacher.schedule.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="smt_id" value="75">
+                
+                <div class="input-group input-group-static mb-2">
+                    <input type="file" name="scheduleFile" class="form-control" required>
+                </div>
+                
+                <div class="input-group input-group-static mb-3">
+                    <select class="form-control" name="empl_category_id">
+                        <option value="1">Jadwal Umum</option>
+                        <option value="2">Jadwal Khusus</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-info btn-sm mb-0 w-100">Unggah</button>
+            </form>
+        </div>
+    </div>
 
-            <div class="p-2" style="margin-left:10px;">
-                <a href="{{route('hrms::service.teacher.teacher.export')}}" class="btn btn-sm btn-soft-success">Download</a>
+    {{-- 3. KARTU DOWNLOAD & LAPORAN --}}
+    <div class="card">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center text-sm">
+                <i class="material-symbols-rounded me-2">description</i> Dokumen
+            </h6>
+        </div>
+        <div class="card-body p-3 pt-0">
+            <a href="{{ route('hrms::service.teacher.teacher.export') }}" class="btn btn-link text-success btn-sm w-100 mb-0 d-flex align-items-center px-0">
+                <i class="material-symbols-rounded me-2">download</i> Download Jadwal
+            </a>
+            <hr class="horizontal dark my-2">
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 text-xs disabled" href="javascript:;">
+                    <i class="material-symbols-rounded me-2">grid_on</i> Rekapitulasi mengajar
+                </a>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
-            </div>
-            <div class="list-group list-group-flush border-top">
-                <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi mengajar</a>
-            </div>
-            <div class="card-body border-top">
-                <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
-            </div>
+    </div>
+@endpush
+
+@section('body-content')
+
+@include('components.navbar-admin')
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <x-table
+                :isSearch="true"
+                type="material"
+                :data="$employees"
+                :columns="$columns"
+                title="Daftar Karyawan"
+                searchRoute="{{ route('hrms::service.teacher.schedule.index', ['search' => request('search')]) }}"
+                :trash="$trashed"
+            />
         </div>
     </div>
 </div>

@@ -68,13 +68,13 @@
             <div class="col-md-9 d-flex justify-content-end align-items-center gap-2">
                 
                 {{-- RENDER EXTRA (SEJAJAR DI KANAN) --}}
-                @if(count($extra) > 0)
-                    <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end">
-                        @foreach($extra as $slot)
-                            {!! $slot !!}
-                        @endforeach
-                    </div>
-                @endif
+             @if(count($extra) > 0)
+                <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end">
+                    @foreach($extra as $slot)
+                        {!! is_callable($slot) ? $slot() : $slot !!}
+                    @endforeach
+                </div>
+            @endif
 
                 {{-- FORM SEARCH DEFAULT --}}
                 @if($searchRoute)

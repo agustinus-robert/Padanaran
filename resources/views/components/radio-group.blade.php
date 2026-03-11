@@ -5,26 +5,34 @@
     'required' => false,
 ])
 
-@foreach($options as $option)
-    <label class="{{ $option['wrapper_class'] ?? '' }}">
+@foreach($options as $key => $option)
+    @php
+        $label = is_array($option) ? ($option['label'] ?? '') : $option;
+        $value = is_array($option) ? ($option['value'] ?? $key) : $key;
+        $wrapperClass = is_array($option) ? ($option['wrapper_class'] ?? 'form-check') : 'form-check';
+        $inputClass = is_array($option) ? ($option['input_class'] ?? '') : '';
+    @endphp
+
+    <div class="{{ $wrapperClass }}">
         <input type="radio"
                name="{{ $name }}"
-               value="{{ $option['value'] }}"
-               class="form-check-input {{ $option['input_class'] ?? '' }}"
+               id="{{ $name . '_' . $value }}"
+               value="{{ $value }}"
+               class="form-check-input {{ $inputClass }}"
                autocomplete="off"
-               @if($selected == $option['value']) checked @endif
-               @if($required) required @endif
+               {{ $selected == $value ? 'checked' : '' }}
+               {{ $required ? 'required' : '' }}
 
-               {{-- Extra attributes --}}
-               @if(isset($option['attributes']))
+               @if(is_array($option) && isset($option['attributes']))
                    @foreach($option['attributes'] as $attr => $val)
                        {{ $attr }}="{{ $val }}"
                    @endforeach
                @endif
         >
-
-        {!! $option['label'] !!}
-    </label>
+        <label class="form-check-label mb-0 ms-2" for="{{ $name . '_' . $value }}">
+            {!! $label !!}
+        </label>
+    </div>
 @endforeach
 
 @error($name)

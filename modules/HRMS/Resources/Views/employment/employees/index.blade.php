@@ -57,80 +57,86 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    @php
+        $isTrash = request('trash');
+        $navMenus = [
+            [
+                'label' => 'Lihat karyawan yang ' . ($isTrash ? 'tidak ' : '') . 'dihapus',
+                'route' => route('hrms::employment.employees.index', ['trash' => !$isTrash]),
+                'icon' => $isTrash ? 'visibility' : 'delete_outline',
+                'class' => 'text-danger'
+            ],
+        ];
+    @endphp
+
+    <x-sidebar-card 
+        title="Menu lainnya" 
+        icon="more_vert" 
+        :items="$navMenus" 
+    />
+
+    <div class="card mt-3">
+        <div class="card-header pb-0 p-3">
+            <div class="d-flex align-items-center">
+                <h6 class="mb-0">Pembaruan data karyawan</h6>
+            </div>
+        </div>
+        <div class="card-body p-3">
+            <ul class="list-group">
+                <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
+                    <a class="btn btn-link text-dark dropdown-item mb-0 px-0 d-flex align-items-center" 
+                       href="{{ route('hrms::employment.employees.template', ['next' => url()->full()]) }}">
+                        <i class="material-symbols-rounded me-2">cloud_download</i>
+                        Unduh template
+                    </a>
+                </li>
+                
+                <li class="list-group-item border-0 px-0">
+                    <form action="{{ route('hrms::employment.employees.upload', ['next' => url()->full()]) }}" 
+                          method="post" 
+                          enctype="multipart/form-data" 
+                          class="row g-2 align-items-center">
+                        @csrf
+                        <div class="col-8">
+                            <div class="input-group input-group-static">
+                                <input type="file" name="file" class="form-control" accept=".xls,.xlsx" required>
+                                @if($errors->has('file'))
+                                    <small class="text-danger text-xxs">{{ $errors->first('file') }}</small>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-dark btn-sm mb-0 w-100">
+                                <i class="material-symbols-rounded text-sm">upload</i>
+                            </button>
+                        </div>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+@endpush
+
 @section('body-content')
     @include('components.navbar-admin')
 
     <div class="container-fluid">
         <div class="row">       
-            <div class="col-md-8">
-                    <x-table
-                        :isSearch="true"
-                        type="material"
-                        :data="$employees"
-                        :columns="$columns"
-                        title="Daftar Karyawan"
-                        searchRoute="{{ route('hrms::employment.employees.index', ['search' => request('search')]) }}"
-                        :trash="$trashed"
-                    />
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Jumlah karyawan</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="display-4">{{ $employees_count }}</div>
-                        <div class="small fw-bold text-secondary text-uppercase">Total</div>
-                    </div>
-                    <div><i class="mdi mdi-account-group-outline mdi-48px text-light"></i></div>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Menu lainnya</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="list-group list-group-flush border-top border-light">
-                            @can('store', Modules\HRMS\Models\Employee::class)
-                                <a class="list-group-item list-group-item-action" href="{{ route('hrms::employment.employees.create', ['next' => url()->full()]) }}"><i class="mdi mdi-plus"></i> Tambah karyawan baru</a>
-                            @endcan
-                            <a class="list-group-item list-group-item-action text-danger" href="{{ route('hrms::employment.employees.index', ['trash' => !request('trash')]) }}"><i class="mdi mdi-trash-can-outline"></i> Lihat karyawan yang {{ request('trash') ? 'tidak' : '' }} dihapus</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Pembaruan data karyawan</h6>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            <a class="list-group-item list-group-item-action d-flex align-items-center" href="{{ route('hrms::employment.employees.template', ['next' => url()->full()]) }}">
-                                <i class="mdi mdi-cloud-download-outline me-2"></i> Unduh template
-                            </a>
-
-                            <form class="list-group-item m-0 p-3" action="{{ route('hrms::employment.employees.upload', ['next' => url()->full()]) }}" method="post" enctype="multipart/form-data">
-                                @csrf
-                                <x-input-group :isRow="true" required>
-                                    <x-col size="8">
-                                        <x-input-file
-                                            name="file"
-                                            :error="$errors->first('file')"
-                                            accept=".xls,.xlsx"
-                                        />
-                                    </x-col>
-
-                                    <x-col size="4">
-                                        <x-btn type="submit" variant="dark"><i class="mdi mdi-upload"></i> Upload</x-btn>
-                                    </x-col>
-                                </x-input-group>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-md-12">
+                <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$employees"
+                    :columns="$columns"
+                    :createCan="['store', Modules\HRMS\Models\Employee::class]"
+                    title="Daftar Karyawan"
+                    :createRoute="route('hrms::employment.employees.create', ['next' => url()->full()])"                
+                    searchRoute="{{ route('hrms::employment.employees.index', ['search' => request('search')]) }}"
+                    :trash="$trashed"
+                    :count="$employees_count"
+                    countLabel="Jumlah Pertemuan"
+                />
             </div>
         </div>
     </div>

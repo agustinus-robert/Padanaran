@@ -89,11 +89,90 @@ $columns = [
 ];
 @endphp
 
+@push('additonal-content')
+<div class="card mb-3">
+    <div class="card-header">
+        <h6>Filter</h6>
+    </div>
+
+    <div class="card-body border-top">
+        <form class="form-block" action="{{ route('hrms::service.vacation.manage.index') }}" method="get">
+            <div class="mb-3">
+                <label class="form-label required">Periode pengajuan</label>
+                <x-date-range-select />
+            </div>
+
+            <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
+                    <x-select
+                    id="select-departments"
+                    name="department"
+                    placeholder="Semua departemen"
+                    data-dependent="#select-positions"
+                    data-source="positions"
+                    :options="$departments->map(function($department) {
+                        return [
+                            'value' => $department->id,
+                            'label' => $department->name,
+                            'data-positions' => $department->positions->pluck('name', 'id'),
+                            'selected' => request('department') == $department->id
+                        ];
+                    })->toArray()"
+                />
+                </x-input-group>
+
+                <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
+                <x-select
+                    id="select-positions"
+                    name="position"
+                    placeholder="Semua jabatan"
+                />
+            </x-input-group>
+
+
+            <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
+                <x-input
+                    class="mb-3"
+                    name="search"
+                    placeholder="Cari nama karyawan ..."
+                    value="{{ request('search') }}"
+                    onkeyup="searchTable()"
+                />
+            </x-input-group>
+
+            <div class="card card-body border mb-3 justify checklist-item checklist-item-primary">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" @if (request('trashed', 0)) checked @endif>
+                    <label class="form-check-label" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <x-btn variant="dark">Terapkan</x-btn>
+                <a class="btn btn-light" href="{{ route('hrms::service.vacation.manage.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h6>Laporan</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="list-group list-group-flush border-top">
+            <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi cuti</a>
+        </div>
+        <div class="card-body border-top">
+            <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
+        </div>
+    </div>
+</div>
+@endpush
 
 @section('body-content')
     @include('components.navbar-admin')
     <div class="row container-fluid">
-        <div class="col-xl-8">
+        <div class="col-xl-12">
             <x-table
                 :isSearch="true"
                 type="material"
@@ -108,85 +187,6 @@ $columns = [
                     }
                 ]"
             />
-        </div>
-        <div class="col-xl-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6>Filter</h6>
-                </div>
-
-                <div class="card-body border-top">
-                    <form class="form-block" action="{{ route('hrms::service.vacation.manage.index') }}" method="get">
-                        <div class="mb-3">
-                            <label class="form-label required">Periode pengajuan</label>
-                            <x-date-range-select />
-                        </div>
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
-                             <x-select
-                                id="select-departments"
-                                name="department"
-                                placeholder="Semua departemen"
-                                data-dependent="#select-positions"
-                                data-source="positions"
-                                :options="$departments->map(function($department) {
-                                    return [
-                                        'value' => $department->id,
-                                        'label' => $department->name,
-                                        'data-positions' => $department->positions->pluck('name', 'id'),
-                                        'selected' => request('department') == $department->id
-                                    ];
-                                })->toArray()"
-                            />
-                         </x-input-group>
-
-                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
-                            <x-select
-                                id="select-positions"
-                                name="position"
-                                placeholder="Semua jabatan"
-                            />
-                        </x-input-group>
-
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
-                            <x-input
-                                class="mb-3"
-                                name="search"
-                                placeholder="Cari nama karyawan ..."
-                                value="{{ request('search') }}"
-                                onkeyup="searchTable()"
-                            />
-                        </x-input-group>
-
-                        <div class="card card-body border mb-3 justify checklist-item checklist-item-primary">
-                            <div class="form-check">
-                               <input class="form-check-input" type="checkbox" name="trashed" id="trashed" value="1" @if (request('trashed', 0)) checked @endif>
-                                <label class="form-check-label" for="trashed">Tampilkan juga pengajuan yang telah dihapus</label>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <x-btn variant="dark">Terapkan</x-btn>
-                            <a class="btn btn-light" href="{{ route('hrms::service.vacation.manage.index') }}"><i class="mdi mdi-refresh"></i> Reset</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <h6>Laporan</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="list-group list-group-flush border-top">
-                        <a class="list-group-item list-group-item-action disabled py-3" href="javascript:;"><i class="mdi mdi-file-excel-outline"></i> Rekapitulasi cuti</a>
-                    </div>
-                    <div class="card-body border-top">
-                        <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($start_at)) }}</small>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 @endsection

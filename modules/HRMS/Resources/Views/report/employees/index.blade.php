@@ -49,90 +49,117 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    {{-- 1. KARTU FILTER --}}
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">filter_alt</i> Filter Laporan
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            <form action="{{ route('hrms::report.employees.index') }}" method="get">
+                {{-- Periode --}}
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Periode Bergabung</label>
+                    <x-date-range-select />
+                </div>
+
+                {{-- Departemen --}}
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Departemen</label>
+                    <x-select
+                        id="select-departments"
+                        name="department"
+                        placeholder="Semua departemen"
+                        data-dependent="#select-positions"
+                        data-source="positions"
+                        :options="$departments->map(function($department) {
+                            return [
+                                'value' => $department->id,
+                                'label' => $department->name,
+                                'data-positions' => $department->positions->pluck('name', 'id'),
+                                'selected' => request('department') == $department->id
+                            ];
+                        })->toArray()"
+                    />
+                </div>
+
+                {{-- Jabatan --}}
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Jabatan</label>
+                    <x-select id="select-positions" name="position" placeholder="Semua jabatan" />
+                </div>
+
+                {{-- Nama Karyawan --}}
+                <div class="input-group input-group-dynamic mb-3 {{ request('search') ? 'is-filled' : '' }}">
+                    <label class="form-label">Cari Nama Karyawan</label>
+                    <x-input type="text" name="search" value="{{ request('search') }}" onkeyup="searchTable()" />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <x-btn type="submit" variant="dark" class="btn-sm mb-0 flex-grow-1">Terapkan</x-btn>
+                    <a class="btn btn-light btn-sm mb-0" 
+                       href="{{ route('hrms::report.employees.index', ['start_at' => $start_at->format('Y-m-d'), 'end_at' => $end_at->format('Y-m-d')]) }}" 
+                       title="Reset">
+                        <i class="material-symbols-rounded text-sm">restart_alt</i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- 2. KARTU EKSPOR LAPORAN --}}
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">description</i> Ekspor Laporan
+            </h6>
+        </div>
+        <div class="card-body p-3 pt-0">
+            <div class="list-group list-group-flush">
+                <button type="button" 
+                        class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 py-2 text-sm {{ !$employees->count() ? 'disabled text-muted' : '' }}" 
+                        onclick="summaryExportExcel()" {{ !$employees->count() ? 'disabled' : '' }}>
+                    <i class="material-symbols-rounded me-2 text-success">file_download</i> Laporan Data Karyawan
+                </button>
+                
+                <button type="button" 
+                        class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 py-2 text-sm {{ !$employees->count() ? 'disabled text-muted' : '' }}" 
+                        onclick="worktimeExportExcel()" {{ !$employees->count() ? 'disabled' : '' }}>
+                    <i class="material-symbols-rounded me-2 text-info">history</i> Laporan Masa Kerja
+                </button>
+            </div>
+
+            <hr class="horizontal dark my-2">
+
+            <div class="bg-gray-100 border-radius-lg p-2">
+                <p class="text-xxs text-muted mb-0 italic" style="line-height: 1.4;">
+                    Berdasarkan filter: <br>
+                    <strong>{{ date('d M Y', strtotime($start_at)) }}</strong> s.d. <strong>{{ date('d M Y', strtotime($end_at)) }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+@endpush
+
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="row container-fluid">
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <i class="mdi mdi-filter-outline"></i> Filter
-                </div>
-                <div class="card-body border-top">
-                    <form class="form-block" action="{{ route('hrms::report.employees.index') }}" method="get">
-                        <div class="mb-3">
-                            <label class="form-label required">Periode pengajuan</label>
-                            <x-date-range-select />
-                        </div>
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
-                             <x-select
-                                id="select-departments"
-                                name="department"
-                                placeholder="Semua departemen"
-                                data-dependent="#select-positions"
-                                data-source="positions"
-                                :options="$departments->map(function($department) {
-                                    return [
-                                        'value' => $department->id,
-                                        'label' => $department->name,
-                                        'data-positions' => $department->positions->pluck('name', 'id'),
-                                        'selected' => request('department') == $department->id
-                                    ];
-                                })->toArray()"
-                            />
-                         </x-input-group>
-
-                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
-                            <x-select
-                                id="select-positions"
-                                name="position"
-                                placeholder="Semua jabatan"
-                            />
-                        </x-input-group>
-
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
-                            <x-input
-                                class="mb-3"
-                                name="search"
-                                placeholder="Cari nama karyawan ..."
-                                value="{{ request('search') }}"
-                                onkeyup="searchTable()"
-                            />
-                        </x-input-group>
-
-                        <div class="d-flex justify-content-between">
-                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
-                            <a class="btn btn-light" href="{{ route('hrms::report.employees.index', ['start_at' => $start_at->format('Y-m-d'), 'end_at' => $end_at->format('Y-m-d')]) }}"><i class="mdi mdi-refresh"></i> Reset</a>
-                        </div>
-                    </form>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 order-md-first">
+                <section>
+                    <x-table
+                        :isSearch="true"
+                        type="material"
+                        :data="$employees"
+                        :columns="$columns"
+                        title="Daftar karyawan aktif"
+                        :trash="$trashed"
+                    />
+                </section>
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <i class="mdi mdi-file-document-multiple-outline"></i> Laporan
-                </div>
-                <div class="list-group list-group-flush border-top">
-                    <button class="list-group-item list-group-item-action @if (!$employees->count()) disabled @endif py-3" onclick="summaryExportExcel()"><i class="mdi mdi-file-excel-outline me-3"></i> Unduh laporan data karyawan</button>
-                    <button class="list-group-item list-group-item-action @if (!$employees->count()) disabled @endif py-3" onclick="worktimeExportExcel()"><i class="mdi mdi-file-excel-outline me-3"></i> Unduh laporan masa kerja karyawan</button>
-                </div>
-                <div class="card-body border-top">
-                    <small class="text-muted">Laporan akan di ambil berdasarkan filter yang diterapkan, yakni tanggal {{ strftime('%d %B %Y', strtotime($start_at)) }} s.d. {{ strftime('%d %B %Y', strtotime($end_at)) }}</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8 order-md-first">
-            <section>
-                <x-table
-                    :isSearch="true"
-                    type="material"
-                    :data="$employees"
-                    :columns="$columns"
-                    title="Daftar karyawan aktif"
-                    :trash="$trashed"
-                />
-            </section>
         </div>
     </div>
 @endsection

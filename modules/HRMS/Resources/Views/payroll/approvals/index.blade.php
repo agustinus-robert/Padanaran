@@ -155,77 +155,96 @@ $columns = [
 ];
 @endphp
 
+@push('additional-content')
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">filter_alt</i> Filter Persetujuan
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            <form action="{{ route('hrms::payroll.approvals.index') }}" method="get">
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Periode Payroll</label>
+                    <x-date-range-select />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Departemen</label>
+                    <x-select
+                        id="select-departments"
+                        name="department"
+                        placeholder="Semua departemen"
+                        data-dependent="#select-positions"
+                        data-source="positions"
+                        :options="$departments->map(function($department) {
+                            return [
+                                'value' => $department->id,
+                                'label' => $department->name,
+                                'data-positions' => $department->positions->pluck('name', 'id'),
+                                'selected' => request('department') == $department->id
+                            ];
+                        })->toArray()"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-xs font-weight-bold">Jabatan</label>
+                    <x-select id="select-positions" name="position" placeholder="Semua jabatan" />
+                </div>
+
+                <div class="input-group input-group-dynamic mb-3 {{ request('search') ? 'is-filled' : '' }}">
+                    <label class="form-label">Cari Nama Karyawan</label>
+                    <x-input 
+                        type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        onkeyup="searchTable()" 
+                    />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <x-btn type="submit" variant="dark" class="btn-sm mb-0 flex-grow-1">Terapkan</x-btn>
+                    <a class="btn btn-light btn-sm mb-0" 
+                       href="{{ route('hrms::payroll.approvals.index', ['start_at' => $start_at->format('Y-m-d'), 'end_at' => $end_at->format('Y-m-d')]) }}" 
+                       title="Reset">
+                        <i class="material-symbols-rounded text-sm">restart_alt</i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header pb-0 p-3">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="material-symbols-rounded me-2">info</i> Informasi
+            </h6>
+        </div>
+        <div class="card-body p-3 pt-0">
+            <p class="text-xxs text-muted mb-0">
+                Gunakan filter di atas untuk menyaring data payroll yang memerlukan persetujuan berdasarkan unit kerja atau periode tertentu.
+            </p>
+        </div>
+    </div>
+@endpush
+
 @section('body-content')
      @include('components.navbar-admin')
-    <div class="row container-fluid">
-        <div class="col-md-8">
-            <section>
-                <x-table
-                :isSearch="true"
-                type="material"
-                :data="$employees"
-                :columns="$columns"
-                title="Daftar karyawan"
-                {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
-                :trash="$trashed"
-            />
-            </section>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h6>Filter</h6>
-                </div>
-                <div class="card-body border-top">
-                    <form class="form-block" action="{{ route('hrms::payroll.approvals.index') }}" method="get">
-                        <div class="mb-3">
-                            <label class="form-label required">Periode</label>
-                            <x-date-range-select />
-                        </div>
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Departement">
-                             <x-select
-                                id="select-departments"
-                                name="department"
-                                placeholder="Semua departemen"
-                                data-dependent="#select-positions"
-                                data-source="positions"
-                                :options="$departments->map(function($department) {
-                                    return [
-                                        'value' => $department->id,
-                                        'label' => $department->name,
-                                        'data-positions' => $department->positions->pluck('name', 'id'),
-                                        'selected' => request('department') == $department->id
-                                    ];
-                                })->toArray()"
-                            />
-                         </x-input-group>
-
-                         <x-input-group :isRow="false" :isInputGroup="true" label="Jabatan">
-                            <x-select
-                                id="select-positions"
-                                name="position"
-                                placeholder="Semua jabatan"
-                            />
-                        </x-input-group>
-
-
-                        <x-input-group :isRow="false" :isInputGroup="true" label="Nama">
-                            <x-input
-                                class="mb-3"
-                                name="search"
-                                placeholder="Cari nama karyawan ..."
-                                value="{{ request('search') }}"
-                                onkeyup="searchTable()"
-                            />
-                        </x-input-group>
-
-                        <div class="d-flex justify-content-between">
-                            <x-btn type="submit" variant="dark">Terapkan</x-btn>
-                            <a class="btn btn-light" href="{{ route('hrms::payroll.approvals.index', ['start_at' => $start_at->format('Y-m-d'), 'end_at' => $end_at->format('Y-m-d')]) }}"><i class="mdi mdi-refresh"></i> Reset</a>
-                        </div>
-                    </form>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <section>
+                    <x-table
+                    :isSearch="true"
+                    type="material"
+                    :data="$employees"
+                    :columns="$columns"
+                    title="Daftar karyawan"
+                    {{-- searchRoute="{{ route('hrms::service.attendance.schedules.index', ['search' => request('search')]) }}" --}}
+                    :trash="$trashed"
+                />
+                </section>
             </div>
         </div>
     </div>
