@@ -17,18 +17,30 @@ class ClassRoomController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        // $this->authorize('access', StudentSemesterCounseling::class);
-        
         $acsem = $this->acsem;
-
         $user = auth()->user();
-    	$student = $user->student->semesters;
-        $classroom = $student->first()->classroom_id;
 
-        $students = StudentSemester::with('student')->where(['semester_id' => $acsem->id, 'classroom_id' => $classroom])->paginate($request->get('limit', 10));
-        $studentsCount = StudentSemester::with('student')->where(['semester_id' => $acsem->id, 'classroom_id' => $classroom])->count();
+        $first = $user->student?->semesters->first();
+
+        if (is_null($first)) {
+            return redirect()->back()->with('danger', 'Data semester atau kelas tidak ditemukan!');
+        }
+
+        $classroom = $first->classroom_id;
+
+        if (!$classroom) {
+            return redirect()->back()->with('danger', 'Anda belum diplot ke kelas manapun!');
+        }
+
+        $query = StudentSemester::with('student')->where([
+            'semester_id' => $acsem->id, 
+            'classroom_id' => $classroom
+        ]);
+
+        $studentsCount = $query->count();
+        $students = $query->paginate($request->get('limit', 10));
 
         return view('academic::classroom', compact('acsem', 'students', 'studentsCount'));
     }

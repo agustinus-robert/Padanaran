@@ -24,6 +24,10 @@
 
     <div class="container-fluid">
         <div class="row">
+            <div class="col-md-12">
+                @include('components.alertion-message')
+            </div>
+            
             <div class="col-md-8">
                 <div class="jumbotron mb-4 border bg-white p-4">
 
