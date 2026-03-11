@@ -45,7 +45,9 @@
         
         {{-- Row Info & Actions (SEJAJAR) --}}
         <div class="row align-items-center mb-3">
-            @include('components.alertion-message')
+            <div class="col-md-12">
+                @include('components.alertion-message')
+            </div>
             {{-- KIRI: Count Info --}}
             <div class="col-md-3">
                 @if($count !== null)

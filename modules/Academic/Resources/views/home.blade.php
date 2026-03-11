@@ -22,152 +22,174 @@
         @include('layouts.component.material-admin-top-nav')
     @endif
 
-    <div class="container-fluid">
+    <div class="container-fluid py-4">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-12">
                 @include('components.alertion-message')
             </div>
             
-            <div class="col-md-8">
-                <div class="jumbotron mb-4 border bg-white p-4">
-
-                    @if (session('login_as_nik'))
-                        <h2>Assalamu'alaikum Wali,  {{ \Str::title($user->name) }}!</h2>
-                    @else
-                        <h2>Assalamu'alaikum {{ \Str::title($user->name) }}!</h2>
-                    @endif
-
-                    <p class="text-muted">Selamat datang di {{ config('academic.home.name') }}</p>
-                    <hr>
-                    Tahun Ajaran <strong>{{ $acsem->full_name }}</strong>
-                </div>
-                <div class="card">
-                    <div class="card-header"><i class="mdi mdi-school-outline"></i> <strong>Data nilai</strong></div>
-                    <div class="list-group list-group-flush">
-                        @if (!empty($stsem))
-                            @forelse($stsem->classroom->meets as $meet)
-                                <a class="list-group-item list-group-item-action bg-light" data-toggle="collapse" data-target="#accordion-assessment-{{ $meet->id }}">
-                                    <div class="font-weight-bold mr-4"><i class="mdi mdi-label text-{{ $meet->props->color ?? 'dark' }}"></i> {{ $meet->subject->name }}</div>
-                                </a>
-                                @php($assessments = $stsem->assessments->where('subject_id', $meet->subject_id))
-                                <div id="accordion-assessment-{{ $meet->id }}" class="@if ($loop->first) show @endif list-group list-group-item list-group-flush collapse p-0">
-                                    @forelse($assessments as $assessment)
-                                        <div class="list-group-item d-flex justify-content-between flex-row">
-                                            <div class="font-weight-bold mr-4">{{ $assessment->type_name }}</div>
-                                            <div>{{ $assessment->value }}</div>
-                                        </div>
-                                    @empty
-                                        <div class="list-group-item">Tidak ada data nilai</div>
-                                    @endforelse
-                                </div>
-                            @empty
-                                <div class="list-group-item">Tidak ada jadwal yang diterapkan</div>
-                            @endforelse
-                        @else
-                            <div class="list-group-item">Tidak ada semester aktif</div>
-                        @endif
+            <div class="col-lg-8">
+                {{-- WELCOME BANNER --}}
+                <div class="card card-body border-0 shadow-sm mb-4">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h3 class="fw-bold mb-1 text-dark">
+                                Assalamu'alaikum {{ session('login_as_nik') ? 'Wali,' : '' }} {{ \Str::title($user->name) }}!
+                            </h3>
+                            <p class="text-muted mb-0 small">Selamat datang di {{ config('academic.home.name') }}</p>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-gradient-primary">T.A. {{ $acsem->full_name }}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header"><i class="mdi mdi-school-outline"></i> <strong>Data kasus</strong></div>
-                    <div class="list-group list-group-flush mb-0">
+
+                {{-- DATA NILAI (ACCORDION STYLE) --}}
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-transparent pb-0 border-0">
+                        <h6 class="mb-0 font-weight-bolder"><i class="material-symbols-rounded align-middle me-2">assessment</i>Data Nilai</h6>
+                    </div>
+                    <div class="card-body px-0 pt-2">
+                        <div class="accordion accordion-flush" id="accordionAssessment">
+                            @if (!empty($stsem))
+                                @forelse($stsem->classroom->meets as $meet)
+                                    <div class="accordion-item border-bottom">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button @if (!$loop->first) collapsed @endif text-sm fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $meet->id }}">
+                                                <i class="material-symbols-rounded me-2 text-{{ $meet->props->color ?? 'primary' }} opacity-7">label</i>
+                                                {{ $meet->subject->name }}
+                                            </button>
+                                        </h2>
+                                        <div id="collapse-{{ $meet->id }}" class="accordion-collapse collapse @if ($loop->first) show @endif" data-bs-parent="#accordionAssessment">
+                                            <div class="accordion-body p-0">
+                                                @php($assessments = $stsem->assessments->where('subject_id', $meet->subject_id))
+                                                <ul class="list-group list-group-flush">
+                                                    @forelse($assessments as $assessment)
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center bg-gray-100-soft border-0 mx-3 my-1 border-radius-sm">
+                                                            <span class="text-xs font-weight-bold">{{ $assessment->type_name }}</span>
+                                                            <span class="badge badge-sm bg-white text-dark shadow-xs border-radius-sm">{{ $assessment->value }}</span>
+                                                        </li>
+                                                    @empty
+                                                        <li class="list-group-item text-xs text-muted ps-4 py-3">Belum ada data nilai</li>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="p-4 text-center text-sm text-muted">Tidak ada jadwal yang diterapkan</div>
+                                @endforelse
+                            @else
+                                <div class="p-4 text-center text-sm text-danger">Tidak ada semester aktif</div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- DATA KASUS --}}
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-transparent pb-0 border-0">
+                        <h6 class="mb-0 font-weight-bolder text-danger"><i class="material-symbols-rounded align-middle me-2">gavel</i>Data Kasus / Kedisiplinan</h6>
+                    </div>
+                    <div class="card-body p-3">
                         @if (!empty($stsem))
                             @forelse($stsem->cases as $case)
-                                <div class="list-group-item">
-                                    <div class="d-flex align-items-center flex-row p-1">
-                                        <div class="p-1">
-                                            <i class="mdi mdi-briefcase-account-outline mdi-36px text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <strong>{{ $case->semester->classroom->name . ' - ' . $case->semester->student->full_name }}</strong> <br>
-                                            {{ $case->category->name }} &mdash; {{ $case->description }} <br>
-                                            <small class="text-muted">Saksi: {{ $case->witness }} - {{ \Carbon\Carbon::parse($case->break_at)->diffForHumans() }}</small>
-                                        </div>
-                                        <div class="pl-3 text-center">
-                                            <h2 class="text-danger mb-0">{{ $case->point ?: '?' }}</h2>
-                                            <small class="text-muted">Poin</small>
-                                        </div>
+                                <div class="d-flex bg-gray-100 p-3 border-radius-lg mb-3 align-items-center">
+                                    <div class="icon icon-shape bg-white shadow-sm text-center border-radius-md me-3">
+                                        <i class="material-symbols-rounded text-danger opacity-10">warning</i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-sm mb-0 fw-bold text-dark">{{ $case->category->name }}</h6>
+                                        <p class="text-xs text-secondary mb-1">{{ $case->description }}</p>
+                                        <p class="text-xxs text-muted mb-0">Saksi: {{ $case->witness }} • {{ \Carbon\Carbon::parse($case->break_at)->diffForHumans() }}</p>
+                                    </div>
+                                    <div class="text-center ms-3">
+                                        <h4 class="text-danger mb-0 fw-bold">{{ $case->point ?: '0' }}</h4>
+                                        <p class="text-xxs text-uppercase font-weight-bolder text-secondary mb-0">Poin</p>
                                     </div>
                                 </div>
                             @empty
-                                <div class="list-group-item">Tidak ada data kasus.</div>
+                                <div class="text-center py-3">
+                                    <i class="material-symbols-rounded text-success display-6 d-block mb-2">check_circle</i>
+                                    <span class="text-sm text-muted">Alhamdulillah, tidak ada catatan kasus.</span>
+                                </div>
                             @endforelse
-                        @else
-                            <div class="list-group-item">Tidak ada semester aktif.</div>
                         @endif
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header"><i class="mdi mdi-school-outline"></i> <strong>Data prestasi</strong></div>
-                    <div class="card-body">
+
+                {{-- DATA PRESTASI --}}
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-transparent pb-0 border-0">
+                        <h6 class="mb-0 font-weight-bolder text-success"><i class="material-symbols-rounded align-middle me-2">emoji_events</i>Data Prestasi</h6>
+                    </div>
+                    <div class="card-body p-3">
                         @forelse(optional(optional($student)->user)->achievements ?? [] as $achievement)
-                            <div class="d-flex justify-content-between mb-2 flex-row">
-                                <div class="flex-grow-1 mr-3">
-                                    <span class="badge badge-dark">{{ $achievement->type->name }}</span><br>
-                                    <strong>{{ $achievement->name }}</strong><br>
-                                    Peringkat {{ $achievement->num->name }} di {{ $achievement->territory->name }}<br>
-                                    <span class="text-muted">Tahun {{ $achievement->year }}</span>
+                            <div class="d-flex justify-content-between align-items-center p-3 border border-radius-lg mb-2">
+                                <div>
+                                    <span class="badge bg-light text-dark text-xxs mb-1">{{ $achievement->type->name }}</span>
+                                    <h6 class="text-sm mb-0">{{ $achievement->name }}</h6>
+                                    <p class="text-xs text-secondary mb-0">Peringkat {{ $achievement->num->name }} di {{ $achievement->territory->name }} ({{ $achievement->year }})</p>
                                 </div>
-                                <form class="form-block form-confirm" action="{{ route('administration::scholar.students.achievements.destroy', ['student' => $student->id, 'achievement' => $achievement->id]) }}" method="POST"> @csrf @method('DELETE')
+                                <div class="d-flex gap-2">
                                     @if (Storage::exists($achievement->file))
-                                        <a class="btn btn-primary btn-sm" href="{{ Storage::url($achievement->file) }}" target="_blank">Lihat berkas</a>
+                                        <a href="{{ Storage::url($achievement->file) }}" target="_blank" class="btn btn-link text-primary p-0 mb-0"><i class="material-symbols-rounded">visibility</i></a>
                                     @endif
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</a>
-                                </form>
+                                    <form action="{{ route('administration::scholar.students.achievements.destroy', ['student' => $student->id, 'achievement' => $achievement->id]) }}" method="POST" class="form-confirm">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-link text-danger p-0 mb-0"><i class="material-symbols-rounded">delete</i></button>
+                                    </form>
+                                </div>
                             </div>
                         @empty
-                            <div>Tidak ada data prestasi, silahkan tekan tombol dibawah untuk menambahkan data prestasi.</div>
+                            <div class="p-3 text-center border border-dashed border-radius-lg">
+                                <p class="text-xs text-muted mb-0">Belum ada data prestasi yang tercatat.</p>
+                            </div>
                         @endforelse
                     </div>
                 </div>
             </div>
-            @if (!empty($student->nis))
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="py-4">
-                                <img class="rounded-circle" src="{{ asset('img/default-avatar.svg') }}" alt="" width="128">
-                            </div>
-                            <h5 class="mb-1"><strong>{{ $user->profile->full_name }}</strong></h5>
-                            <p>
-                                NIS. {{ $student->nis ?: '-' }}
-                                @if ($student->nisn)
-                                    <br> NISN. {{ $student->nisn }}
-                                @endif
-                            </p>
-                            <h4 class="mb-0">
-                                @if (!empty($user->phone->whatsapp) && $user->phone->whatsapp)
-                                    <a class="text-primary px-1" href="https://wa.me/{{ $user->phone->number }}" target="_blank"><i class="mdi mdi-whatsapp"></i></a>
-                                @endif
-                                @if (!empty($user->email->verified_at) && $user->email->verified_at)
-                                    <a class="text-danger px-1" href="mailto:{{ $user->email->address }}"><i class="mdi mdi-email-outline"></i></a>
-                                @endif
-                            </h4>
-                        </div>
-                        <div class="list-group list-group-flush border-top">
-                            @foreach ([
-                'Angkatan ke' => optional($student->generation)->name ?: '-',
-                'Masuk pada' => optional($student->entered_at)->diffForHumans() ?: '-',
-                'Bergabung pada' => $user->created_at->diffForHumans(),
-            ] as $k => $v)
-                                <div class="list-group-item border-0">
-                                    {{ $k }} <br>
-                                    <span class="{{ $v ? 'font-weight-bold' : 'text-muted' }}">
-                                        {{ $v ?? 'Belum diisi' }}
-                                    </span>
+
+            {{-- SIDEBAR PROFIL --}}
+            <div class="col-lg-4">
+                @if (!empty($student->nis))
+                    <div class="card card-profile shadow-sm border-0 mb-4">
+                        <div class="card-body text-center p-4">
+                            <img src="{{ asset('img/default-avatar.svg') }}" class="rounded-circle shadow-lg mb-3" width="100">
+                            <h5 class="mb-1 text-dark fw-bold">{{ $user->profile->full_name }}</h5>
+                            <p class="text-xs text-secondary mb-3">NIS. {{ $student->nis }} | NISN. {{ $student->nisn ?? '-' }}</p>
+                            
+                            <div class="text-start bg-gray-100 p-3 border-radius-lg mb-3">
+                                <div class="d-flex justify-content-between mb-2 text-xs">
+                                    <span class="text-secondary">Angkatan:</span>
+                                    <span class="fw-bold">{{ optional($student->generation)->name ?: '-' }}</span>
                                 </div>
-                            @endforeach
-                            <div class="list-group-item text-muted border-0">
-                                <i class="mdi mdi-account-circle"></i> User ID : {{ $user->id }}
+                                <div class="d-flex justify-content-between mb-2 text-xs">
+                                    <span class="text-secondary">Masuk:</span>
+                                    <span class="fw-bold">{{ optional($student->entered_at)->diffForHumans() ?: '-' }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between text-xs">
+                                    <span class="text-secondary">Status Akun:</span>
+                                    <span class="text-success fw-bold">Aktif</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-2">
+                                @if (!empty($user->phone->whatsapp))
+                                    <a href="https://wa.me/{{ $user->phone->number }}" target="_blank" class="btn btn-sm btn-outline-success">WA Orang Tua</a>
+                                @endif
+                                @if (!empty($user->email->verified_at))
+                                    <a href="mailto:{{ $user->email->address }}" class="btn btn-sm btn-outline-danger">Email</a>
+                                @endif
                             </div>
                         </div>
                     </div>
-                </div>
-            @else
-                <div class="col-md-4">
-                    <div class="alert alert-info"> User ini Tidak terdaftar sebagai murid</div>
-                </div>
-            @endif
+                @else
+                    <div class="alert alert-info border-0 text-white shadow-sm text-sm" role="alert">
+                        User ini tidak terdaftar sebagai murid aktif.
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 @endsection

@@ -46,38 +46,53 @@
     ];
 @endphp
 
+@push('additional-content')
+    <div class="card mb-3 shadow-none border">
+        <div class="card-header pb-0 p-3 bg-transparent">
+            <h6 class="mb-0 d-flex align-items-center text-sm">
+                <i class="material-symbols-rounded me-2 text-dark">settings</i> Lanjutan
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            <div class="list-group list-group-flush">
+                <a href="{{ route('counseling::manage.counseling.categories.index') }}" 
+                   class="list-group-item list-group-item-action border-0 d-flex align-items-center px-0 py-2 text-sm text-primary">
+                    <div class="icon icon-shape icon-xs bg-gradient-primary shadow text-center border-radius-sm me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-symbols-rounded text-white" style="font-size: 1rem;">inventory_2</i>
+                    </div>
+                    <span class="fw-bold">Kelola Kategori</span>
+                </a>
+            </div>
+            
+            <hr class="horizontal dark my-2">
+            
+            <div class="p-2 bg-gray-100 border-radius-sm">
+                <p class="text-xxs text-muted mb-0">
+                    <i class="material-symbols-rounded text-xs me-1">info</i>
+                    Konfigurasi jenis dan kategori konseling akademik.
+                </p>
+            </div>
+        </div>
+    </div>
+@endpush
+
 @section('body-content')
     @include('components.navbar-admin')
 
-    <div class="row container-fluid">
-        <div class="col-md-7 col-lg-8">
-            <x-table
-                type="material"
-                :data="$counselings"
-                :columns="$columns"
-                title="Data Konseling"
-                searchRoute="{{ route('academic::counselings.index', ['academic' => request('academic')]) }}"
-                :trash="$trashed"
-            />
-        </div>
-        <div class="col-md-5 col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="h1 text-muted mb-4 text-right">
-                        <i class="mdi mdi-file-cabinet float-right"></i>
-                    </div>
-                    <div class="text-value">{{ $counselings_count }}</div>
-                    <small class="text-muted text-uppercounseling font-weight-bold">Jumlah konseling saat ini </small>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <i class="mdi mdi-cogs float-left mr-2"></i>Lanjutan
-                </div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('counseling::counselings.create', ['next' => url()->full()]) }}"><i class="mdi mdi-file-plus-outline"></i> Input konseling baru</a>
-                    <a class="list-group-item list-group-item-action text-primary" href="{{ route('counseling::manage.counseling.categories.index') }}"><i class="mdi mdi-file-cabinet"></i> Kelola kategori</a>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <x-table
+                    type="material"
+                    :data="$counselings"
+                    :columns="$columns"
+                    title="Data Konseling"
+                    createRoute="{{ route('counseling::counselings.create', ['next' => url()->current()]) }}"
+                    searchRoute="{{ route('academic::counselings.index', ['academic' => request('academic')]) }}"
+                    :trash="$trashed"
+                    :count="$counselings_count"
+                    countLabel="Jumlah Perizinan Tertunda"
+                />
             </div>
         </div>
     </div>

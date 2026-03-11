@@ -23,19 +23,25 @@ class ActivityHistoryController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        // $this->authorize('access', StudentSemesterCounseling::class);
-        
+    {        
         $acsem = $this->acsem;
-
         $user = auth()->user();
-    	$student = $user->student->semesters;
-        $classroom = $student->first()->classroom_id;
+
+        // 1. Validasi awal: Ambil data semester/kelas
+        $firstSemester = $user->student?->semesters->first();
+
+        // Jika data semester kosong, jangan dipaksa ambil classroom_id
+        if (is_null($firstSemester) || empty($firstSemester->classroom_id)) {
+            return redirect()->back()->with('danger', 'Data akademik atau kelas Anda tidak ditemukan.');
+        }
+
+        $classroom = $firstSemester->classroom_id;
 
         $leaveTable = (new BoardingStudentsLeave)->getTable();
         $boardingTable = (new BoardingStudents)->getTable();
 
-        $actived = UserLog::with('modelable')
+        // 2. Query Log Aktivitas
+        $activedQuery = UserLog::with('modelable')
             ->where('user_id', $user->id)
             ->where(function ($q) use ($leaveTable, $boardingTable, $user) {
                 $q->where(function ($sub) use ($leaveTable, $user) {
@@ -57,9 +63,15 @@ class ActivityHistoryController extends Controller
             })
             ->orderByDesc('created_at');
 
-                    // paginate
-        $activityStudent = $actived->paginate();
-        $activityStudentNum = (clone $actived)->count();
+        // 3. Cek jumlah data aktivitas
+        $activityStudentNum = $activedQuery->count();
+
+        if ($activityStudentNum === 0) {
+            return redirect()->back()->with('danger', 'Belum ada riwayat aktivitas yang tercatat.');
+        }
+
+        // 4. Paginate hasil akhir
+        $activityStudent = $activedQuery->paginate($request->get('limit', 10));
 
         return view('academic::activity-history', compact('acsem', 'activityStudent', 'activityStudentNum'));
     }
