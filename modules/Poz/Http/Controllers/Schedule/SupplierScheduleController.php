@@ -20,19 +20,42 @@ class SupplierScheduleController extends Controller
     /**
      * Show the dashboard page.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = [];
+        $outletId = $request->outlet;
 
-        $data['column'] = [
-            dbuilder_table('time', 'Shift'),
-            dbuilder_table('total_supplier', 'Jumlah Supplier', false, true),
-            dbuilder_table('action', 'Aksi', false, false),
+        $timeLabels = [
+            'morning' => 'Pagi',
+            'afternoon' => 'Siang',
+            'evening' => 'Sore',
         ];
 
-        $data['title'] = 'Supplier';
+        // Ambil data langsung di sini
+        $schedules = collect($timeLabels)->map(function ($label, $key) use ($outletId) {
+            $total = SupplierSchedule::where('time', $key)
+                ->whereNull('deleted_at')
+                ->whereHas('supplier.outlets', function ($query) use ($outletId) {
+                    $query->where('outlet_id', $outletId);
+                })
+                ->distinct('supplier_id')
+                ->count('supplier_id');
 
-        return view('poz::schedule.supplier_schedule', $data);
+            return (object)[
+                'label' => $label,
+                'key' => $key,
+                'total_supplier' => $total,
+                'url' => route('poz::schedule.supplier_schedule.show', [
+                    'supplier_schedule' => $key,
+                    'outlet' => $outletId,
+                ])
+            ];
+        });
+
+        return view('poz::schedule.supplier_schedule', [
+            'title' => 'Supplier Schedule',
+            'schedules' => $schedules,
+            'outletId' => $outletId
+        ]);
     }
 
     public function show($supplier_schedule){
