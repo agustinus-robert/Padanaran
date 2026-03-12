@@ -1,61 +1,72 @@
 <div>
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="font-size-18 mb-0">Pajak</h4>
-
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pajak</a></li>
-                        <li class="breadcrumb-item active">{{ $action }} Pajak</li>
+    <div class="row mb-4 align-items-center">
+        <div class="col-12 d-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="fw-bold mb-1">Pajak</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0" style="font-size: 0.8rem;">
+                        <li class="breadcrumb-item"><a href="#" class="text-muted text-decoration-none">Master</a></li>
+                        <li class="breadcrumb-item active text-secondary">{{ $action }} Pajak</li>
                     </ol>
-                </div>
+                </nav>
             </div>
         </div>
     </div>
 
-    <div class="card card-primary card-outline mb-4"> <!--begin::Header-->
-        <div class="card-header">
-            <div class="card-title">{{ $action }} Pajak</div>
-        </div> <!--end::Header--> <!--begin::Form-->
-        <form wire:submit="save" enctype="multipart/form-data"> <!--begin::Body-->
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Code</label>
-                    <input disabled wire:model="form.code" type="text" class="form-control">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+            <h5 class="card-title mb-0 fw-bold text-dark">{{ $action }} Pajak</h5>
+        </div>
+        
+        <form wire:submit="save"> 
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">Code</label>
+                        <input disabled wire:model="form.code" type="text" class="form-control bg-light border-0">
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label small fw-bold text-secondary">Nama Pajak</label>
+                        <input type="text" class="form-control @error('form.name') is-invalid @enderror" 
+                               wire:model="form.name" placeholder="Contoh: PPN 11%">
+                        @error('form.name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label small fw-bold text-secondary">Aktifkan Pada</label>
+                        <select class="form-select @error('form.actived_on') is-invalid @enderror" wire:model="form.actived_on">
+                            <option value="">Pilih Penempatan Pajak</option>
+                            <option value="1">Produk</option>
+                            <option value="2">Penjualan / Penjualan POS</option>
+                        </select>
+                        @error('form.actived_on')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">Tarif (%)</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" class="form-control @error('form.rate') is-invalid @enderror" 
+                                   wire:model="form.rate" placeholder="0">
+                            <span class="input-group-text bg-white text-secondary">%</span>
+                        </div>
+                        @error('form.rate')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Nama Pajak</label>
-                    <input type="text" class="form-control" wire:model="form.name">
-                    @error('form.name')
-                        <span class="text-danger mt-2"><i class="bi bi-exclamation-triangle text-danger"></i> {{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Aktifkan Pada</label>
-                    <select class="form-select" wire:model="form.actived_on">
-                        <option value="">Pilih</option>
-                        <option value="1">Produk</option>
-                        <option value="2">Penjualan/Penjualan POS</option>
-                    </select>
-
-                    @error('form.actived_on')
-                        <span class="text-danger mt-2"><i class="bi bi-exclamation-triangle text-danger"></i> {{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Tarif</label>
-                    <input class="form-control" wire:model="form.rate" />
-                    @error('form.rate')
-                        <span class="text-danger mt-2"><i class="bi bi-exclamation-triangle text-danger"></i> {{ $message }}</span>
-                    @enderror
-                </div>
-
-            </div> <!--end::Body--> <!--begin::Footer-->
-            <div class="card-footer"> <button type="submit" class="btn btn-primary">Submit</button> </div> <!--end::Footer-->
-        </form> <!--end::Form-->
+            <div class="card-footer bg-light p-4 text-end border-top-0">
+                <button type="button" class="btn btn-link text-muted text-decoration-none me-2">Batal</button>
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                    Simpan Data Pajak
+                </button>
+            </div>
+        </form>
     </div>
 </div>
