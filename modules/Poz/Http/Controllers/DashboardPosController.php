@@ -18,6 +18,7 @@ class DashboardPosController extends Controller
     public function index(Request $request)
     {
         $outletId = $request->outlet;
+        
         $productStocks = ProductStock::with('product')->get();
 
         $filteredStocksPurchase = $productStocks->filter(function ($stock) {

@@ -18,7 +18,6 @@
     <meta property="og:url" content="">
     <meta property="og:image" content="">
 
-
     @if(config('theme.default') == 'material')
         @include('layouts.component.material-style')
     @elseif(config('theme.default') == 'skote')
@@ -33,7 +32,7 @@
 </head>
 
 <body class="g-sidenav-show bg-gray-100" data-topbar="dark" data-layout="horizontal">
-
+    
     @if(config('theme.default') == 'material')
         @if (!Route::has('portal::dashboard.index'))
             @include('layouts.component.material-admin-nav')

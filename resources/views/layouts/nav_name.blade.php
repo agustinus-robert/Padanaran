@@ -1,6 +1,6 @@
 <div class="dropdown d-inline-block">
     <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <img class="rounded-circle header-profile-user" src="{{ Auth::user()->profile_avatar_path }}" style="width:40px !important;" alt="Header Avatar">
+        {{-- <img class="rounded-circle header-profile-user" src="{{ Auth::user()->profile_avatar_path }}" style="width:40px !important;" alt="Header Avatar"> --}}
         @if (session('login_as_nik'))
             <span class="d-none d-xl-inline-block ms-1" key="t-henry">Wali, {{ Auth::user()->name }}</span>
         @else

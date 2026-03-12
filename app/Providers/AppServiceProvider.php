@@ -12,6 +12,8 @@ use Modules\Admin\Http\Controllers\Configure\DataTableConfigureController;
 use Modules\Admin\Http\Controllers\CustomFeature\DataTableCustomController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -67,6 +69,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+         View::composer('*', function ($view) {
+            if (Auth::check()) {
+                $theme = Auth::user()->employee->position->position_id !== 11
+                    ? 'material'
+                    : 'skote';
+
+                config(['theme.default' => $theme]);
+            }
+        });
+            
         if (config('theme.default') === 'material') {
             Paginator::defaultView('vendor.pagination.material-paginate');
             Paginator::defaultSimpleView('vendor.pagination.material-simple');

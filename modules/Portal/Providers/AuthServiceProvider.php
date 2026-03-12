@@ -40,7 +40,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('is-casier', function(User $user){
             $employee = $user->regularEmp;
 
-
             if ($employee && $employee->contract) {
                 $positionType = $employee->position->position->type;
 

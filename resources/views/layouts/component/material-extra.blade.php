@@ -164,6 +164,7 @@
                         ['route' => 'portal::dashboard-msdm.index', 'icon' => 'captive_portal', 'label' => 'Portal'],
                         ['route' => 'finance::dashboard', 'icon' => 'payments', 'label' => 'Finance'],
                         ['route' => 'boarding::dashboard', 'icon' => 'home_work', 'label' => 'Pondok'],
+                        // ['route' => 'portal::dashboard.index', 'icon' => 'local_convenience_store', 'label' => 'Point Of Sale'],
                     ];
                 @endphp
                 @foreach($moduls as $m)

@@ -17,8 +17,10 @@ class IsPozMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        return Gate::authorize('poz::access')
-            ? $next($request)
-            : abort(403);
+        if (Gate::allows('poz::access')) {
+            return $next($request);
+        }
+
+        abort(403);
     }
 }

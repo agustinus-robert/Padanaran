@@ -137,13 +137,37 @@
                     <form class="form-block" action="{{ route('finance::service.overtime.manage.index') }}" method="get">
                         <div class="mb-3">
                             <label class="form-label required">Periode pengajuan</label>
-                            <div class="input-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-daterangepicker="true" data-daterangepicker-start="[name='start_at']" data-daterangepicker-end="[name='end_at']">
-                                    <span class="d-inline d-sm-none"><i class="mdi mdi-sort-clock-descending-outline"></i></span>
-                                    <span class="d-none d-sm-inline">Rentang waktu</span>
-                                </button>
-                                <input class="form-control" type="date" name="start_at" value="{{ date('Y-m-d', strtotime($start_at)) }}" required>
-                                <input class="form-control" type="date" name="end_at" value="{{ date('Y-m-d', strtotime($end_at)) }}" required>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                    <button type="button" 
+                                            class="btn btn-white border-end d-flex align-items-center gap-2 px-3" 
+                                            data-daterangepicker="true" 
+                                            data-daterangepicker-start="[name='start_at']" 
+                                            data-daterangepicker-end="[name='end_at']"
+                                            style="background: #fff; border: 1px solid #dee2e6;">
+                                        <i class="mdi mdi-calendar-range text-primary"></i>
+                                        <span class="d-none d-md-inline fw-semibold small text-dark">Rentang Waktu</span>
+                                    </button>
+
+                                    <input class="form-control form-control-sm border-start-0 ps-2" 
+                                        type="date" 
+                                        name="start_at" 
+                                        value="{{ date('Y-m-d', strtotime($start_at)) }}" 
+                                        required 
+                                        style="max-width: 140px; border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; font-size: 0.85rem;">
+
+                                    <span class="input-group-text bg-white border-start-0 border-end-0 text-muted px-1">
+                                        <i class="mdi mdi-arrow-right-thin"></i>
+                                    </span>
+
+                                    <input class="form-control form-control-sm border-start-0" 
+                                        type="date" 
+                                        name="end_at" 
+                                        value="{{ date('Y-m-d', strtotime($end_at)) }}" 
+                                        required 
+                                        style="max-width: 140px; border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; border-right: 1px solid #dee2e6; font-size: 0.85rem;">
+                                </div>
                             </div>
                         </div>
                         <div class="mb-3">

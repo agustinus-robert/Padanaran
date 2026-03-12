@@ -6,3 +6,7 @@
 <link href="{{ asset('skote/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('skote/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 <script src="{{ asset('skote/js/plugin.js') }}"></script>
+<link href="{{ asset('material/css/nucleo-icons.css') }}" rel="stylesheet" />
+<link href="{{ asset('material/css/nucleo-svg.css') }}" rel="stylesheet" />
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />

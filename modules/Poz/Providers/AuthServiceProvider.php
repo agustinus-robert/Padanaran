@@ -24,39 +24,53 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Gate::define(
-        //     'admin::access',
-        //     fn(User $user) => count(array_filter(array_map(fn($policy) => (new $policy())->access($user), $this->policies)))
-        // );
 
-        Gate::define('poz::access', function (User $user) {
-            $employee = $user->regularEmp;
+        Gate::define('poz::access', function ($user) {
+            $allowedPositions = [10, 11];
 
-            if ($employee && $employee->contract && $employee->contract->position && $employee->contract->position->position) {
-                $positionType = $employee->contract->position->position->type;
-
-                if ($positionType === \Modules\Core\Enums\PositionTypeEnum::KASIRTOKO) {
-                    return true;
-                }
-            }
-
-            return false;
+            return in_array(
+                $user->employee?->position?->position_id,
+                $allowedPositions
+            );
         });
 
+        Gate::define('supplier::access', function ($user) {
+            $allowedPositions = [12];
 
-        Gate::define('supplier::access', function (User $user) {
-            $employee = $user->regularEmp;
-
-            if ($employee && $employee->contract) {
-                $positionType = $employee->position->position->type;
-
-                if ($positionType === \Modules\Core\Enums\PositionTypeEnum::SUPPLIER) {
-                    return true;
-                }
-            }
-
-            return false;
+            return in_array(
+                $user->employee?->position?->position_id,
+                $allowedPositions
+            );
         });
+
+        // Gate::define('poz::access', function (User $user) {
+        //     $employee = $user->regularEmp;
+
+        //     if ($employee && $employee->contract && $employee->contract->position && $employee->contract->position->position) {
+        //         $positionType = $employee->contract->position->position->type;
+
+        //         if ($positionType === \Modules\Core\Enums\PositionTypeEnum::KASIRTOKO) {
+        //             return true;
+        //         }
+        //     }
+
+        //     return false;
+        // });
+
+
+        // Gate::define('supplier::access', function (User $user) {
+        //     $employee = $user->regularEmp;
+
+        //     if ($employee && $employee->contract) {
+        //         $positionType = $employee->position->position->type;
+
+        //         if ($positionType === \Modules\Core\Enums\PositionTypeEnum::SUPPLIER) {
+        //             return true;
+        //         }
+        //     }
+
+        //     return false;
+        // });
         //poz::supplier.dashboard
 
         //  Gate::define('poz::access', function (User $user) {
