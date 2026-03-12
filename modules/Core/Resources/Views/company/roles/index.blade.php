@@ -159,7 +159,7 @@
                                     @error('name') <small class="text-danger">{{ $message }}</small> @enderror
                                 </div>
                                 <div class="mb-0">
-                                    <x-btn variant="dark"><span class="material-symbols-rounded">check</span> Simpan</x-btn>
+                                    <x-btn variant="success"><span class="material-symbols-rounded">check</span> Simpan</x-btn>
                                 </div>
                             </form>
                         </div>

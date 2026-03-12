@@ -109,8 +109,10 @@
 
                             {{-- Tombol --}}
                             <x-input-group>
-                                <x-btn type="submit" variant="success">{{ $student ? 'Perbarui' : 'Simpan' }}</x-btn>
-                                <x-btn href="{{ request('next', route('administration::scholar.students.index')) }}" variant="secondary">Kembali</x-btn>
+                                <x-col size="12" offset="3">
+                                    <x-btn type="submit" variant="success">{{ $student ? 'Perbarui' : 'Simpan' }}</x-btn>
+                                    <x-btn href="{{ request('next', route('administration::scholar.students.index')) }}" variant="secondary">Kembali</x-btn>
+                                </x-col>
                             </x-input-group>
                         </form>
                     </div>

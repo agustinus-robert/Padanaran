@@ -81,8 +81,8 @@
                 type="material"
                 :data="$insurances"
                 :columns="$columns"
-                :createCan="['store', Modules\Core\Models\CompanyBuilding::class]"
-                createRoute="{{ route('core::company.insurances.manages.create', ['next' => url()->current()]) }}"
+                {{-- :createCan="['store', Modules\Core\Models\CompanyBuilding::class]"
+                createRoute="{{ route('core::company.insurances.manages.create', ['next' => url()->current()]) }}" --}}
                 title="Daftar Asuransi"
                 searchRoute="{{ route('core::company.insurances.manages.index', ['search' => request('search')]) }}"
                 :trash="$trashed"

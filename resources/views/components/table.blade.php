@@ -47,6 +47,12 @@
         <div class="row align-items-center mb-3">
             <div class="col-md-12">
                 @include('components.alertion-message')
+
+                @if($trash)
+                    <div class="alert alert-warning text-dark mt-2 mb-0 py-2 border-warning">
+                        <i class="material-symbols-rounded text-sm">report</i> Menampilkan data yang dihapus
+                    </div>
+                @endif
             </div>
             {{-- KIRI: Count Info --}}
             <div class="col-md-3">
@@ -107,16 +113,6 @@
         </div>
 
         {{-- Alerts --}}
-        <div class="row px-2">
-            @if(Session::has('success'))
-                <div class="alert alert-success text-white py-2">{{ Session::get('success') }}</div>
-            @endif
-            @if($trash)
-                <div class="alert alert-warning text-dark mt-2 mb-0 py-2 border-warning">
-                    <i class="material-symbols-rounded text-sm">report</i> Menampilkan data yang dihapus
-                </div>
-            @endif
-        </div>
 
         {{-- Table --}}
         <div class="table-responsive p-0 mt-3">

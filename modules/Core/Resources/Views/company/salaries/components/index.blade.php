@@ -191,8 +191,8 @@
                                 </x-input-group>
 
 
-                                <div>
-                                    <x-btn class="mt-3" type="submit" variant="dark">
+                                <div class="mt-4">
+                                    <x-btn class="mt-3" type="submit" variant="success">
                                             <span class="material-symbols-rounded">check</span> Simpan
                                     </x-btn>
                                 </div>

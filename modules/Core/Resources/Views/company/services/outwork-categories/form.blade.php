@@ -106,18 +106,19 @@
                         </x-col>
                     </x-input-group>
 
-                    {{-- Action --}}
-                    <div class="row mt-4">
-                        <div class="col-lg-8 offset-lg-3">
+                     <x-input-group>
+                        <x-col size="12" offset="3">
                             <x-btn type="submit" variant="success">
-                                <span class="material-symbols-rounded">check</span> {{ $isEdit ? 'Update' : 'Simpan' }}
+                                Simpan
                             </x-btn>
 
-                            <a class="btn btn-light text-dark" href="{{ request('next', route('core::company.services.outwork-categories.index')) }}">
-                                <i class="mdi mdi-arrow-left"></i> Kembali
+                            <a class="btn btn-secondary"
+                            href="{{ request('next', route('core::company.services.outwork-categories.index')) }}">
+                                Kembali
                             </a>
-                        </div>
-                    </div>
+                        </x-col>
+                    </x-input-group>
+                    {{-- Action --}}
 
                 </form>
             </div>

@@ -79,7 +79,7 @@
 
                         <div class="required row mb-3">
                             <label class="col-lg-4 col-xl-3 col-form-label">Visibilitas</label>
-                            <div class="col-lg-8 text-center">
+                            <div class="col-lg-8">
                                 <div class="btn-group">
                                     <input class="btn-check" type="radio" id="is_visible1" name="is_visible" value="1" required autocomplete="off"
                                         @checked(!is_null(old('is_visible', $department->is_visible ?? null)) && old('is_visible', $department->is_visible ?? null) == 1) />
@@ -100,14 +100,18 @@
                             </div>
                         </div>
 
+                         <x-input-group>
+                            <x-col size="12" offset="3">
+                                <x-btn type="submit" variant="success">
+                                    Simpan
+                                </x-btn>
 
-                        <div class="row mb-3">
-                            <div class="col-lg-8 offset-lg-4 offset-xl-3">
-                                {{-- <button class="btn btn-soft-danger"><i class="mdi mdi-check"></i> Simpan</button> --}}
-                                <x-btn variant="success">Simpan</x-btn>
-                                <a class="btn btn-light text-dark" href="{{ request('next', route('core::company.departments.index')) }}"><i class="mdi mdi-arrow-left"></i> Kembali</a>
-                            </div>
-                        </div>
+                                <a class="btn btn-secondary"
+                                href="{{ request('next', route('core::company.departments.index')) }}">
+                                    Kembali
+                                </a>
+                            </x-col>
+                        </x-input-group>
                     </form>
                 </div>
             </div>

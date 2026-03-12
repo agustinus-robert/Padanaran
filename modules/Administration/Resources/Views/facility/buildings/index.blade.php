@@ -199,7 +199,7 @@ $columns = [
                                 </x-col>
                             </x-input-group>
 
-                            <x-input-group class="mt-2">
+                            <x-input-group class="mt-3">
                                 <x-btn type="submit" variant="success">
                                     Simpan
                                 </x-btn>

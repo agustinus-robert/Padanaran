@@ -178,8 +178,8 @@
 
                         {{-- Tombol --}}
                         <x-input-group>
-                            <x-col size="8" offset="3">
-                                <x-btn type="submit" variant="primary">
+                            <x-col size="12" offset="3">
+                                <x-btn type="submit" variant="success">
                                     {{ isset($meet) ? 'Update' : 'Simpan' }}
                                 </x-btn>
 

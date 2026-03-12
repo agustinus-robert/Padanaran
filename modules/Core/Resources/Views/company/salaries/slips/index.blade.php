@@ -126,8 +126,8 @@
                                     </x-col>
                                 </x-input-group>
 
-                                <div class="mt-2">
-                                    <x-btn variant="dark"><span class="material-symbols-rounded">check</span> Simpan</x-btn>
+                                <div class="mt-4">
+                                    <x-btn variant="success"><span class="material-symbols-rounded">check</span> Simpan</x-btn>
                                 </div>
                             </form>
                         </div>

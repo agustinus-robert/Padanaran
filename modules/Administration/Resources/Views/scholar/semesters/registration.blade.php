@@ -118,10 +118,13 @@
                         <div class="alert alert-info d-none" id="msg-alert">
                             Anda akan meregesitrasikan <strong><span id="msg-count">0</span> siswa</strong> ke kelas <strong><span id="msg-classroom"></span></strong>
                         </div>
-                        <div class="form-group mb-0">
-                            <button type="submit" class="btn btn-success">Simpan</button>
-                            <a class="btn btn-secondary" href="{{ request('next', route('administration::scholar.semesters.index')) }}"> Kembali</a>
-                        </div>
+
+                        <x-input-group>
+                            <x-col size="12" offset="3">
+                                <x-btn type="submit" variant="success">Simpan</x-btn>
+                                <x-btn href="{{ request('next', route('administration::scholar.semesters.index')) }}" variant="secondary">Kembali</x-btn>
+                            </x-col>
+                        </x-input-group>
                     </form>
                 </div>
             </div>

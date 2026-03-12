@@ -146,14 +146,9 @@
                                 </x-input-group>
 
                                 {{-- Button submit --}}
-                                <x-input-group :isRow="false">
-                                    <x-col size="12">
-                                        <x-btn type="submit" variant="dark">
-                                            <span class="material-symbols-rounded">check</span> Simpan
-                                        </x-btn>
-                                    </x-col>
-                                </x-input-group>
-
+                                <div class="mt-4">
+                                    <x-btn variant="success"><span class="material-symbols-rounded">check</span> Simpan</x-btn>
+                                </div>
                             </form>
                         </div>
                     </div>

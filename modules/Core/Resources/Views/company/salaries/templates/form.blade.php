@@ -251,19 +251,22 @@
                                             Dengan ini saya menyatakan data di atas adalah valid
                                         </label>
                                     </div>
-
-                                    {{-- Tombol aksi --}}
-                                    <div class="d-flex gap-2 mt-2">
-                                        <x-btn variant="dark"><span class="material-symbols-rounded">check</span> Simpan</x-btn>
-                                        <a class="btn btn-light text-dark" href="{{ request('next', route('core::company.salaries.templates.index')) }}">
-                                            <i class="mdi mdi-arrow-left"></i> Kembali
-                                        </a>
-                                    </div>
-
                             </div>
                         </x-col>
                     </div>
 
+                     <x-input-group>
+                        <x-col size="12" offset="3">
+                            <x-btn type="submit" variant="success">
+                                {{ isset($meet) ? 'Update' : 'Simpan' }}
+                            </x-btn>
+
+                            <a class="btn btn-secondary"
+                            href="{{ request('next', route('core::company.salaries.templates.index')) }}">
+                                Kembali
+                            </a>
+                        </x-col>
+                    </x-input-group>
                 </form>
             </div>
         </div>

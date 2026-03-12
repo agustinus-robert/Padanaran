@@ -168,7 +168,7 @@
                         </x-input-group>
 
                         <x-input-group>
-                            <x-col size="8" offset="3">
+                            <x-col size="12" offset="3">
                                 <x-btn type="submit" variant="success">
                                     {{ isset($classroom) ? 'Update' : 'Simpan' }}
                                 </x-btn>

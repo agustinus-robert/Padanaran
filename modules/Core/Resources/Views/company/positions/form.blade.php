@@ -230,18 +230,18 @@
 
                         <hr class="horizontal dark my-4">
 
-                        {{-- ACTION BUTTONS --}}
-                        <div class="row">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <a class="btn btn-light mb-0" href="{{ request('next', route('core::company.positions.index')) }}">
-                                    Batal
-                                </a>
-                                <x-btn variant="dark" class="mb-0">
-                                    <span class="material-symbols-rounded text-sm">check</span>
-                                    {{ $isEdit ? 'Update Jabatan' : 'Simpan Jabatan' }}
+                        <x-input-group>
+                            <x-col size="12" offset="3">
+                                <x-btn type="submit" variant="success">
+                                    Simpan
                                 </x-btn>
-                            </div>
-                        </div>
+
+                                <a class="btn btn-secondary"
+                                href="{{ request('next', route('core::company.positions.index')) }}">
+                                    Kembali
+                                </a>
+                            </x-col>
+                        </x-input-group>
                     </div>
                 </div>
             </div>
