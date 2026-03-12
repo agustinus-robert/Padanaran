@@ -1,5 +1,4 @@
 <style>
-    /* Custom Styling */
     .custom-card {
         border: none;
         border-radius: 12px;
