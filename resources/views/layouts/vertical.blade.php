@@ -28,6 +28,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- END Icons -->
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" id="css-main" href="{{ asset('material/css/material-dashboard-full.min.css') }}">
+    
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" id="bootstrap-style" href="{{ asset('skote/css/bootstrap.min.css') }}" type="text/css">
