@@ -26,7 +26,7 @@ class SubjectController extends Controller
         $trashed = $request->get('trash');
 
         $acsems = AcademicSemester::openedByDesc()->get();
-        $gradesLevels = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $gradesLevels = GradeLevel::pluck('id');
 
         $subjects = AcademicSubject::where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
@@ -55,8 +55,8 @@ class SubjectController extends Controller
         $acsems = AcademicSemester::openedByDesc()->get();
         $acsem = $acsems->firstWhere('id', $request->get('academic', $acsems->first()->id));
 
-        $levels = GradeLevel::where('grade_id', userGrades())->get();
-        $categories = AcademicSubjectCategory::where('grade_id', userGrades())->get();
+        $levels = GradeLevel::get();
+        $categories = AcademicSubjectCategory::get();
 
         return view('administration::curriculas.subjects.form', compact('acsems', 'acsem', 'levels', 'categories'));
     }
@@ -77,10 +77,14 @@ class SubjectController extends Controller
                 $subject->id
             );
 
-            return redirect($request->get('next', url()->previous()))->with('success', 'Mapel <strong>'.$subject->name.'</strong> berhasil dibuat');
+            return redirect($request->get('next', route('administration::curriculas.subjects.index')))
+                ->with('success', 'Mapel <strong>'.$subject->name.'</strong> berhasil dibuat');
         }
 
-        return redirect($request->get('next', url()->previous()))->with('danger', 'Mapel <strong>'.$subject->name.'</strong> gagal dibuat');
+        return redirect()->back()
+            ->withInput()
+            ->with('danger', 'Mata Pelajaran <strong>'.$subject->name.'</strong> gagal diperbarui. Terjadi kesalahan sistem.')
+            ->withErrors(['Gagal memperbarui data ke database']);
     }
 
     /**
@@ -89,10 +93,14 @@ class SubjectController extends Controller
     public function edit(AcademicSubject $subject, Request $request)
     {
         $this->authorize('show', AcademicSubject::class);
-        $levels = GradeLevel::where('grade_id', userGrades())->get();
+        $levels = GradeLevel::get();
         $categories = AcademicSubjectCategory::all();
+        $acsems = AcademicSemester::openedByDesc()->get();
 
-        return view('administration::curriculas.subjects.form', compact('subject', 'levels', 'categories'));
+        $acsem = $acsems->firstWhere('id', $request->get('academic', $acsems->first()->id));
+
+
+        return view('administration::curriculas.subjects.form', compact('subject', 'levels', 'categories', 'acsems', 'acsem'));
     }
 
     /**
@@ -101,7 +109,10 @@ class SubjectController extends Controller
     public function update(AcademicSubject $subject, UpdateRequest $request)
     {
         $this->authorize('update', AcademicSubject::class);
-        if($subject->update($request->only('kd', 'name', 'level_id', 'category_id', 'color_id', 'score_standard'))){
+
+        $data = $request->only(['kd', 'name', 'level_id', 'category_id', 'color_id', 'score_standard']);
+
+        if($subject->update($data)){
             Auth::user()->log(
                 ' Mapel bernama '.$subject->name.' telah diperbarui '.
                 ' <strong>[ID: ' . $subject->id . ']</strong>',
@@ -109,10 +120,14 @@ class SubjectController extends Controller
                 $subject->id
             );
 
-            return redirect($request->get('next', url()->previous()))->with('success', 'Mapel <strong>'.$subject->name.'</strong> berhasil diperbarui');
+            return redirect($request->get('next', route('administration::curriculas.subjects.index')))
+                ->with('success', 'Mapel <strong>'.$subject->name.'</strong> berhasil diperbarui');
         }
 
-        return redirect($request->get('next', url()->previous()))->with('danger', 'Mapel <strong>'.$subject->name.'</strong> gagal diperbarui');
+        return redirect()->back()
+            ->withInput()
+            ->with('danger', 'Mata Pelajaran <strong>'.$subject->name.'</strong> gagal diperbarui. Terjadi kesalahan sistem.')
+            ->withErrors(['Gagal memperbarui data ke database']);
     }
 
     /**

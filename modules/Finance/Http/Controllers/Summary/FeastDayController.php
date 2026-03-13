@@ -31,9 +31,8 @@ class FeastDayController extends Controller
 
         return view('finance::summary.feastdays.index', [
             ...compact('cutoff_at', 'religions'),
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'employees' => Employee::with('user')
-                ->where('grade_id', userGrades())
                 ->whereHas('user', fn($q) => $q->whereMetaIn('profile_religion', $request->get('religions', array_map(fn($religion) => $religion->value, $religions))))
                 ->has('contract')
                 ->whenWithTrashed($request->get('trashed'))
@@ -57,9 +56,9 @@ class FeastDayController extends Controller
         $moment    = CompanyMoment::whereYear('date', (date('Y') - 1))->get()->filter(fn($value) => $value->meta != null && in_array($religion, $value->meta->religion));
         $start_at  = $moment->count() > 0 && $employee->joined_at->lt(Carbon::parse($moment->first()->date)) ? $period->startOfYear()->format('Y-m-d') : $employee->joined_at->format('Y-m-d');
         $periods   = CarbonPeriod::create($start_at, '1 month', $period->endOfYear()->format('Y-m-d'));
-        $cmpDefaultTemplate = CompanySalaryTemplate::where('grade_id', userGrades())->whereJsonContains('meta->default', true)->first();
+        $cmpDefaultTemplate = CompanySalaryTemplate::whereJsonContains('meta->default', true)->first();
         $defaultTemplate = $cmpDefaultTemplate->components;
-        $feastdayComponents = CompanySalaryTemplate::where('grade_id', userGrades())->whereJsonContains('meta->feastday', true)->first()->components ?? null;
+        $feastdayComponents = CompanySalaryTemplate::whereJsonContains('meta->feastday', true)->first()->components ?? null;
 
         if (is_null($feastdayComponents)) {
             return redirect()->back()->with('danger', 'Belum ada template THR, silakan buat template terlebih dahulu!');

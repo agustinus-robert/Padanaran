@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Cache;
 
 use Modules\Academic\Models\Traits\StudentTrait;
 use Modules\HRMS\Models\EmployeePosition;
+use App\Models\Traits\HasGradeFromSession;
 
 class Student extends Model
 {
-    use SoftDeletes, StudentTrait;
+    use SoftDeletes, StudentTrait, HasGradeFromSession;
 
     /**
      * The table associated with the model.

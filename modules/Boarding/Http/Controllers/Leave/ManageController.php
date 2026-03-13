@@ -25,17 +25,13 @@ class ManageController extends Controller
 	//	$employee = $user->employe;
 
 		$leaves = BoardingStudentsLeave::with('student.user')
-			->whereHas('student', function ($query) {
-				$query->where('grade_id', userGrades());
-			})
+			->whereHas('student')
 			->whenOnlyPending($request->get('pending'))
 			->search($request->get('search'))
 			->latest()
 			->paginate($request->get('limit', 10));
 
-		$pending_leaves_count = BoardingStudentsLeave::whereHas('student', function ($query) {
-				$query->where('grade_id', userGrades());
-		})
+		$pending_leaves_count = BoardingStudentsLeave::whereHas('student')
 		->whenOnlyPending(true)
 		->count();
 
@@ -51,7 +47,7 @@ class ManageController extends Controller
 		$student = $user->student;
         $employee = $user->employee;
 
-        $parentBoard = BoardingStudents::with('employee')->where('grade_id', userGrades())->where('student_id', $leave->student_id)->first();
+        $parentBoard = BoardingStudents::with('employee')->where('student_id', $leave->student_id)->first();
 		$results = config('modules.core.features.services.leaves_student.approvable_enum_available');
 
 		$leave = $leave->load('approvables.userable.position');

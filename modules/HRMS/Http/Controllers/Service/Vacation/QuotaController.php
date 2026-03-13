@@ -24,7 +24,7 @@ class QuotaController extends Controller
 
         $year = $request->get('year', date('Y'));
 
-        $employees = Employee::where('grade_id', userGrades())->with(['user.meta', 'contract', 'vacationQuotas' => fn($quota) => $quota->with('vacations')->whenInYear($year)])
+        $employees = Employee::with(['user.meta', 'contract', 'vacationQuotas' => fn($quota) => $quota->with('vacations')->whenInYear($year)])
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
@@ -40,8 +40,8 @@ class QuotaController extends Controller
         $this->authorize('store', EmployeeVacationQuota::class);
 
         $year = $request->get('year', date('Y'));
-        $categories = CompanyVacationCategory::where('grade_id', userGrades())->get();
-        $employee = Employee::where('grade_id', userGrades())->with(['vacationQuotas' => fn($quota) => $quota->with('vacations')->has('employee.contract')->whenInYear($year)])->find($request->get('employee'));
+        $categories = CompanyVacationCategory::get();
+        $employee = Employee::with(['vacationQuotas' => fn($quota) => $quota->with('vacations')->has('employee.contract')->whenInYear($year)])->find($request->get('employee'));
         $quotanow = getQuotaNow($employee, $year);
 
         return view('hrms::service.vacation.quotas.create', compact('categories', 'employee', 'quotanow'));

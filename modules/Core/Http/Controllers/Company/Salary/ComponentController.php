@@ -26,8 +26,8 @@ class ComponentController extends Controller
 
         return view('core::company.salaries.components.index', [
             'components'   => $this->getCompanySalarySlipComponent($request),
-            'components_count'   => CompanySalarySlipComponent::where('grade_id', userGrades())->count(),
-            'slips'      => CompanySalarySlip::where('grade_id', userGrades())->with('categories')->get(),
+            'components_count'   => CompanySalarySlipComponent::count(),
+            'slips'      => CompanySalarySlip::with('categories')->get(),
             'units'      => SalaryUnitEnum::cases(),
             'operates'   => SalaryOperateEnum::cases(),
         ]);
@@ -52,8 +52,8 @@ class ComponentController extends Controller
         $this->authorize('update', $component);
         return view('core::company.salaries.components.show', [
             'salary'     => $component,
-            'categories' => CompanySalarySlipCategory::where('grade_id', userGrades())->get(),
-            'slips'      => CompanySalarySlip::where('grade_id', userGrades())->get(),
+            'categories' => CompanySalarySlipCategory::get(),
+            'slips'      => CompanySalarySlip::get(),
             'units'      => SalaryUnitEnum::cases(),
             'operates'   => SalaryOperateEnum::cases(),
         ]);

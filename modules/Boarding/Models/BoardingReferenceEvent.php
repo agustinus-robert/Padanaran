@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Academic\Models\Student;
 use Modules\Administration\Models\SchoolBuilding;
 use Modules\Boarding\Enums\BoardingEventTypeEnum;
+use App\Models\Traits\HasGradeFromSession;
 
 class BoardingReferenceEvent extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasGradeFromSession;
 
     /**
      * The table associated with the model.

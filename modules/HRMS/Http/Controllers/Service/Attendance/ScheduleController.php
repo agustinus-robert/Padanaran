@@ -43,7 +43,6 @@ class ScheduleController extends Controller
           //  'contractWithin7Days.schedules' => fn($schedule) => $schedule->whenMonth($request->get('month', date('Y-m'))),
         ])
             ->search($request->get('search'))
-            ->where('grade_id', userGrades())
             ->whenTrashed($request->get('trash'))
             ->whereDoesntHave('contract.position', function ($position) {
                 $position->whereHas('position', function ($type) {
@@ -67,7 +66,7 @@ class ScheduleController extends Controller
     {
         $this->authorize('store', EmployeeSchedule::class);
 
-        $employee = Employee::where('grade_id', userGrades())->findOrFail($request->get('employee'));
+        $employee = Employee::findOrFail($request->get('employee'));
 
         $month = $request->old('month', $request->get('month', date('Y-m')));
 
@@ -75,11 +74,11 @@ class ScheduleController extends Controller
         $end_at = $request->get('end_at', now()->endOfWeek());
 
 
-        $defaultCategoryAcademic = AcademicSubjectCategory::where('grade_id', userGrades())->get();
-        $gradeLevel = GradeLevel::where('grade_id', userGrades())->get();
+        $defaultCategoryAcademic = AcademicSubjectCategory::get();
+        $gradeLevel = GradeLevel::get();
         //set pertamat kali di pengajaran umum
         $defaultLessons = EmployeeScheduleLesson::where(['category_schedule_id' => 1])->get();
-        $defaultCategoryLessons = EmployeeScheduleCategory::where('grade_id', userGrades())->get()->map(fn($item) => [
+        $defaultCategoryLessons = EmployeeScheduleCategory::get()->map(fn($item) => [
             'label' => $item->name,
             'value' => $item->id
         ]);
@@ -133,7 +132,7 @@ class ScheduleController extends Controller
     {
         $this->authorize('update', $schedule);
 
-        $gradeLevel = GradeLevel::where('grade_id', userGrades())->get()->pluck('id');
+        $gradeLevel = GradeLevel::get()->pluck('id');
         $workshifts = TeacherShiftEnum::cases();
         $dates = [];
 
@@ -142,7 +141,7 @@ class ScheduleController extends Controller
         $defaultCategoryAcademic = AcademicSubjectCategory::get();
         //set pertamat kali di pengajaran umum
         $defaultLessons = EmployeeScheduleLesson::where(['category_schedule_id' => 1])->get();
-        $defaultCategoryLessons = EmployeeScheduleCategory::where('grade_id', userGrades())->get();
+        $defaultCategoryLessons = EmployeeScheduleCategory::get();
 
         $start_at = $request->get('start_at', now()->startOfWeek());
         $end_at = $request->get('end_at', now()->endOfWeek());

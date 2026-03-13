@@ -26,16 +26,12 @@ class ContractController extends Controller
         $this->authorize('access', EmployeeContract::class);
 
         $contracts = EmployeeContract::with('contract', 'employee.user')
-            ->whereHas('employee', function ($q) {
-              $q->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
 
-        $contracts_count = EmployeeContract::whereHas('employee', function ($q) {
-              $q->where('grade_id', userGrades());
-            })->active()->count();
+        $contracts_count = EmployeeContract::whereHas('employee')->active()->count();
 
         return view('hrms::employment.contracts.index', compact('contracts', 'contracts_count'));
     }
@@ -47,8 +43,8 @@ class ContractController extends Controller
     {
         $this->authorize('store', EmployeeContract::class);
 
-        $employee = Employee::where('grade_id', userGrades())->withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee')));
-        $contracts = CompanyContract::where('grade_id', userGrades())->get();
+        $employee = Employee::withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee')));
+        $contracts = CompanyContract::whereHas('employee')->get();
         return view('hrms::employment.contracts.form', compact('contracts', 'employee'));
     }
 
@@ -95,7 +91,7 @@ class ContractController extends Controller
 
         return view('hrms::employment.contracts.form', [
             'cmpcontracts' => CompanyContract::all(),
-            'employee' => Employee::where('grade_id', userGrades())->withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee'))),
+            'employee' => Employee::withTrashed()->with('user')->find($request->old('employee_id', $request->get('employee'))),
             'contract' => $contract
         ]);
     }

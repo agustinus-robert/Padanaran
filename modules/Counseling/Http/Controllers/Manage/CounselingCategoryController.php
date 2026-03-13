@@ -20,11 +20,11 @@ class CounselingCategoryController extends Controller
 
         $trashed = $request->get('trash');
 
-        $categories = AcademicCounselingCategory::where('grade_id', userGrades())->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
+        $categories = AcademicCounselingCategory::where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
         })->paginate($request->get('limit', 10));
 
-        $categories_count = AcademicCounselingCategory::where('grade_id', userGrades())->count();
+        $categories_count = AcademicCounselingCategory::count();
 
         return view('counseling::manage.counselings.categories.index', compact('categories', 'categories_count'));
     }

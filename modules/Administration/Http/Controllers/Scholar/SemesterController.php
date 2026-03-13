@@ -30,12 +30,12 @@ class SemesterController extends Controller
         $acsem = $acsems->firstWhere('open', 1);
 
         $stsems = StudentSemester::where('semester_id', $request->get('acsem', $acsem->id))->whereHas('student', function ($student) use ($request) {
-            return $student->where('grade_id', userGrades())->search($request->get('search', ''));
+            return $student->search($request->get('search', ''));
         })->paginate($request->get('limit', 10));
 
         $stsems_count = StudentSemester::where('semester_id', $request->get('acsem', $acsem->id))
         ->whereHas('student', function ($student) use ($request) {
-            return $student->where('grade_id', userGrades())->search($request->get('search', ''));
+            return $student->search($request->get('search', ''));
         })
         ->count();
 
@@ -49,7 +49,7 @@ class SemesterController extends Controller
     {
         $this->authorize('access', AcademicSemester::class);
 
-        $grade = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grade = GradeLevel::pluck('id');
         $aclassRoom = AcademicClassroom::whereIn('level_id', $grade)->whereNull('deleted_at')->get();
         $acsems = AcademicSemester::with(['classrooms' => function($q) use ($grade) {
             $q->whereIn('level_id', $grade);
@@ -59,7 +59,7 @@ class SemesterController extends Controller
                         ? $acsems->firstWhere('id', $request->get('acsem'))
                         : $acsems->firstWhere('open', 1);
 
-        $students = Student::where('grade_id', userGrades())->whereDoesntHave('semesters')->get();
+        $students = Student::whereDoesntHave('semesters')->get();
 
         return view('administration::scholar.semesters.registration', compact('students', 'acsems', 'acsem', 'aclassRoom'));
     }
@@ -71,7 +71,7 @@ class SemesterController extends Controller
     {
         $this->authorize('access', AcademicSemester::class);
 
-        $grade = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grade = GradeLevel::pluck('id');
         $aclassRoom = AcademicClassroom::whereIn('level_id', $grade)->whereNull('deleted_at')->get();
         $acsems = AcademicSemester::with(['classrooms' => function($q) use ($grade) {
             $q->whereIn('level_id', $grade);

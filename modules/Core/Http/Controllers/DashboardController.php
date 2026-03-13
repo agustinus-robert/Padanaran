@@ -16,19 +16,15 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $statistics = [
-            'departments_count' => Models\CompanyDepartment::where('grade_id', userGrades())->count(),
+            'departments_count' => Models\CompanyDepartment::count(),
             'positions_count' => Models\CompanyPosition::count(),
-            'employees_count' => Employee::where('grade_id', userGrades())->count(),
-            'users_count' => User::whereHas('teacher', function($query){
-                $query->where('grade_id', userGrades());
-            })->orWhereHas('student', function($query){
-                $query->where('grade_id', userGrades());
-            })->count(),
+            'employees_count' => Employee::count(),
+            'users_count' => User::whereHas('teacher')
+                ->orWhereHas('student')
+                ->count(),
         ];
 
-        $recent_activities = UserLog::with('user.meta')->whereHas('user.teacher', function($query){
-            $query->where('grade_id', userGrades());
-        })->latest()->limit(5)->get();
+        $recent_activities = UserLog::with('user.meta')->whereHas('user.teacher')->latest()->limit(5)->get();
 
         return view('core::dashboard', compact(
             'statistics',

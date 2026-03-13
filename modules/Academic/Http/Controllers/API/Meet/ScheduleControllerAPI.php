@@ -30,7 +30,7 @@ class ScheduleControllerAPI extends Controller
             $classroomId = $request->get('classroom_id');
             $dayId       = $request->get('day_id');
             $limit       = $request->get('limit', 10);
-            //where('grade_id', userGrades())
+
             $acdmcSchedule = AcademicSubjectSchedule::when($trashed, fn($query) => $query->onlyTrashed())
                 ->when($subjectId, fn($query) => $query->where('subject_id', $subjectId))
                 ->when($teacherId, fn($query) => $query->where('teacher_id', $teacherId))

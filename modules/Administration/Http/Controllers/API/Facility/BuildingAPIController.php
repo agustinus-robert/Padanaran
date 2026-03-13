@@ -26,8 +26,7 @@ class BuildingAPIController extends Controller
         $search  = $request->get('search', '');
         $limit   = $request->get('limit', 10);
 
-        $buildings = SchoolBuilding::where('grade_id', userGrades())
-            ->where('name', 'like', '%'.$search.'%')
+        $buildings = SchoolBuilding::where('name', 'like', '%'.$search.'%')
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->paginate($limit);
 

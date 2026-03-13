@@ -21,7 +21,7 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-        $levels = GradeLevel::where('grade_id', userGrades())->get();
+        $levels = GradeLevel::get();
 
         return [
             'kd'            => 'required|max:191|string',

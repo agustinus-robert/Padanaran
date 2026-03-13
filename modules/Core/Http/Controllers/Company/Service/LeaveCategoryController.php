@@ -21,7 +21,6 @@ class LeaveCategoryController extends Controller
         $this->authorize('access', CompanyLeaveCategory::class);
 
         $categories = CompanyLeaveCategory::with('parent')
-                                        ->where('grade_id', userGrades())
                                         ->whenTrashed($request->get('trash'))
                                         ->search($request->get('search'))
                                         ->paginate($request->get('limit', 10));
@@ -38,7 +37,7 @@ class LeaveCategoryController extends Controller
     {
         $this->authorize('store', CompanyLeaveCategory::class);
 
-        $categories = CompanyLeaveCategory::where('grade_id', userGrades())->whereNull('parent_id')->get();
+        $categories = CompanyLeaveCategory::whereNull('parent_id')->get();
 
         return view('core::company.services.leave-categories.form', compact('categories'));
     }
@@ -64,7 +63,7 @@ class LeaveCategoryController extends Controller
     {
         $this->authorize('update', $category);
 
-        $categories = CompanyLeaveCategory::where('grade_id', userGrades())->whereNull('parent_id')->get();
+        $categories = CompanyLeaveCategory::whereNull('parent_id')->get();
 
         return view('core::company.services.leave-categories.form', compact('categories', 'category'));
     }

@@ -24,8 +24,8 @@ class TemplateController extends Controller
         $this->authorize('access', CompanySalarySlipComponent::class);
 
         return view('core::company.salaries.templates.index', [
-            'templates'      => CompanySalaryTemplate::where('grade_id', userGrades())->whenTrashed($request->get('trash'))->paginate($request->get('limit', 10)),
-            'template_count' => CompanySalaryTemplate::where('grade_id', userGrades())->count(),
+            'templates'      => CompanySalaryTemplate::whenTrashed($request->get('trash'))->paginate($request->get('limit', 10)),
+            'template_count' => CompanySalaryTemplate::count(),
         ]);
     }
 
@@ -37,8 +37,8 @@ class TemplateController extends Controller
         $defaults = collect(setting('cmp_payroll_default_components'));
         return view('core::company.salaries.templates.form', [
             'defaults' => $defaults,
-            'slips' => CompanySalarySlip::with('categories.components')->where('grade_id', userGrades())->get(),
-            'items' => CompanySalarySlipComponent::where('grade_id', userGrades())->get(),
+            'slips' => CompanySalarySlip::with('categories.components')->get(),
+            'items' => CompanySalarySlipComponent::get(),
         ]);
     }
 
@@ -74,8 +74,8 @@ class TemplateController extends Controller
         return view('core::company.salaries.templates.form', [
             'template'   => $template,
             'components' => collect($template['components']),
-            'slips'      => CompanySalarySlip::with('categories.components')->where('grade_id', userGrades())->get(),
-            'items'      => CompanySalarySlipComponent::where('grade_id', userGrades())->get(),
+            'slips'      => CompanySalarySlip::with('categories.components')->get(),
+            'items'      => CompanySalarySlipComponent::get(),
         ]);
     }
 

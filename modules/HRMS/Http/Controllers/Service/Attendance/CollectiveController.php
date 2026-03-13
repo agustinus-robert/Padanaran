@@ -47,16 +47,14 @@ class CollectiveController extends Controller
 
         $contracts = EmployeeContract::with(['employee.user', 'position.position' => fn($w) => $w->with('department')])
             ->whereHas('position.position', fn($p) => $p->where('type', PositionTypeEnum::GURU->value))
-             ->whereHas('employee', function ($q) {
-                $q->where('grade_id', userGrades());
-            })
+             ->whereHas('employee')
             ->active()
             ->get();
 
-        $employees = Employee::where('grade_id', userGrades())->with('user')->whereNull('deleted_at')->get();
+        $employees = Employee::with('user')->whereNull('deleted_at')->get();
 
         $worktime_default = setting('cmp_empl_default_worktimes');
-        $grades = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grades = GradeLevel::pluck('id');
         $academicSubject = AcademicSubject::whereIn('level_id', $grades)->get();
 
         return view('hrms::service.attendance.collective.create', compact('dates', 'workshifts', 'contracts', 'moments', 'worktime_default', 'employees', 'academicSubject'));

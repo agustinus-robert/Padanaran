@@ -31,11 +31,9 @@ class AttendanceController extends Controller
         $start_at = Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00');
         $end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59');
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get();
+        $departments = CompanyDepartment::visible()->with('positions')->get();
 
-        $summaries = EmployeeDataRecapitulation::whereHas('employee', function($query){
-           $query->where('grade_id', userGrades());
-        })->whereType(DataRecapitulationTypeEnum::ATTENDANCE)->whereStrictPeriodIn($start_at, $end_at)->get();
+        $summaries = EmployeeDataRecapitulation::whereHas('employee')->whereType(DataRecapitulationTypeEnum::ATTENDANCE)->whereStrictPeriodIn($start_at, $end_at)->get();
 
         $employees = Employee::with('user', 'contract.position.position')
             ->whereHas('contract.position', function ($position) {
@@ -49,7 +47,6 @@ class AttendanceController extends Controller
                     ]);
                 });
             })
-            ->where('grade_id', userGrades())
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
             ->search($request->get('search'))
             ->paginate($request->get('limit', 10));
@@ -62,7 +59,7 @@ class AttendanceController extends Controller
      */
     public function create(Request $request)
     {
-        $employee = Employee::where('grade_id', userGrades())->findOrFail($request->get('employee'));
+        $employee = Employee::findOrFail($request->get('employee'));
 
         foreach (WorkLocationEnum::cases() as $location) {
             $locations[$location->value] = $location->name;

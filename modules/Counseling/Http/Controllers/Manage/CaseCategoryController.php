@@ -21,12 +21,11 @@ class CaseCategoryController extends Controller
 
         $trashed = $request->get('trash');
 
-        $categories = AcademicCaseCategory::where('grade_id', userGrades())
-        ->withCount('descriptions')->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
+        $categories = AcademicCaseCategory::withCount('descriptions')->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
         })->paginate($request->get('limit', 10));
 
-        $categories_count = AcademicCaseCategory::where('grade_id', userGrades())->count();
+        $categories_count = AcademicCaseCategory::count();
 
         return view('counseling::manage.cases.categories.index', compact('categories', 'categories_count'));
     }

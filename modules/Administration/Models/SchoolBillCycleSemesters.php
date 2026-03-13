@@ -5,10 +5,11 @@ namespace Modules\Administration\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Academic\Models\AcademicSemester;
+use App\Models\Traits\HasGradeFromSession;
 
 class SchoolBillCycleSemesters extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasGradeFromSession;
 
     /**
      * The table associated with the model.

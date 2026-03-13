@@ -29,10 +29,9 @@ class OvertimeController extends Controller
         return view('finance::summary.overtimes.index', [
             'start_at'    => $start_at,
             'end_at'      => $end_at,
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'employees'   => Employee::with(['user', 'contract.position.position', 'dataRecapitulations' => fn($recap) => $recap->whereType(DataRecapitulationTypeEnum::OVERTIME)->whereStrictPeriodIn($start_at, $end_at)])
                 ->withCount(['overtimes' => fn($overtime) => $overtime->whereBetween('paidable_at', [$start_at, $end_at])])
-                ->where('grade_id', userGrades())
                 ->whereHas('contract')
                 ->whereHas('overtimes', fn($overtime) => $overtime->whereBetween('paidable_at', [$start_at, $end_at]))
                 ->whenPositionOfDepartment($request->get('department'), $request->get('position'))

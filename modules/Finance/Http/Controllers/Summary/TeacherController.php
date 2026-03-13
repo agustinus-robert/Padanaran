@@ -43,14 +43,11 @@ class TeacherController extends Controller
             'id',
             CompanyPosition::whereType(PositionTypeEnum::GURU)
                 ->pluck('dept_id')->unique()->toArray()
-        )->where('grade_id', userGrades())->visible()->with(['positions' => fn($poss) => $poss->whereType(PositionTypeEnum::GURU)])->get();
+        )->visible()->with(['positions' => fn($poss) => $poss->whereType(PositionTypeEnum::GURU)])->get();
 
-        $summaries = EmployeeDataRecapitulation::whereHas('employee', function($query){
-            $query->where('grade_id', userGrades());
-        })->whereType(DataRecapitulationTypeEnum::HONOR)->whereStrictPeriodIn($start_at, $end_at)->get();
+        $summaries = EmployeeDataRecapitulation::whereHas('employee')->whereType(DataRecapitulationTypeEnum::HONOR)->whereStrictPeriodIn($start_at, $end_at)->get();
 
         $employees = Employee::with('user', 'contract.position.position')
-            ->where('grade_id', userGrades())
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
             //   ->whereHas('position', fn($position) => $position->whereIn('position_id', $employee->position->position->children->pluck('id')))
             ->whereHas('position.position', fn($q) => $q->where('type', PositionTypeEnum::GURU->value))

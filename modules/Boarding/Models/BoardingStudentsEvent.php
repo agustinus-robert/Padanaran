@@ -9,6 +9,7 @@ use Modules\Boarding\Models\BoardingReferenceEvent;
 use Modules\Administration\Models\SchoolBuilding;
 use Modules\HRMS\Models\Employee;
 
+
 class BoardingStudentsEvent extends Model
 {
     use SoftDeletes;

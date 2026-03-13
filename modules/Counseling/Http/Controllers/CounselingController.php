@@ -30,9 +30,7 @@ class CounselingController extends Controller
                          });
         })->whereHas('semester', function ($q) {
             $q->where('semester_id', $this->acsem->id)
-            ->whereHas('student', function ($q2) {
-                $q2->where('grade_id', userGrades()); // filter ke grade_id
-            });
+            ->whereHas('student');
         })->paginate($request->get('limit', 10));
 
         $counselings_count = StudentSemesterCounseling::whereHas('semester', function ($semester) {
@@ -50,7 +48,7 @@ class CounselingController extends Controller
         $this->authorize('store', StudentSemesterCounseling::class);
         $acsem = $this->acsem;
 
-        $grades = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $grades = GradeLevel::pluck('id');
 
         $classrooms = StudentSemester::with('classroom')
         ->whereHas('classroom', function ($classroom) use ($request, $grades) {
@@ -88,7 +86,7 @@ class CounselingController extends Controller
         $this->authorize('update', StudentSemesterCounseling::class);
         $acsem = $this->acsem;
 
-        $categories = AcademicCounselingCategory::where('grade_id', userGrades())->get();
+        $categories = AcademicCounselingCategory::get();
 
         return view('counseling::counselings.form', compact('acsem', 'categories', 'counseling'));
     }

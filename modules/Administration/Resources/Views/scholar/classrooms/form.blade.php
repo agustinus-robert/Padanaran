@@ -136,7 +136,7 @@
                                 name="major_id"
                                 :value="old('major_id', $classroom->major_id ?? null)"
                                 placeholder="-- Pilih jurusan --"
-                                :options="$acsem->majors->where('grade_id', userGrades())->map(fn($major) => [
+                                :options="$acsem->majors->map(fn($major) => [
                                     'value' => $major->id,
                                     'label' => $major->name
                                 ])"
@@ -148,7 +148,7 @@
                                 name="superior_id"
                                 :value="old('superior_id', $classroom->superior_id ?? null)"
                                 placeholder="-- Pilih unggulan --"
-                                :options="$acsem->superiors->where('grade_id', userGrades())->map(fn($s) => [
+                                :options="$acsem->superiors->map(fn($s) => [
                                     'value' => $s->id,
                                     'label' => $s->name
                                 ])"
@@ -158,10 +158,10 @@
                         <x-input-group label="Wali kelas">
                             <x-select-2
                                 name="supervisor_id"
-                                :value="old('supervisor_id', $classroom->supervisor_id ?? null)"
+                                :value="old('supervisor_id') ?? $classroom->supervisor_id ?? $classroom->supervisor_id ?? null"                                
                                 placeholder="-- Pilih wali kelas --"
                                 :options="$supervisors->map(fn($spv) => [
-                                    'value' => $spv->id,
+                                    'value' => (string) $spv->id, 
                                     'label' => $spv->user->name
                                 ])"
                             />

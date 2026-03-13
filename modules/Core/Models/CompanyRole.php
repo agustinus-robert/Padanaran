@@ -8,12 +8,13 @@ use App\Models\Permission;
 use App\Models\Traits\Cacheable\Cacheable;
 use App\Models\Traits\Restorable\Restorable;
 use App\Models\Traits\Searchable\Searchable;
+use App\Models\Traits\HasGradeFromSession;
 use Modules\Account\Models\User;
 use App\Models\References\Grade;
 
 class CompanyRole extends Model
 {
-    use Cacheable, Searchable, Restorable;
+    use Cacheable, Searchable, Restorable, HasGradeFromSession;
 
     /**
      * The table associated with the model.

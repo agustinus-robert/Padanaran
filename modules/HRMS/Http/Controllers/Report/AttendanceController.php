@@ -25,7 +25,7 @@ class AttendanceController extends Controller
         $start_at = Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00');
         $end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59');
 
-        $employeeCollections = Employee::where('grade_id', userGrades())->whereHas('contract')->with([
+        $employeeCollections = Employee::whereHas('contract')->with([
             'user.meta',
             'contract.position.position',
             'schedules' => fn($schedule) => $schedule->wherePeriodIn($start_at, $end_at)
@@ -37,9 +37,7 @@ class AttendanceController extends Controller
 
         $employeeCollections->each(function ($employee) use ($start_at, $end_at) {
             $employee->scanlogs = $scanlogs = EmployeeScanLog::where('empl_id', $employee->id)
-                ->whereHas('employee', function($query){
-                    $query->where('grade_id', userGrades());
-                })
+                ->whereHas('employee')
                 ->where('created_at', '>=', $start_at)
                 ->where('created_at', '<=', $end_at)
                 ->get()
@@ -77,7 +75,7 @@ class AttendanceController extends Controller
 
         $period = $start_at->isSameDay($end_at) ? $end_at->isoFormat('DD MMM YYYY') : $start_at->isoFormat('DD MMM') . ' s.d. ' . $end_at->isoFormat('DD MMM YYYY');
 
-        $employees = Employee::where('grade_id', userGrades())->whereHas('contract')->with([
+        $employees = Employee::whereHas('contract')->with([
             'user.meta',
             'contract.position.position',
             'schedules' => fn($schedule) => $schedule->wherePeriodIn($start_at, $end_at)
@@ -85,9 +83,7 @@ class AttendanceController extends Controller
 
         $employees->each(function ($employee) use ($start_at, $end_at) {
             $employee->scanlogs = EmployeeScanLog::where('empl_id', $employee->id)
-                ->whereHas('employee', function($query){
-                    $query->where('grade_id', userGrades());
-                })
+                ->whereHas('employee')
                 ->where('created_at', '>=', $start_at)
                 ->where('created_at', '<=', $end_at)
                 ->get();

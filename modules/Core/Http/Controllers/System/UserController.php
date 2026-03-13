@@ -22,17 +22,14 @@ class UserController extends Controller
         $this->authorize('access', User::class);
 
         $users = User::with('roles', 'meta', 'teacher')
-            ->whereHas('teacher', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('teacher')
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
 
-        $users_count = User::with('teacher')->whereHas('teacher', function($query){
-            $query->where('grade_id', userGrades());
-        })->orWhereHas('student', function($query) {
-            $query->where('grade_id', userGrades());
+        $users_count = User::where(function($q) {
+            $q->whereHas('teacher')
+            ->orWhereHas('student');
         })->count();
 
         return view('core::system.users.index', compact('users', 'users_count'));
@@ -55,7 +52,7 @@ class UserController extends Controller
     public function show(Request $request, User $user)
     {
         $this->authorize('update', $user);
-        $roles = CompanyRole::where('grade_id', userGrades())->get();
+        $roles = CompanyRole::get();
 
         return in_array($request->get('page', 'profile'), ['profile', 'username', 'email', 'phone', 'role'])
             ? view('core::system.users.show', compact('user', 'roles'))

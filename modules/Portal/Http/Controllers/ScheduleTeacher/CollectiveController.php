@@ -52,7 +52,6 @@ class CollectiveController extends Controller
             'schedules' => fn($schedule) => $schedule->where('start_at', $start_at)->where('end_at', $end_at),
         ])
             // ->whereHas('position', fn($position) => $position->whereIn('position_id', $employee->position->position->children->pluck('id')))
-            ->where('grade_id', userGrades())
             ->when($type, fn($t) => $t->whereHas('position.position', fn($q) => $q->where('type', PositionTypeEnum::GURU->value)))
             ->search($request->get('search'))->whenTrashed($request->get('trash'))->get();
 
@@ -67,9 +66,7 @@ class CollectiveController extends Controller
 
         $calendarData = EmployeeScheduleTeacher::whereMonth('start_at', $month) // Ambil berdasarkan bulan
             ->with(['employee.user', 'employee.position.position'])
-            ->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->get()
             ->groupBy('empl_id');
 

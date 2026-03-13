@@ -25,7 +25,6 @@ class StudentWebController extends Controller
             $students = Cache::tags(['students'])->remember($cacheKey, now()->addMinutes(60), function () use ($trashed, $search, $gradeId) {
                 Log::info('sedang membuat cache');
                 $std = Student::with('user')
-                    ->where('grade_id', $gradeId)
                     ->when($search, fn($query) => $query->whereHas('user', fn($q) => $q->where('name', 'like', "%{$search}%")))
                     ->when($trashed, fn($query) => $query->onlyTrashed())
                     ->orderByDesc('id')

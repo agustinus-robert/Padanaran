@@ -38,7 +38,7 @@ class StudentController extends Controller
         $grades = [];
 
         if(!empty($request->education)){
-            $grades = GradeLevel::where('grade_id', $request->education)->with('grade')->get()->pluck('id');
+            $grades = GradeLevel::with('grade')->get()->pluck('id');
         }
 
         $semesterStudent = StudentSemester::with('classroom')->whereHas('classroom', function($q) use ($grades) {

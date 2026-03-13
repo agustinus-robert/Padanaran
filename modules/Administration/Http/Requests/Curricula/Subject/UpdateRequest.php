@@ -21,7 +21,7 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $levels = GradeLevel::where('grade_id', config('school.grade'))->get();
+        $levels = GradeLevel::get();
 
         return [
             'kd'            => 'required|max:191|string',

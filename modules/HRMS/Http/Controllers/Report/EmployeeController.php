@@ -29,7 +29,6 @@ class EmployeeController extends Controller
                 'contracts',
                 fn ($contracts) => $contracts->with('positions.position.department')->whereActivePeriod($start_at, $end_at)
             )
-            ->where('grade_id', userGrades())
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
@@ -51,7 +50,7 @@ class EmployeeController extends Controller
 
         $period = $start_at->isSameDay($end_at) ? $end_at->isoFormat('DD MMM YYYY') : $start_at->isoFormat('DD MMM') . ' s.d. ' . $end_at->isoFormat('DD MMM YYYY');
 
-        $employees = Employee::where('grade_id', userGrades())->whereHas('contracts', fn ($contract) => $contract->whereActivePeriod($start_at, $end_at))
+        $employees = Employee::whereHas('contracts', fn ($contract) => $contract->whereActivePeriod($start_at, $end_at))
             ->with([
                 'user.meta',
                 'contracts' => fn ($c) => $c->with('contract', 'positions.position.department'),
@@ -218,7 +217,7 @@ class EmployeeController extends Controller
             })
         ];
 
-        $leave_ctgs = CompanyLeaveCategory::where('grade_id', userGrades())->all();
+        $leave_ctgs = CompanyLeaveCategory::all();
         $json['Rekapitulasi izin karyawan'] = [
             'columns' => [
                 'number' => 'No',
@@ -283,14 +282,14 @@ class EmployeeController extends Controller
 
         $period = $start_at->isSameDay($end_at) ? $end_at->isoFormat('DD MMM YYYY') : $start_at->isoFormat('DD MMM') . ' s.d. ' . $end_at->isoFormat('DD MMM YYYY');
 
-        $employees = Employee::where('grade_id', userGrades())->whereHas('contracts', fn ($contract) => $contract->whereActivePeriod($start_at, $end_at))
+        $employees = Employee::whereHas('contracts', fn ($contract) => $contract->whereActivePeriod($start_at, $end_at))
             ->with([
                 'user.meta',
                 'contracts' => fn ($c) => $c->whereActivePeriod($start_at, $end_at)->with('contract', 'positions.position.department')
             ])
             ->get();
 
-        CompanyDepartment::where('grade_id', userGrades())->visible()->get()->each(function ($dept) use (&$sheets, $employees, $end_at) {
+        CompanyDepartment::visible()->get()->each(function ($dept) use (&$sheets, $employees, $end_at) {
             $sheets[$dept->name] = [
                 'columns' => [
                     'number' => 'No',

@@ -14,8 +14,8 @@ class PtkpController extends Controller
     public function index(Request $request)
     {
         return view('finance::tax.ptkp.index', [
-            'ptkps'      => CompanyPtkp::where('grade_id', userGrades())->whenTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
-            'ptkp_count' => CompanyPtkp::where('grade_id', userGrades())->count(),
+            'ptkps'      => CompanyPtkp::whenTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
+            'ptkp_count' => CompanyPtkp::count(),
         ]);
     }
 }

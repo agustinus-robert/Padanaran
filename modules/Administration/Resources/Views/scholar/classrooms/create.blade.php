@@ -93,7 +93,7 @@
                             name="major_id"
                             :value="old('major_id')"
                             placeholder="-- Pilih jurusan --"
-                            :options="$acsem->majors->where('grade_id', userGrades())->map(fn($major) => [
+                            :options="$acsem->majors->map(fn($major) => [
                                 'value' => $major->id,
                                 'label' => $major->name
                             ])"
@@ -106,7 +106,7 @@
                             name="superior_id"
                             :value="old('superior_id')"
                             placeholder="-- Pilih unggulan --"
-                            :options="$acsem->superiors->where('grade_id', userGrades())->map(fn($s) => [
+                            :options="$acsem->superiors->map(fn($s) => [
                                 'value' => $s->id,
                                 'label' => $s->name
                             ])"

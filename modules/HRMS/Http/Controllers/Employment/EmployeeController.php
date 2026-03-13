@@ -26,12 +26,11 @@ class EmployeeController extends Controller
         $this->authorize('access', Employee::class);
 
         $employees = Employee::with('user.meta', 'contract.positions.position')
-            ->where('grade_id', userGrades())
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
 
-        $employees_count = Employee::where('grade_id', userGrades())->count();
+        $employees_count = Employee::count();
         $employee = null;
 
         return view('hrms::employment.employees.index', compact('employees', 'employees_count', 'employee'));

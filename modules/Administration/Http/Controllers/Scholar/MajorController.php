@@ -25,7 +25,6 @@ class MajorController extends Controller
         $acsems = AcademicSemester::openedByDesc()->get();
 
         $majors = AcademicMajor::with('classrooms')->where('name', 'like', '%'.$request->get('search').'%')
-        ->where('grade_id', userGrades())
         ->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
         })->where('semester_id', $request->get('academic', $acsems->first()->id))->orderByDesc('id')->paginate($request->get('limit', 10));

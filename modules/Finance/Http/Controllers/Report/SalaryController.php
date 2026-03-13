@@ -27,12 +27,11 @@ class SalaryController extends Controller
 
         return view('finance::report.salaries.index', [
             ...compact('start_at', 'end_at'),
-            'departments' => CompanyDepartment::visible()->where('grade_id', userGrades())->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'hasApprovedSalaries' => EmployeeSalary::whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('approved_at')->count(),
             'hasReleasedSalaries' => EmployeeSalary::whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('released_at')->count(),
             'employees' => Employee::with(['salaries' => fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')), 'user', 'position.position'])
                 ->whereHas('salaries', fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')))
-                ->where('grade_id', userGrades())
                 ->whenWithTrashed($request->get('trashed'))
                 ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
                 ->search($request->get('search'))
@@ -56,11 +55,10 @@ class SalaryController extends Controller
                 'dataRecapitulations' => fn ($salary) => $salary->whereType(DataRecapitulationTypeEnum::ATTENDANCE)->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')),
                 'salaries' => fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))
             ])
-            ->where('grade_id', userGrades())
             ->whereHas('salaries', fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')))->get();
 
         $component_ids = $employees->pluck('salaries.*.components.*.ctgs.*.i.*.component_id')->flatten()->unique()->sort()->values();
-        $components = CompanySalarySlipComponent::with('slip', 'category')->where('grade_id', userGrades())->whereIn('id', $component_ids)->get(['id', 'slip_id', 'ctg_id', 'name'])->groupBy(['slip.name', 'category.name']);
+        $components = CompanySalarySlipComponent::with('slip', 'category')->whereIn('id', $component_ids)->get(['id', 'slip_id', 'ctg_id', 'name'])->groupBy(['slip.name', 'category.name']);
         $attendances = config('modules.core.features.recapitulations.attendances');
 
         return response()->json([

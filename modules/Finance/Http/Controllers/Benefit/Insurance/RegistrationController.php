@@ -25,7 +25,6 @@ class RegistrationController extends Controller
         return view('finance::benefit.insurances.index', [
             'required_salary' => ($required_salary = CompanyInsurancePrice::pluck('price_factor_additional')->flatten()->unique()->filter()),
             'employees' => Employee::with(['user', 'position.position', 'insurances.price.insurance', 'salaryTemplate' => fn($item) => $item->whereHas('items.component', fn($component) => $component->whereIn('kd', $required_salary))])
-                ->where('grade_id', userGrades())
                 ->search($request->get('search'))
                 ->paginate($request->get('limit', 10)),
         ]);
@@ -39,14 +38,13 @@ class RegistrationController extends Controller
         $this->authorize('store', EmployeeInsurance::class);
 
         $employee = Employee::with(['salaryTemplate' => fn($template) => $template->hasPrimarySalary()->with('items.component')])
-        ->where('grade_id', userGrades())
         ->find($request->get('employee'));
 
         $refSal = setting('cmp_insurance_max_salary') ?? (config('modules.hrms.features.benefit.insurance.maxSalary') ?? 0);
 
         return view('finance::benefit.insurances.create', [
             'employee' => $employee,
-            'insurances' => CompanyInsurance::with('prices.insurance')->where('grade_id', userGrades())->get(),
+            'insurances' => CompanyInsurance::with('prices.insurance')->get(),
             'max_salary' => $employee->getMainSalary() > $refSal ? $refSal : $employee->getMainSalary()
         ]);
     }

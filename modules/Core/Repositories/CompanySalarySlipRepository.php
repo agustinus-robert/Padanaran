@@ -12,7 +12,6 @@ trait CompanySalarySlipRepository
     public function getCompanySalarySlip($request)
     {
         return $slips = CompanySalarySlip::whenTrashed($request->get('trash'))
-            ->where('grade_id', userGrades())
             ->search($request->get('search'))
             ->orderBy('az')
             ->paginate($request->get('limit', 10));

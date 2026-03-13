@@ -17,15 +17,12 @@ class StudentController extends Controller
 {
 	public function index(Request $request)
     {
-        $boardingFacilityStdn = BoardingStudents::with('student', 'ground')->where('grade_id', userGrades())->whereNull('deleted_at')->paginate(10);
-        $students = Student::with('user')->where('grade_id', userGrades())->whereNull('deleted_at')->get();
-        $buildings = SchoolBuilding::where('grade_id', userGrades())->whereNull('deleted_at')->get();
-        $room = SchoolBuildingRoom::whereHas('building', function ($query) {
-            $query->where('grade_id', userGrades()); 
-        })->whereNull('deleted_at')->get();
+        $boardingFacilityStdn = BoardingStudents::with('student', 'ground')->whereNull('deleted_at')->paginate(10);
+        $students = Student::with('user')->whereNull('deleted_at')->get();
+        $buildings = SchoolBuilding::whereNull('deleted_at')->get();
+        $room = SchoolBuildingRoom::whereNull('deleted_at')->get();
 
-        $empBoarding = Employee::where('grade_id', userGrades())
-        ->whereHas('contract.position', function ($query) {
+        $empBoarding = Employee::whereHas('contract.position', function ($query) {
             $query->where('position_id', PositionTypeEnum::PENGASUH);
         })->get();
 
@@ -62,16 +59,14 @@ class StudentController extends Controller
     public function edit(BoardingStudents $student){
 
         $boardingFacilityStdn = BoardingStudents::with('student', 'ground')
-            ->where('grade_id', userGrades())
             ->whereNull('deleted_at')
             ->paginate(10);
 
-        $students = Student::with('user')->where('grade_id', userGrades())->whereNull('deleted_at')->get();
-        $buildings = SchoolBuilding::whereNull('deleted_at')->where('grade_id', userGrades())->get();
+        $students = Student::with('user')->whereNull('deleted_at')->get();
+        $buildings = SchoolBuilding::whereNull('deleted_at')->get();
         $empBoarding = Employee::whereHas('contract.position', function ($query) {
             $query->where('position_id', PositionTypeEnum::PENGASUH);
         })
-        ->where('grade_id', userGrades())
         ->get();
 
         return view('boarding::facility.student.index', [

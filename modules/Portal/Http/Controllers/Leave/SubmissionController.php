@@ -41,7 +41,7 @@ class SubmissionController extends Controller
 	{
 		$employee = $request->user()->employee;
 
-		$categories = CompanyLeaveCategory::with('children')->where('grade_id', userGrades())->whereNull('parent_id')->get();
+		$categories = CompanyLeaveCategory::with('children')->whereNull('parent_id')->get();
 
 		return view('portal::leave.submission.create', compact('employee', 'categories'));
 	}

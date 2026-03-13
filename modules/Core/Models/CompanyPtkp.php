@@ -7,10 +7,11 @@ use App\Models\Traits\Restorable\Restorable;
 use App\Models\Traits\Searchable\Searchable;
 use Modules\Account\Enums\MariageEnum;
 use Modules\Account\Enums\SexEnum;
+use App\Models\Traits\HasGradeFromSession;
 
 class CompanyPtkp extends Model
 {
-    use Restorable, Searchable;
+    use Restorable, Searchable, HasGradeFromSession;
 
     /**
      * The table associated with the model.

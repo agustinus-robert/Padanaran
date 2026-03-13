@@ -31,7 +31,6 @@ class ValidationController extends CalculationController
                 'salaries' => fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')),
                 'user', 'position.position'
             ])
-                ->where('grade_id', userGrades())
                 ->whenWithTrashed($request->get('trashed'))
                 ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
                 ->isActive()

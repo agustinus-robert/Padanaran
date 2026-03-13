@@ -39,7 +39,7 @@ class TeachingController extends Controller
         $start_at = Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00');
         $end_at   = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59');
 
-        $departmentsQuery = CompanyDepartment::where('grade_id', userGrades())->whereIn(
+        $departmentsQuery = CompanyDepartment::whereIn(
             'id',
             CompanyPosition::whereType(PositionTypeEnum::GURU)
                 ->pluck('dept_id')->unique()->toArray()
@@ -51,10 +51,8 @@ class TeachingController extends Controller
             $departments = $departmentsQuery->with(['positions' => fn($poss) => $poss->whereType(PositionTypeEnum::GURU)])->get();
         //}
 
-        $summaries = EmployeeRecapSubmission::whereHas('employee', function($query){
-            $query->where('grade_id', userGrades());
-        })->whereType(DataRecapitulationTypeEnum::HONOR)->whereStrictPeriodIn($start_at, $end_at)->get();
-        $employeesQuery = Employee::where('grade_id', userGrades())->with('user', 'contract.position.position')
+        $summaries = EmployeeRecapSubmission::whereHas('employee')->whereType(DataRecapitulationTypeEnum::HONOR)->whereStrictPeriodIn($start_at, $end_at)->get();
+        $employeesQuery = Employee::with('user', 'contract.position.position')
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
             ->whereHas('position', fn($position) => $position->whereIn('position_id', $employee->position->position->children->pluck('id')));
 
@@ -85,7 +83,7 @@ class TeachingController extends Controller
      */
     public function create(Request $request)
     {
-        $employee = Employee::where('grade_id', userGrades())->findOrFail($request->get('employee'));
+        $employee = Employee::findOrFail($request->get('employee'));
         $userNow = $request->user()->employee->position->position_id;
 
         $workHour = $employee->getMeta('default_workhour');
@@ -128,7 +126,6 @@ class TeachingController extends Controller
         // kalau untuk perhitungan dikunci ke 2 jam (mis: 08:00 - 10:00)
 
         $employee = Employee::with('user', 'contract', 'schedulesTeachers', 'vacations', 'leaves')
-        ->where('grade_id', userGrades())
         ->findOrFail($request->get('employee'));
 
         $employeeVacations = $employee->vacations()->with('quota.category')->get();

@@ -28,15 +28,12 @@ class HomeMsdmController extends Controller
         //->filter(fn($leave) => $leave->hasAllApprovableResultIn('APPROVE'))
         $today = date('Y-m-d');
         $leaves_today = EmployeeLeave::with('employee.user.meta')
-            ->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->whereRaw("jsonb_path_exists(dates, '$[*] ? (@.d == \"$today\")')")
             ->get()
             ->filter(fn($v) => $v->hasAllApprovableResultIn('APPROVE'));
 
         $vacations_today = EmployeeVacation::with('quota.employee.user.meta')
-            ->where('grade_id', userGrades())
             ->whereRaw("jsonb_path_exists(dates, '$[*] ? (@.d == \"$today\")')")
             ->get()
             ->filter(fn($v) => $v->hasAllApprovableResultIn('APPROVE'));

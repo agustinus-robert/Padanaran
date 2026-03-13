@@ -22,11 +22,10 @@ class VacationCategoryController extends Controller
         $this->authorize('access', CompanyVacationCategory::class);
 
         $categories = CompanyVacationCategory::whenTrashed($request->get('trash'))
-                                        ->where('grade_id', userGrades())
                                         ->search($request->get('search'))
                                         ->paginate($request->get('limit', 10));
 
-        $categories_count = CompanyVacationCategory::where('grade_id', userGrades())->count();
+        $categories_count = CompanyVacationCategory::count();
 
         return view('core::company.services.vacation-categories.index', compact('categories', 'categories_count'));
     }

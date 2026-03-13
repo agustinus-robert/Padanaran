@@ -22,7 +22,7 @@ class ManageController extends Controller
         $this->authorize('access', CompanyInsurance::class);
 
         return view('core::company.insurances.manages.index', [
-            'insurances' => CompanyInsurance::with('prices')->where('grade_id', userGrades())->paginate($request->get('limit', 10)),
+            'insurances' => CompanyInsurance::with('prices')->paginate($request->get('limit', 10)),
         ]);
     }
 

@@ -39,7 +39,6 @@ class CalculationController extends Controller
                 //        ->whereHas('user', fn($q) => $q->whereMetaIn('profile_religion', $request->get('religions', array_map(fn($religion) => $religion->value, $religions))))
                 ->whenWithTrashed($request->get('trashed'))
                 ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
-                ->where('grade_id', userGrades())
                 ->isActive()
                 ->search($request->get('search'))
                 ->paginate($request->get('limit', 10)),
@@ -66,7 +65,6 @@ class CalculationController extends Controller
 
         $start_at = Carbon::parse($request->get('start_at') . ' 00:00:00');
         $end_at = Carbon::parse($request->get('end_at') . ' 23:59:59');
-        //where('grade_id', userGrades())
         $components = CompanySalarySlipComponent::with('category.slip')->get();
         $employee = Employee::has('contract')->with('salaryTemplates.items.component')->find($request->get('employee'));
 

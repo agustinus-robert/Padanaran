@@ -20,12 +20,10 @@ class ManageController extends Controller
         $start_at = $request->get('start_at', date('Y-m-01'));
         $end_at = $request->get('end_at', date('Y-m-t'));
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get();
+        $departments = CompanyDepartment::visible()->with('positions')->get();
 
         $leaves = EmployeeLeave::with('employee.user', 'category', 'approvables.userable.position')
-            ->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->whenPeriod($start_at, $end_at)
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
             ->whenWithTrashed($request->get('trashed'))

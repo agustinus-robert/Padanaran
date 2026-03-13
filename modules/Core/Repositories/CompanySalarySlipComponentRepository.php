@@ -12,7 +12,6 @@ trait CompanySalarySlipComponentRepository
     public function getCompanySalarySlipComponent($request)
     {
         return $salaries = CompanySalarySlipComponent::whenTrashed($request->get('trash'))
-            ->where('grade_id', userGrades())
             ->with('category', 'slip')
             ->search($request->get('search'))
             ->orderBy('id')

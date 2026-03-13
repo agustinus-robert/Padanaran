@@ -67,7 +67,7 @@ class SubmissionController extends Controller
 
 
         $superiors = array_filter($this->superiors, fn($superior) => count($superior['positions']));
-        $categories = CompanyOutworkCategory::where('grade_id', userGrades())->get()->groupBy('name');
+        $categories = CompanyOutworkCategory::get()->groupBy('name');
 
         return view('portal::outwork.submission.create', compact('employee', 'superiors', 'categories'));
     }

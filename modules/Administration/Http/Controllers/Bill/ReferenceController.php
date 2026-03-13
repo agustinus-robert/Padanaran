@@ -45,7 +45,7 @@ class ReferenceController extends Controller
         }
 
         $academicSmt = AcademicSemester::whereNull('deleted_at')->get();
-        $academicBatch = SchoolBillCycleSemesters::with('semesters')->where('grade_id', userGrades())->whereNull('deleted_at')->get();
+        $academicBatch = SchoolBillCycleSemesters::with('semesters')->whereNull('deleted_at')->get();
 
         return view('administration::bill.reference.index', compact('user', 'bills','billCount', 'billCategories', 'editBill', 'academicSmt', 'academicBatch'));
     }

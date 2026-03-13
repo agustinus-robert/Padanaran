@@ -27,19 +27,14 @@ class SalaryController extends Controller
 
         return view('hrms::report.salaries.index', [
             ...compact('start_at', 'end_at'),
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'hasApprovedSalaries' => EmployeeSalary::whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))
-            ->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->whereNotNull('approved_at')->count(),
             'hasReleasedSalaries' => EmployeeSalary::whereDate('start_at', $start_at->format('Y-m-d'))
-            ->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('released_at')->count(),
             'employees' => Employee::with(['salaries' => fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->
-            where('grade_id', userGrades())->
             whereDate('end_at', $end_at->format('Y-m-d')), 'user', 'position.position'])
                 ->whereHas('salaries', fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')))
                 ->whenWithTrashed($request->get('trashed'))
@@ -65,7 +60,6 @@ class SalaryController extends Controller
                 'dataRecapitulations' => fn ($salary) => $salary->whereType(DataRecapitulationTypeEnum::ATTENDANCE)->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')),
                 'salaries' => fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))
             ])
-            ->where('grade_id', userGrades())
             ->whereHas('salaries', fn ($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')))->get();
 
         $component_ids = $employees->pluck('salaries.*.components.*.ctgs.*.i.*.component_id')->flatten()->unique()->sort()->values();

@@ -31,7 +31,6 @@ class TeacherReportController extends Controller
             },
         ])
         ->search($request->get('search'))
-        ->where('grade_id', userGrades())
         ->whenTrashed($request->get('trash'))
         ->whereHas('contract.position', function ($position) {
             $position->whereHas('position', function ($type) {

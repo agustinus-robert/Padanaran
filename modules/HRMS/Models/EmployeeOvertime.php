@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Modules\Core\Enums\ApprovableResultEnum;
 use Modules\Core\Models\Traits\Approvable\Approvable;
 use Modules\Docs\Models\Traits\Documentable\Documentable;
+use App\Models\Traits\HasGradeFromSession;
 
 class EmployeeOvertime extends Model
 {
-    use Restorable, Searchable, Approvable, Documentable;
+    use Restorable, Searchable, Approvable, Documentable, HasGradeFromSession;
 
     /**
      * The table associated with the model.

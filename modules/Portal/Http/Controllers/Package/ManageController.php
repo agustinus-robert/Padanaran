@@ -22,14 +22,10 @@ class ManageController extends Controller
         $start_at     = $month->copy()->startOfMonth()->format("Y-m-d");
         $end_at     = $month->copy()->endOfMonth()->format("Y-m-d");
         $packages = StudentsPackage::with('student')->
-        whereHas('student', function($query){
-            $query->where('grade_id', userGrades());
-        })->whereNull('deleted_at')->get();
+        whereHas('student')->whereNull('deleted_at')->get();
 
-        $students = Student::where('grade_id', userGrades())->whereNull('deleted_at')->get();
-        $packagesCount = StudentsPackage::whereHas('student', function($query){
-            $query->where('grade_id', userGrades());
-        })->whereNull('deleted_at')->count();
+        $students = Student::whereNull('deleted_at')->get();
+        $packagesCount = StudentsPackage::whereHas('student')->whereNull('deleted_at')->count();
 
         return view('portal::package.index', compact('start_at', 'end_at', 'packages', 'packagesCount', 'students'));
     }

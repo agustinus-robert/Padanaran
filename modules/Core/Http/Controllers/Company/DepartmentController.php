@@ -21,7 +21,6 @@ class DepartmentController extends Controller
         $this->authorize('access', CompanyDepartment::class);
 
         $departments = CompanyDepartment::withCount('positions')
-            ->where('grade_id', userGrades())
             ->whenTrashed($request->get('trash'))
             ->search($request->get('search'))
             ->paginate($request->get('limit', 10));
@@ -38,7 +37,7 @@ class DepartmentController extends Controller
     {
         $this->authorize('store', CompanyDepartment::class);
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->get();
+        $departments = CompanyDepartment::get();
 
         return view('core::company.departments.form', compact('departments'));
     }
@@ -63,7 +62,7 @@ class DepartmentController extends Controller
     {
         $this->authorize('update', $department);
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->get();
+        $departments = CompanyDepartment::get();
 
         return view('core::company.departments.form', compact('departments', 'department'));
         // return view('core::company.departments.show', compact('departments', 'department'));

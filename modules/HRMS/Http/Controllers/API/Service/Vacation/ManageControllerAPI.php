@@ -22,13 +22,11 @@ class ManageControllerAPI extends Controller
         $end_at   = $request->get('end_at', date('Y-m-t'));
         $limit    = $request->get('limit', 10);
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())
-            ->visible()
+        $departments = CompanyDepartment::visible()
             ->with('positions')
             ->get();
 
         $vacations = EmployeeVacation::with('quota.employee.user', 'quota.category', 'approvables.userable.position')
-            ->where('grade_id', userGrades())
             ->whenPeriod($start_at, $end_at)
             ->whenWithTrashed($request->get('trashed'))
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))

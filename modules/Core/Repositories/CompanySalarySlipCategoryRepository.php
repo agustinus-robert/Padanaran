@@ -12,9 +12,7 @@ trait CompanySalarySlipCategoryRepository
     public function getCompanySalaryCategories($request)
     {
         return $categories = CompanySalarySlipCategory::with('slip')->whenTrashed($request->get('trash'))
-            ->whereHas('slip', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('slip')
             ->search($request->get('search'))
             ->orderBy('slip_id')
             ->orderBy('az')

@@ -21,11 +21,10 @@ class OutworkCategoryController extends Controller
         $this->authorize('access', CompanyOutworkCategory::class);
 
         $categories = CompanyOutworkCategory::search($request->get('search'))
-            ->where('grade_id', userGrades())
             ->whenTrashed($request->get('trash'))
             ->paginate($request->get('limit', 10));
 
-        $categories_count = CompanyOutworkCategory::where('grade_id', userGrades())->count();
+        $categories_count = CompanyOutworkCategory::count();
 
         return view('core::company.services.outwork-categories.index', compact('categories', 'categories_count'));
     }
@@ -59,7 +58,7 @@ class OutworkCategoryController extends Controller
     {
         $this->authorize('update', $category);
 
-        $categories = CompanyOutworkCategory::where('grade_id', userGrades())->get();
+        $categories = CompanyOutworkCategory::get();
 
         return view('core::company.services.outwork-categories.form', compact('categories', 'category'));
     }

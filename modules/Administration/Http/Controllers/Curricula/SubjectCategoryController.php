@@ -21,12 +21,12 @@ class SubjectCategoryController extends Controller
 
         $trashed = $request->get('trash');
 
-        $categories = AcademicSubjectCategory::withCount('subjects')->where('grade_id', userGrades())
+        $categories = AcademicSubjectCategory::withCount('subjects')
         ->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
         })->paginate($request->get('limit', 10));
 
-        $categories_count = AcademicSubjectCategory::where('grade_id', userGrades())->count();
+        $categories_count = AcademicSubjectCategory::count();
 
         return view('administration::curriculas.subject-categories.index', compact('categories', 'categories_count'));
     }

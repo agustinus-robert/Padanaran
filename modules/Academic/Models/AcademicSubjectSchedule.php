@@ -4,10 +4,11 @@ namespace Modules\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Traits\HasGradeFromSession;
 
 class AcademicSubjectSchedule extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasGradeFromSession;
 
     /**
      * The table associated with the model.

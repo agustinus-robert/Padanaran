@@ -24,10 +24,9 @@ class ManageController extends Controller
         $start_at = $request->get('start_at', date('Y-m-01')) . ' 00:00:00';
         $end_at = $request->get('end_at', date('Y-m-t')) . ' 23:59:59';
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get();
+        $departments = CompanyDepartment::visible()->with('positions')->get();
 
         $outworks = EmployeeOutwork::with('approvables.userable.position', 'employee.user')
-            ->where('grade_id', userGrades())
             ->whenPeriod($start_at, $end_at)
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
             ->whenOnlyPending($request->get('pending'))
@@ -35,7 +34,7 @@ class ManageController extends Controller
             ->latest()
             ->paginate($request->get('limit', 10));
 
-        $pending_outworks_count = EmployeeOutwork::where('grade_id', userGrades())->whenOnlyPending(true)->count();
+        $pending_outworks_count = EmployeeOutwork::whenOnlyPending(true)->count();
 
         return view('finance::service.outwork.manage.index', compact('start_at', 'end_at', 'departments', 'departments', 'outworks', 'pending_outworks_count'));
     }
@@ -46,7 +45,7 @@ class ManageController extends Controller
     public function create(Request $request)
     {
         $employees  = Employee::with('user', 'position')->get();
-        $categories = CompanyOutworkCategory::where('grade_id', userGrades())->get()->groupBy('name');
+        $categories = CompanyOutworkCategory::get()->groupBy('name');
         $results = config('modules.core.features.services.overtimes.approvable_enum_available');
         $limit_at = Carbon::parse((now()->copy()->startOfYear())->format('Y-m-d') . ' 00:00:00')->subMonth(1)->copy()->startOfMonth();
 
@@ -80,7 +79,7 @@ class ManageController extends Controller
     {
         $outwork    = $outwork->load('employee.user', 'approvables.userable.position');
         $employee   = $outwork->employee;
-        $categories = CompanyOutworkCategory::where('grade_id', userGrades())->get()->groupBy('name');
+        $categories = CompanyOutworkCategory::get()->groupBy('name');
         $results = config('modules.core.features.services.overtimes.approvable_enum_available');
 
         return view('finance::service.outwork.manage.show', compact('employee', 'outwork', 'categories', 'results'));

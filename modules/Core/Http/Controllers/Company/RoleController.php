@@ -23,7 +23,6 @@ class RoleController extends Controller
         $this->authorize('access', CompanyRole::class);
 
         $roles = CompanyRole::with('permissions')
-            ->where('grade_id', userGrades())
             ->withCount('users')
             ->whenTrashed($request->get('trash'))
             ->search($request->get('search'))

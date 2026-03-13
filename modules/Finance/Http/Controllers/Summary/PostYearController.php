@@ -28,9 +28,8 @@ class PostYearController extends Controller
 
         return view('finance::summary.postyears.index', [
             ...compact('start_at', 'end_at'),
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'employees' => Employee::with('user')
-                ->where('grade_id', userGrades())
                 ->has('contract')
                 ->whenWithTrashed($request->get('trashed'))
                 ->with(['dataRecapitulations' => fn($recap) => $recap->where('type', DataRecapitulationTypeEnum::G13)->where('start_at', $start_at->format('Y-m-d'))->where('end_at', $end_at->format('Y-m-d'))])

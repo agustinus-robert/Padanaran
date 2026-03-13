@@ -37,10 +37,8 @@ class TemplateController extends Controller
                 'salaryTemplates' => fn($template) => $template->withCount('items')->with('companyTemplate')->whenInYear($year),
                 'user',
                 'position.position'
-            ])->where('grade_id', userGrades())
-                // ->whereHas('user', fn($q) => $q->whereMetaIn('profile_religion', $request->get('religions', array_map(fn($religion) => $religion->value, $religions))))
-                ->whenReligions($request->get('religions') ?? [])
-                ->search($request->get('search'))->has('contract')->paginate($request->get('limit', 10)),
+            ])->whenReligions($request->get('religions') ?? [])
+            ->search($request->get('search'))->has('contract')->paginate($request->get('limit', 10)),
             'employees_count' => Employee::has('contract')->count(),
             'religions' => $religions
         ]);
@@ -56,10 +54,10 @@ class TemplateController extends Controller
         $employee = Employee::with(['salaryTemplates' => fn($t) => $t->with('items')->where('cmp_template_id', 1)->whereYear('start_at', now()->format('Y'))->whereYear('end_at', now()->format('Y')), 'contract'])->find($request->get('employee'));
         $activeTemplate = !empty($employee->salaryTemplates) ? $employee->salaryTemplates?->first() : null;
         $lastTemplate = $employee->lastSalaryTemplate ?? null;
-        $default_component = CompanySalarySlipComponent::with('category.slip')->where('grade_id', userGrades())->whereJsonContains('meta->default_component', true)->first();
-        $settings = CompanyPayrollSetting::whereAz(PayrollSettingEnum::FORMULA)->where('grade_id', userGrades())->get();
+        $default_component = CompanySalarySlipComponent::with('category.slip')->whereJsonContains('meta->default_component', true)->first();
+        $settings = CompanyPayrollSetting::whereAz(PayrollSettingEnum::FORMULA)->get();
         $cmptid = $settings->pluck('meta.component');
-        $secondarySlip = CompanySalarySlipComponent::with('category.slip')->where('grade_id', userGrades())->whereIn('id', $cmptid)->get()->unique('category.id')->pluck('category')->first();
+        $secondarySlip = CompanySalarySlipComponent::with('category.slip')->whereIn('id', $cmptid)->get()->unique('category.id')->pluck('category')->first();
 
         return view('finance::payroll.templates.create', [
             'employee'      => $employee,
@@ -97,11 +95,6 @@ class TemplateController extends Controller
         $this->authorize('update', $template);
         $settings = CompanyPayrollSetting::whereAz(PayrollSettingEnum::FORMULA)->get();
         $cmptid = $settings->pluck('meta.component');
-        //->where('grade_id', userGrades())
-        //where('grade_id', userGrades())
-        //where('grade_id', userGrades())
-        //->where('grade_id', userGrades())
-        //where('grade_id', userGrades())
         $default_component = CompanySalarySlipComponent::with('category.slip')->whereJsonContains('meta->default_component', true)->first();
         $secondarySlip = CompanySalarySlipComponent::with('category.slip')->whereIn('id', $cmptid)->get()->unique('category.id')->pluck('category')->first();
 

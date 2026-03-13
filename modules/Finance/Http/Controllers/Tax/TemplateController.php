@@ -31,8 +31,8 @@ class TemplateController extends Controller
     public function create()
     {
         return view('finance::tax.templates.create', [
-            'slips' => CompanySalarySlip::where('grade_id', userGrades())->get(),
-            'items' => CompanySalarySlipComponent::where('grade_id', userGrades())->get(),
+            'slips' => CompanySalarySlip::get(),
+            'items' => CompanySalarySlipComponent::get(),
         ]);
     }
 
@@ -56,8 +56,8 @@ class TemplateController extends Controller
         return view('finance::tax.templates.show', [
             'template'   => $template,
             'components' => collect($template['value']),
-            'slips'      => CompanySalarySlip::with('categories.components')->where('grade_id', userGrades())->get(),
-            'items'      => CompanySalarySlipComponent::where('grade_id', userGrades())->get(),
+            'slips'      => CompanySalarySlip::with('categories.components')->get(),
+            'items'      => CompanySalarySlipComponent::get(),
         ]);
     }
 

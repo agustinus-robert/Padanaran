@@ -25,16 +25,13 @@ class ManageController extends Controller
 
         $outworks = EmployeeOutwork::with('approvables.userable.position', 'employee.user', 'category')
             ->whereHas('approvables', fn($approvable) => $approvable->where('userable_id', $employee->position->id))
-            ->where('grade_id', userGrades())
             ->whenOnlyPending($request->get('pending'))
             ->search($request->get('search'))
             ->latest()
             ->paginate($request->get('limit', 10));
 
         $pending_outworks_count = EmployeeOutwork::whereHas('employee.position', fn($position) => $position->whereIn('position_id', $employee->position->position->children->pluck('id')))
-            ->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })->whenOnlyPending(true)
+            ->whereHas('employee')->whenOnlyPending(true)
             ->count();
 
         return view('portal::outwork.manage.index', compact('user', 'employee', 'outworks', 'pending_outworks_count'));

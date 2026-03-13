@@ -24,14 +24,10 @@ class ApprovalController extends CalculationController
 
         return view('hrms::payroll.approvals.index', [
             ...compact('start_at', 'end_at'),
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
-            'hasValidatedSalaries' => EmployeeSalary::whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('validated_at')->count(),
-            'hasReleasedSalaries' => EmployeeSalary::whereHas('employee', function ($query) {
-                $query->where('grade_id', userGrades());
-            })->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('released_at')->count(),
-            'employees' => Employee::where('grade_id', userGrades())->with(['salaries' => fn($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')), 'user', 'position.position'])
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
+            'hasValidatedSalaries' => EmployeeSalary::whereHas('employee')->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('validated_at')->count(),
+            'hasReleasedSalaries' => EmployeeSalary::whereHas('employee')->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d'))->whereNotNull('released_at')->count(),
+            'employees' => Employee::with(['salaries' => fn($salary) => $salary->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')), 'user', 'position.position'])
                 ->whenWithTrashed($request->get('trashed'))
                 ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
                 ->isActive()

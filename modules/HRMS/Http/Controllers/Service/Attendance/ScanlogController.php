@@ -25,7 +25,7 @@ class ScanlogController extends Controller
         $start_at = $request->get('start_at', date('Y-m-01')) . ' 00:00:00';
         $end_at = $request->get('end_at', date('Y-m-t')) . ' 23:59:59';
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get();
+        $departments = CompanyDepartment::visible()->with('positions')->get();
 
         foreach (WorkLocationEnum::cases() as $location) {
             $locations[$location->value] = $location->name;
@@ -35,9 +35,7 @@ class ScanlogController extends Controller
             ->where('created_at', '>=', Carbon::parse($start_at))
             ->where('created_at', '<=', Carbon::parse($end_at))
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
-            ->whereHas('employee', function ($q) {
-                $q->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->search($request->get('search'))
             ->latest()
             ->get();

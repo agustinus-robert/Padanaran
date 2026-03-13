@@ -23,11 +23,9 @@ class IncometaxController extends Controller
         return view('finance::tax.incomes.index', [
             'start_at'    => $start_at = Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00'),
             'end_at'      => $end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59'),
-            'departments' => CompanyDepartment::visible()->where('grade_id', userGrades())->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'types'       => collect(TaxTypeEnum::cases()),
-            'taxs'        => EmployeeTax::where('type', TaxTypeEnum::YEARLY)->whereHas('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })->whenPeriod($start_at, $end_at)->whenTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
+            'taxs'        => EmployeeTax::where('type', TaxTypeEnum::YEARLY)->whereHas('employee')->whenPeriod($start_at, $end_at)->whenTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
         ]);
     }
 

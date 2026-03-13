@@ -29,12 +29,11 @@ class OutworkController extends Controller
         return view('finance::summary.outworks.index', [
             'start_at'    => $start_at,
             'end_at'      => $end_at,
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
             'employees'   => Employee::with(['user', 'contract.position.position', 'dataRecapitulations' => fn($recap) => $recap->whereType(DataRecapitulationTypeEnum::OUTWORK)->whereStrictPeriodIn($start_at, $end_at)])
                 ->withCount(['outworks' => fn($outwork) => $outwork->whereBetween('paidable_at', [$start_at, $end_at])])
                 ->whereHas('contract')
                 ->whereHas('outworks', fn($outwork) => $outwork->whereBetween('paidable_at', [$start_at, $end_at]))
-                ->where('grade_id', userGrades())
                 ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
                 ->search($request->get('search'))
                 ->paginate($request->get('limit', 10))
@@ -50,12 +49,10 @@ class OutworkController extends Controller
             'employee'   => ($employee = Employee::findOrFail($request->get('employee'))),
             'start_at'   => ($start_at = Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00')),
             'end_at'     => ($end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59')),
-            'categories' => CompanyOutworkCategory::where('grade_id', userGrades())->get(),
+            'categories' => CompanyOutworkCategory::get(),
             'schedules'  => ($schedules = $employee->schedules()->wherePeriodIn($start_at, $end_at)->pluck('dates')->flatMap(fn($v) => $v)),
             'recap'    => EmployeeDataRecapitulation::whereType(DataRecapitulationTypeEnum::OUTWORK)
-            ->where('employee', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->find($request->get('edit')),
             'outworks'   => $employee->outworks()->with('category')->whereBetween('paidable_at', [$start_at, $end_at])->get()->each(function ($outwork) use ($schedules) {
                 $outwork->dates = $outwork->dates->map(function ($date) use ($schedules) {

@@ -25,9 +25,7 @@ class PositionController extends Controller
         $departments = CompanyDepartment::all();
 
         $positions = CompanyPosition::with('department')
-            ->whereHas('department', function($query){
-                $query->where('grade_id', userGrades());
-            })
+            ->whereHas('department')
             ->withCount(['employeePositions' => fn($position) => $position->active()])
             ->whenDepartmentId($request->get('department'))
             ->whenTrashed($request->get('trash'))
@@ -46,12 +44,10 @@ class PositionController extends Controller
     {
         $this->authorize('store', CompanyPosition::class);
 
-        $roles = CompanyRole::where('grade_id', userGrades())->get();
-        $departments = CompanyDepartment::where('grade_id', userGrades())->get();
+        $roles = CompanyRole::get();
+        $departments = CompanyDepartment::get();
         $positions = CompanyPosition::with('department')
-        ->whereHas('department', function($query){
-            $query->where('grade_id', userGrades());
-        })
+        ->whereHas('department')
         ->get()->groupBy('department.name');
 
         return view('core::company.positions.form', compact('roles', 'positions', 'departments'));
@@ -78,12 +74,10 @@ class PositionController extends Controller
 
         $position = $position->load('children', 'parents', 'meta');
 
-        $roles = CompanyRole::where('grade_id', userGrades())->get();
-        $departments = CompanyDepartment::where('grade_id', userGrades())->get();
+        $roles = CompanyRole::get();
+        $departments = CompanyDepartment::get();
         $positions = CompanyPosition::with('department')
-        ->whereHas('department', function($query){
-            $query->where('grade_id', userGrades());
-        })->get()->groupBy('department.name');
+        ->whereHas('department')->get()->groupBy('department.name');
 
         return view('core::company.positions.form', compact('position', 'roles', 'departments', 'positions'));
     }

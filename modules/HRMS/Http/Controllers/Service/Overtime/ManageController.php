@@ -20,10 +20,9 @@ class ManageController extends Controller
         $start_at = $request->get('start_at', date('Y-m-01')) . ' 00:00:00';
         $end_at = $request->get('end_at', date('Y-m-t')) . ' 23:59:59';
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get();
+        $departments = CompanyDepartment::visible()->with('positions')->get();
 
         $overtimes = EmployeeOvertime::with('approvables.userable.position', 'employee.user')
-            ->where('grade_id', userGrades())
             ->whenPeriod($start_at, $end_at)
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
             ->whenOnlyPending($request->get('pending'))
@@ -31,7 +30,7 @@ class ManageController extends Controller
             ->latest()
             ->paginate($request->get('limit', 10));
 
-        $pending_overtimes_count = EmployeeOvertime::where('grade_id', userGrades())->whenOnlyPending(true)->count();
+        $pending_overtimes_count = EmployeeOvertime::whenOnlyPending(true)->count();
 
         return view('hrms::service.overtime.manage.index', compact('start_at', 'end_at', 'departments', 'overtimes', 'pending_overtimes_count'));
     }

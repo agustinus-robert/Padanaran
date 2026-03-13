@@ -29,7 +29,7 @@ class ClassroomController extends Controller
         $trashed = $request->get('trash');
 
         $acsems = AcademicSemester::openedByDesc()->get();
-        $gradesLevels = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $gradesLevels = GradeLevel::pluck('id');
 
         $classrooms = AcademicClassroom::withCount('stsems')->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
@@ -58,12 +58,12 @@ class ClassroomController extends Controller
         $acsems = AcademicSemester::openedByDesc()->get();
         $acsem = $acsems->firstWhere('id', $request->get('academic', $acsems->first()->id))->load('majors', 'superiors');
 
-        $rooms = SchoolBuildingRoom::where('grade_id', userGrades())->whereNull('deleted_at')->get();
+        $rooms = SchoolBuildingRoom::whereNull('deleted_at')->get();
 
         $supervisors = Employee::whereHas('contract.position', function ($query) {
             $query->where('position_id', PositionTypeEnum::GURU)
           ->orWhere('position_id', PositionTypeEnum::HUMAS);
-        })->where('grade_id', userGrades())->get();
+        })->get();
 
         return view('administration::scholar.classrooms.form', [
             'mode'        => 'create',
@@ -85,17 +85,22 @@ class ClassroomController extends Controller
         $classroom = new AcademicClassroom($request->only('semester_id', 'level_id', 'name', 'room_id', 'major_id', 'superior_id', 'supervisor_id'));
 
         if($classroom->save()){
-             Auth::user()->log(
+            Auth::user()->log(
                 ' Rombel bernama '.$classroom->name.' telah ditambahkan '.
                 ' <strong>[ID: ' . $classroom->id . ']</strong>',
                 AcademicClassroom::class,
                 $classroom->id
             );
 
-            return redirect($request->get('next', url()->previous()))->with('success', 'Rombel <strong>'.$classroom->name.'</strong> berhasil dibuat');
+            return redirect($request->get('next', url()->previous()))
+                    ->with('success', 'Rombel <strong>'.$classroom->name.'</strong> berhasil dibuat');
         }
 
-        return redirect($request->get('next', url()->previous()))->with('danger', 'Rombel <strong>'.$classroom->name.'</strong> gagal dibuat');
+        // Redirect kembali dengan pesan error, input lama, dan errors dari validator
+        return redirect()->back()
+                ->withInput()
+                ->with('danger', 'Rombel <strong>'.$request->name.'</strong> gagal dibuat. Silakan periksa kembali data Anda.')
+                ->withErrors(['Gagal menyimpan data ke database']);
     }
 
     /**
@@ -108,11 +113,11 @@ class ClassroomController extends Controller
         $acsems = AcademicSemester::openedByDesc()->get();
         $acsem = $acsems->firstWhere('id', $classroom->semester_id)->load('majors', 'superiors');
 
-        $rooms = SchoolBuildingRoom::where('grade_id', userGrades())->whereNull('deleted_at')->get();
+        $rooms = SchoolBuildingRoom::whereNull('deleted_at')->get();
 
-        $supervisors = Employee::where('grade_id', userGrades())->whereHas('contract.position', function ($query) {
+        $supervisors = Employee::whereHas('contract.position', function ($query) {
             $query->where('position_id', PositionTypeEnum::GURU);
-        })->where('grade_id', userGrades())->get();
+        })->get();
 
         return view('administration::scholar.classrooms.form', [
             'mode'        => 'edit',
@@ -132,17 +137,21 @@ class ClassroomController extends Controller
         $this->authorize('update', AcademicClassroom::class);
 
         if($classroom->update($request->only('level_id', 'name', 'room_id', 'major_id', 'superior_id', 'supervisor_id'))){
-             Auth::user()->log(
+            Auth::user()->log(
                 ' Rombel bernama '.$classroom->name.' telah diperbarui '.
                 ' <strong>[ID: ' . $classroom->id . ']</strong>',
                 AcademicClassroom::class,
                 $classroom->id
             );
 
-            return redirect($request->get('next', url()->previous()))->with('success', 'Rombel <strong>'.$classroom->name.'</strong> berhasil diperbarui');
+            return redirect($request->get('next', url()->previous()))
+                    ->with('success', 'Rombel <strong>'.$classroom->name.'</strong> berhasil diperbarui');
         }
 
-        return redirect($request->get('next', url()->previous()))->with('danger', 'Rombel <strong>'.$classroom->name.'</strong> gagal diperbarui');
+        return redirect()->back()
+                ->withInput()
+                ->with('danger', 'Rombel <strong>'.$classroom->name.'</strong> gagal diperbarui. Terjadi kesalahan sistem.')
+                ->withErrors(['Gagal memperbarui data ke database']);
     }
 
     /**

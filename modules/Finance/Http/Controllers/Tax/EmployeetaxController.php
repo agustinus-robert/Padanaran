@@ -31,8 +31,8 @@ class EmployeetaxController extends Controller
         return view('finance::tax.employeetaxs.index', [
             'start_at'    => Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00'),
             'end_at'      => Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59'),
-            'departments' => CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get(),
-            'employees'   => Employee::isActive()->with('user.meta', 'position.position')->where('grade_id', userGrades())->whenTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
+            'departments' => CompanyDepartment::visible()->with('positions')->get(),
+            'employees'   => Employee::isActive()->with('user.meta', 'position.position')->whenTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
         ]);
     }
 

@@ -24,7 +24,7 @@
 
     @foreach($options as $opt)
         <option value="{{ $opt['value'] }}"
-            @if($value == $opt['value']) selected @endif>
+            @selected((string)$value == (string)$opt['value'])>
             {{ $opt['label'] }}
         </option>
     @endforeach

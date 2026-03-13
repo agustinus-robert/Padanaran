@@ -26,16 +26,14 @@ class OvertimeController extends Controller
         $end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59');
 
         $recap = EmployeeDataRecapitulation::where('type', DataRecapitulationTypeEnum::OVERTIME)
-        ->whereHas('employee', function($query){
-            $query->where('grade_id', userGrades());
-        })->whereStrictPeriodIn($start_at, $end_at)->get();
+        ->whereHas('employee')
+        ->whereStrictPeriodIn($start_at, $end_at)->get();
 
         $employees = Employee::with([
             'user',
             'position.position',
             'overtimes' => fn ($ov) => $ov->whereIn('id', $recap->pluck('result.overtimes.*.id')->flatten())
         ])
-            ->where('grade_id', userGrades())
             ->whereIn('id', $recap->pluck('empl_id')->toArray())
             ->whenWithTrashed($request->get('trashed'))
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))
@@ -77,7 +75,6 @@ class OvertimeController extends Controller
             'overtimes' => fn ($overtime) => $overtime->with(['approvables'])
                 ->whereHas('approvables', fn ($approve) => $approve->where('userable_id', $poss)->whereBetween('updated_at', [$start_at, $end_at]))
         ])
-            ->where('grade_id', userGrades())
             ->wherehas('overtimes.approvables', fn ($approve) => $approve->where('userable_id', $poss)->whereBetween('updated_at', [$start_at, $end_at]))
             ->get();
 

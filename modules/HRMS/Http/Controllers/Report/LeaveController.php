@@ -24,7 +24,6 @@ class LeaveController extends Controller
         $end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59');
 
         $employees = Employee::with('user.meta')
-            ->where('grade_id', userGrades())
             ->withWhereHas('contracts', fn($contracts) => $contracts->with('position.position')->whereActivePeriod($start_at, $end_at))
             ->with([
                 'leaves' => fn($leaves) => $leaves->with('approvables')->whereExtractedDatesBetween($start_at, $end_at)
@@ -55,13 +54,12 @@ class LeaveController extends Controller
         $period = $start_at->isSameDay($end_at) ? $end_at->isoFormat('DD MMM YYYY') : $start_at->isoFormat('DD MMM') . ' s.d. ' . $end_at->isoFormat('DD MMM YYYY');
 
         $employees = Employee::with('user.meta')
-            ->where('grade_id', userGrades())
             ->withWhereHas('contracts', fn($contracts) => $contracts->with('position.position')->whereActivePeriod($start_at, $end_at))
             ->with([
                 'leaves' => fn($leaves) => $leaves->with('approvables')->whereExtractedDatesBetween($start_at, $end_at)
             ])->get();
 
-        $categories = CompanyLeaveCategory::where('grade_id', userGrades())->get();
+        $categories = CompanyLeaveCategory::get();
 
         $sheets['Rekapitulasi keseluruhan'] = [
             'columns' => array_merge([

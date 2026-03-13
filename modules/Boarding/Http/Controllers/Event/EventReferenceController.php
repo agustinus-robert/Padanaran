@@ -14,7 +14,7 @@ class EventReferenceController extends Controller
 {
     public function index(Request $request)
     {
-        $boardingEvent = BoardingReferenceEvent::where('grade_id', userGrades())->whereNull('deleted_at')->paginate(10);
+        $boardingEvent = BoardingReferenceEvent::whereNull('deleted_at')->paginate(10);
 
         return view('boarding::event.index', compact('boardingEvent'));
     }

@@ -21,9 +21,7 @@ class UserLogController extends Controller
         $user = User::find($request->get('user'));
 
         $logs = UserLog::with('user')
-                    ->whereHas('user.teacher', function($query){
-                        $query->where('grade_id', userGrades());
-                    })
+                    ->whereHas('user.teacher')
                     ->latest()
                     ->search($request->get('search'))
                     ->whenUserId($request->get('user'))

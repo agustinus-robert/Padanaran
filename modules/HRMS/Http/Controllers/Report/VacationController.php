@@ -23,7 +23,7 @@ class VacationController extends Controller
         $start_at = Carbon::parse($request->get('start_at', cmp_cutoff(0)->format('Y-m-d')) . ' 00:00:00');
         $end_at = Carbon::parse($request->get('end_at', cmp_cutoff(1)->format('Y-m-d')) . ' 23:59:59');
 
-        $employees = Employee::where('grade_id', userGrades())->with('user.meta')
+        $employees = Employee::with('user.meta')
             ->withWhereHas('contracts', fn($contracts) => $contracts->with('position.position')->whereActivePeriod($start_at, $end_at))
             ->with([
                 'vacations' => fn($vacations) => $vacations->with('quota', 'approvables')->whereExtractedDatesBetween($start_at, $end_at)
@@ -54,7 +54,6 @@ class VacationController extends Controller
         $period = $start_at->isSameDay($end_at) ? $end_at->isoFormat('DD MMM YYYY') : $start_at->isoFormat('DD MMM') . ' s.d. ' . $end_at->isoFormat('DD MMM YYYY');
 
         $employees = Employee::with('user.meta')
-            ->where('grade_id', userGrades())
             ->withWhereHas('contracts', fn($contracts) => $contracts->with('position.position')->whereActivePeriod($start_at, $end_at))
             ->with([
                 'vacations' => fn($vacations) => $vacations->with('quota', 'approvables')->whereExtractedDatesBetween($start_at, $end_at)

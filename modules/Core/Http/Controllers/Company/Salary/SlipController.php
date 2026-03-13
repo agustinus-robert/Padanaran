@@ -22,7 +22,7 @@ class SlipController extends Controller
 
         return view('core::company.salaries.slips.index', [
             'slips' => $this->getCompanySalarySlip($request),
-            'slips_count' => CompanySalarySlip::where('grade_id', userGrades())->count()
+            'slips_count' => CompanySalarySlip::count()
         ]);
     }
 

@@ -22,7 +22,7 @@ class CategoryController extends Controller
         $this->authorize('access', CompanySalarySlipCategory::class);
         return view('core::company.salaries.categories.index', [
             'categories' => $this->getCompanySalaryCategories($request),
-            'slips'      => CompanySalarySlip::where('grade_id', userGrades())->get(),
+            'slips'      => CompanySalarySlip::get(),
         ]);
     }
 
@@ -45,7 +45,7 @@ class CategoryController extends Controller
         $this->authorize('update', $category);
         return view('core::company.salaries.categories.show', [
             'category'  => $category,
-            'slips'     => CompanySalarySlip::where('grade_id', userGrades())->get()
+            'slips'     => CompanySalarySlip::get()
         ]);
     }
 

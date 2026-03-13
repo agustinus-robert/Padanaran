@@ -34,7 +34,7 @@ class PphController extends Controller
                 'taxs' => fn($tax) => $tax->whereDate('start_at', $start_at->format('Y-m-d'))->whereDate('end_at', $end_at->format('Y-m-d')),
                 'user',
                 'position.position'
-            ])->whenWithTrashed($request->get('trashed'))->where('grade_id', userGrades())->paginate($request->get('limit', 10)),
+            ])->whenWithTrashed($request->get('trashed'))->paginate($request->get('limit', 10)),
         ]);
     }
 

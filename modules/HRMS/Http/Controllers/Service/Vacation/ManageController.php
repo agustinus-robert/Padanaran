@@ -21,10 +21,9 @@ class ManageController extends Controller
         $start_at = $request->get('start_at', date('Y-m-01'));
         $end_at = $request->get('end_at', date('Y-m-t'));
 
-        $departments = CompanyDepartment::where('grade_id', userGrades())->visible()->with('positions')->get();
+        $departments = CompanyDepartment::visible()->with('positions')->get();
 
         $vacations = EmployeeVacation::with('quota.employee.user', 'quota.category', 'approvables.userable.position')
-            ->where('grade_id', userGrades())
             ->whenPeriod($start_at, $end_at)
             ->whenWithTrashed($request->get('trashed'))
             ->whenPositionOfDepartment($request->get('department'), $request->get('position'))

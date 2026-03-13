@@ -7,10 +7,11 @@ use App\Models\Traits\Cacheable\Cacheable;
 use App\Models\Traits\Restorable\Restorable;
 use App\Models\Traits\Searchable\Searchable;
 use Modules\Core\Enums\PayrollSettingEnum;
+use App\Models\Traits\HasGradeFromSession;
 
 class CompanyPayrollSetting extends Model
 {
-    use Cacheable, Searchable, Restorable;
+    use Cacheable, Searchable, Restorable, HasGradeFromSession;
 
     /**
      * The table associated with the model.

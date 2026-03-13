@@ -20,12 +20,12 @@ class CurriculaController extends Controller
 
         $trashed = $request->get('trash');
 
-        $curriculas = SchoolCurricula::where('grade_id', userGrades())
-        ->where('name', 'like', '%'.$request->get('search').'%')->when($trashed, function($query, $trashed) {
+        $curriculas = SchoolCurricula::where('name', 'like', '%'.$request->get('search').'%')
+        ->when($trashed, function($query, $trashed) {
             return $query->onlyTrashed();
         })->orderByDesc('id')->paginate($request->get('limit', 10));
 
-        $curriculas_count = SchoolCurricula::where('grade_id', userGrades())->count();
+        $curriculas_count = SchoolCurricula::count();
 
         return view('administration::database.curriculas.index', compact('curriculas', 'curriculas_count'));
     }

@@ -7,10 +7,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Modules\HRMS\Enums\WorkShiftEnum;
+use App\Models\Traits\HasGradeFromSession;
 
 class EmployeeScheduleShiftDuty extends Model
 {
-    use Searchable;
+    use Searchable, HasGradeFromSession;
 
     /**
      * The table associated with the model.

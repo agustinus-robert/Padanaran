@@ -21,7 +21,7 @@ class CaseController extends Controller
         $this->authorize('store', StudentSemesterCase::class);
 
         $acsem = $this->acsem;
-        $gradesLevels = GradeLevel::where('grade_id', userGrades())->pluck('id');
+        $gradesLevels = GradeLevel::pluck('id');
 
 
         $classrooms = StudentSemester::with('classroom')
@@ -29,7 +29,7 @@ class CaseController extends Controller
             $query->whereIn('level_id', $gradesLevels);
         })
         ->where('semester_id', $acsem->id)->get()->groupBy('classroom.name');
-        $categories = AcademicCaseCategory::with('descriptions')->where('grade_id', userGrades())->get();
+        $categories = AcademicCaseCategory::with('descriptions')->get();
 
         return view('teacher::cases.create', compact('acsem', 'classrooms', 'categories'));
     }

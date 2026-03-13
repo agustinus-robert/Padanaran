@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Academic\Models\Student;
 use Modules\Administration\Models\SchoolBuilding;
 use Modules\Administration\Models\SchoolBuildingRoom;
+use App\Models\Traits\HasGradeFromSession;
 
 class BoardingStudents extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasGradeFromSession;
 
     /**
      * The table associated with the model.

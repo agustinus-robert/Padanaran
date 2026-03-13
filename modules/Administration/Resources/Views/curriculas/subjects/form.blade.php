@@ -51,6 +51,9 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-10">
+            
+            @include('components.validation-errors')
+
             <div class="card mb-4">
 
                 <x-card-header type="{{ config('theme.default') }}">

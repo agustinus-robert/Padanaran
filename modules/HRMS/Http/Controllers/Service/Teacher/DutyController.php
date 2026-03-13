@@ -66,7 +66,6 @@ class DutyController extends Controller
             'schedulesDutyTeacher' => fn($schedule) => $schedule->whereDate('start_at', '<=', $end_at)->whereDate('end_at', '>=', $start_at),
         ])
             ->whereHas('position', fn($position) => $position->whereIn('position_id', $employee->position->position->children->pluck('id')))
-            ->where('grade_id', userGrades())
             ->when($type, fn($t) => $t->whereHas('position.position', fn($q) => $q->where('type', $type)))
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
@@ -83,9 +82,6 @@ class DutyController extends Controller
 
         $calendarData = EmployeeTeacherDuty::whereMonth('start_at', $month)
             ->with(['employee.user', 'employee.position.position'])
-            ->whereHas('employee', function ($q) {
-                $q->where('grade_id', userGrades());
-            })
             ->get()
             ->groupBy('empl_id');
 
@@ -115,9 +111,7 @@ class DutyController extends Controller
         }
 
         $room = SchoolBuildingRoom::with('building')
-        ->whereHas('building', function($q){
-            $q->where('grade_id', userGrades());
-        })
+        ->whereHas('building')
         ->whereNull('deleted_at')->get();
 
 
@@ -147,7 +141,7 @@ class DutyController extends Controller
 
         $start_at = request('start_at') ?? now()->copy()->subDays(6)->format('Y-m-d');
         $end_at   = request('end_at') ?? now()->copy()->format('Y-m-d');
-        $shiftDatabs = EmployeeScheduleShiftDuty::where('grade_id', userGrades())->where('status', 1)->get();
+        $shiftDatabs = EmployeeScheduleShiftDuty::where('status', 1)->get();
 
         $startDate = request()->filled('start_at')
                 ? Carbon::parse(request('start_at'))
@@ -173,7 +167,6 @@ class DutyController extends Controller
             'position.position',
             'schedules' => fn($schedule) => $schedule->whereDate('start_at', '<=', $end_at)->whereDate('end_at', '>=', $start_at),
         ])
-            ->where('grade_id', userGrades())
             ->whereHas('position', fn($position) => $position->whereIn('position_id', $employee->position->position->children->pluck('id')))
             ->when($type, fn($t) => $t->whereHas('position.position', fn($q) => $q->where('type', $type)))
             ->search($request->get('search'))->whenTrashed($request->get('trash'))->get();
@@ -188,9 +181,7 @@ class DutyController extends Controller
 
         $calendarData = EmployeeTeacherDuty::whereMonth('start_at', $month)
             ->with(['employee.user', 'employee.position.position'])
-            ->whereHas('employee', function ($q) {
-                  $q->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->get()
             ->groupBy('empl_id');
 
@@ -238,9 +229,7 @@ class DutyController extends Controller
 
         $calendarData = EmployeeTeacherDuty::whereMonth('start_at', $month)
             ->with(['employee.user', 'employee.position.position'])
-            ->whereHas('employee', function ($q) {
-              $q->where('grade_id', userGrades());
-            })
+            ->whereHas('employee')
             ->get()
             ->groupBy('empl_id');
 
@@ -271,8 +260,7 @@ class DutyController extends Controller
 
         $shiftDatabs = EmployeeScheduleShiftDuty::whereStatus(1)->get();
         $type = PositionTypeEnum::GURU->value;
-        $employees = Employee::where('grade_id', userGrades())
-        ->whereHas('position.position', function ($query) use ($type) {
+        $employees = Employee::whereHas('position.position', function ($query) use ($type) {
             $query->where('type', $type);
         })->get();
 

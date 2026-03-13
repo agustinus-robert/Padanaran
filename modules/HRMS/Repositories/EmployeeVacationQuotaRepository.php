@@ -59,7 +59,6 @@ trait EmployeeVacationQuotaRepository
         try {
             // Mengambil semua karyawan dengan relasi 'position' dan 'user.meta'
             $employees = Employee::with('position.position', 'user.meta')
-                ->where('grade_id', userGrades())
                 ->whereHas('contract')
                 ->get();
 

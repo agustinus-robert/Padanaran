@@ -24,10 +24,10 @@ class ConfigController extends Controller
         $this->authorize('access', CompanyPayrollSetting::class);
 
         return view('core::company.salaries.configs.index', [
-            'slips' => CompanySalaryTemplate::where('grade_id', userGrades())->get(),
-            'settings' => CompanyPayrollSetting::whenTrashed($request->get('trash'))->where('grade_id', userGrades())->paginate($request->get('limit', 10)),
-            'setting_count' => CompanyPayrollSetting::where('grade_id', userGrades())->count(),
-            'employees' => Employee::with('user', 'contract.position.position')->where('grade_id', userGrades())->get()
+            'slips' => CompanySalaryTemplate::get(),
+            'settings' => CompanyPayrollSetting::whenTrashed($request->get('trash'))->paginate($request->get('limit', 10)),
+            'setting_count' => CompanyPayrollSetting::count(),
+            'employees' => Employee::with('user', 'contract.position.position')->get()
         ]);
     }
 
@@ -38,11 +38,11 @@ class ConfigController extends Controller
     {
         $this->authorize('store', CompanyPayrollSetting::class);
 
-        $default_component = CompanySalarySlipComponent::whereJsonContains('meta->default_component', true)->where('grade_id', userGrades())->first();
-        $components = CompanySalarySlipComponent::with('slip')->where('operate', '!=', 0)->where('grade_id', userGrades())->get();
+        $default_component = CompanySalarySlipComponent::whereJsonContains('meta->default_component', true)->first();
+        $components = CompanySalarySlipComponent::with('slip')->where('operate', '!=', 0)->get();
         $types = PayrollSettingEnum::cases();
         $active = PayrollSettingEnum::tryFrom($request->get('active_id')) ? PayrollSettingEnum::tryFrom($request->get('active_id'))->template() : null;
-        $disabled = CompanyPayrollSetting::where('grade_id', userGrades())->whereAz(PayrollSettingEnum::APPROVABLE)->first()?->az->value;
+        $disabled = CompanyPayrollSetting::whereAz(PayrollSettingEnum::APPROVABLE)->first()?->az->value;
 
         return view('core::company.salaries.configs.create', [
             'default' => $default_component,
@@ -50,7 +50,7 @@ class ConfigController extends Controller
             'types' => $types,
             'active' => $active,
             'disabled' => $disabled,
-            'employees' => Employee::with('user', 'contract.position.position')->where('grade_id', userGrades())->get()
+            'employees' => Employee::with('user', 'contract.position.position')->get()
         ]);
     }
 

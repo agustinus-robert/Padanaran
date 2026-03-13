@@ -47,7 +47,6 @@ class ManageController extends Controller
             'contract.position.position',
             'schedulesTeachers' => fn($schedule) => $schedule->whenMonth($request->get('month', date('Y-m'))),
         ])
-            ->where('grade_id', userGrades())
             ->when($type, fn($t) => $t->whereHas('position.position', fn($q) => $q->where('type', $type)))
             ->search($request->get('search'))
             ->whenTrashed($request->get('trash'))
